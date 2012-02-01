@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{38D86BD0-1FE5-D4E8-12AE-AE3D5F4F1491}") = "Heavy-Insertion", "Heavy-Insertion.csproj", "{AEE356BF-22ED-68CA-3A05-B6A2C6B37EED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AEE356BF-22ED-68CA-3A05-B6A2C6B37EED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEE356BF-22ED-68CA-3A05-B6A2C6B37EED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEE356BF-22ED-68CA-3A05-B6A2C6B37EED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEE356BF-22ED-68CA-3A05-B6A2C6B37EED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	
+EndGlobal

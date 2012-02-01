@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{5BEF6143-CE77-1F39-7BA2-479460E591A2}</ProjectGuid>
+	<ProjectGuid>{AEE356BF-22ED-68CA-3A05-B6A2C6B37EED}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace>Irrelevant</RootNamespace>
@@ -67,12 +67,15 @@
      <Compile Include="Assets\Detonator\System\DetonatorSpray.cs" />
      <None Include="Assets\Detonator\TestScene\DetonatorTest.js" />
      <Compile Include="Assets\Editor\LevelManagerGUIScript.cs" />
+     <Compile Include="Assets\Scripts\Test Scripts\DebugCam.cs" />
+     <Compile Include="Assets\Scripts\Test Scripts\JumpingCube.cs" />
      <Compile Include="Assets\Scripts\AIInputController.cs" />
      <Compile Include="Assets\Scripts\CameraFollow.cs" />
      <Compile Include="Assets\Scripts\CarouselRotator.cs" />
      <Compile Include="Assets\Scripts\DontGoThroughThings.cs" />
      <Compile Include="Assets\Scripts\DragTransform.cs" />
      <Compile Include="Assets\Scripts\GameUtils.cs" />
+     <None Include="Assets\Scripts\GlobalFog.js" />
      <Compile Include="Assets\Scripts\GuidedProjectileInputController.cs" />
      <Compile Include="Assets\Scripts\GuidedProjectileScript.cs" />
      <Compile Include="Assets\Scripts\Hovercraft.cs" />
@@ -88,6 +91,7 @@
      <Compile Include="Assets\Scripts\TestCannonScript.cs" />
      <Compile Include="Assets\Scripts\TrackingComputer.cs" />
      <Compile Include="Assets\Scripts\TurretScript.cs" />
+     <None Include="Assets\Shaders\GlobalFog.shader" />
      <None Include="Assets\Standard Assets\Editor\Image Effects\BloomAndFlaresEditor.js" />
      <None Include="Assets\Standard Assets\Editor\Image Effects\ColorCorrectionCurvesEditor.js" />
      <None Include="Assets\Standard Assets\Editor\Image Effects\DepthOfFieldEditor.js" />
