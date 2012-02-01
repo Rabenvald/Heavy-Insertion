@@ -128,6 +128,8 @@ public class TurretScript : MonoBehaviour
 
         // Set its velocity
         projectile.rigidbody.velocity = Muzzle.transform.forward * ProjectileSpeed + randomness + transform.parent.rigidbody.velocity;
+        // Recoil
+        transform.parent.rigidbody.AddForceAtPosition(-projectile.rigidbody.velocity * projectile.rigidbody.mass, Muzzle.transform.position, ForceMode.Impulse);
     }
 
     private void FireMissile()

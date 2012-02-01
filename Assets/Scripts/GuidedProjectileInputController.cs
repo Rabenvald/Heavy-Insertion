@@ -73,7 +73,11 @@ public class GuidedProjectileInputController : InputController
         float xyDot = 0;
         float zxDot = 0;
 
-        targetPosition -= rigidbody.velocity * Mathf.Clamp((1 / Mathf.Clamp(DistanceToTarget, 0.00001f, 999999)), 0.00001f, 0.4f) * (DistanceToTarget * 0.2f) + Physics.gravity * DistanceToTarget;
+        if (DistanceToTarget > 0.6f)
+        {
+            targetPosition -= rigidbody.velocity * Mathf.Clamp((1 / Mathf.Clamp(DistanceToTarget, 0.00001f, 999999)), 0.00001f, 0.4f) * (DistanceToTarget * 0.2f) + Physics.gravity * DistanceToTarget;
+        }
+        //targetPosition += (targetPosition - transform.position).normalized * rigidbody.velocity.magnitude;
         looker.transform.LookAt(targetPosition, rigidbody.transform.up);
         looker.transform.position = rigidbody.transform.position;
         tp = targetPosition;
