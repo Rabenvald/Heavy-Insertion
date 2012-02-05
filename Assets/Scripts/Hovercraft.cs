@@ -162,7 +162,7 @@ public class Hovercraft : ImportantObject
             throttle = rigidbody.velocity;
         }
 
-        if (bTouchingGround && Controller.Throttle > 0)
+        if (bTouchingGround && Controller.Throttle >= 0)
         {
             rigidbody.velocity = (rigidbody.velocity.normalized + rigidbody.transform.forward * steeringTightness).normalized * rigidbody.velocity.magnitude;  //induce lateral drag
         }
