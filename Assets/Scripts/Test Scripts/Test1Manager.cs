@@ -52,6 +52,9 @@ public class Test1Manager : MonoBehaviour {
 		currentRoom = smartFox.LastJoinedRoom;
 		clientName = smartFox.MySelf.Name;
 		
+		if(currentRoom.UserCount == 0){
+			isPhysX = true;	
+		}
 		
 		smartFox.AddEventListener(SFSEvent.USER_ENTER_ROOM, OnUserEnterRoom);
 		smartFox.AddEventListener(SFSEvent.USER_EXIT_ROOM, OnUserLeaveRoom);
@@ -78,7 +81,13 @@ public class Test1Manager : MonoBehaviour {
 		User user = (User)evt.Params["user"];
 		ISFSObject obj = (SFSObject)evt.Params["message"];
 		
-		Debug.Log(obj.GetFloat("x"));
+		if(obj.GetBool("isPhysX")){
+			daCube.transform.position = new Vector3(obj.GetFloat("x"), obj.GetFloat("y"), obj.GetFloat("z"));
+			daCube.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
+			daCube.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
+		}
+		
+		Debug.Log(obj.GetFloat("x") + " " + obj.GetFloat("y") + " " + obj.GetFloat("z"));
 	}
 	
 	public void OnUserCountChange (BaseEvent evt){
@@ -115,6 +124,8 @@ public class Test1Manager : MonoBehaviour {
 		data.PutFloat("vx", daCube.rigidbody.velocity.x);
 		data.PutFloat("vy", daCube.rigidbody.velocity.y);
 		data.PutFloat("vz", daCube.rigidbody.velocity.z);
+		
+		data.PutBool("isPhysX", isPhysX);
 		
 		smartFox.Send(new ObjectMessageRequest(data));
 	}
