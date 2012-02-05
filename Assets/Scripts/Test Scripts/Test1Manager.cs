@@ -52,8 +52,11 @@ public class Test1Manager : MonoBehaviour {
 		currentRoom = smartFox.LastJoinedRoom;
 		clientName = smartFox.MySelf.Name;
 		
-		if(currentRoom.UserCount == 0){
+		if(currentRoom.UserCount == 1){
 			isPhysX = true;	
+		}
+		else{
+			isPhysX = false;	
 		}
 		
 		smartFox.AddEventListener(SFSEvent.USER_ENTER_ROOM, OnUserEnterRoom);
@@ -79,15 +82,6 @@ public class Test1Manager : MonoBehaviour {
 	
 	public void OnUserLeaveRoom (BaseEvent evt){
 		User user = (User)evt.Params["user"];
-		ISFSObject obj = (SFSObject)evt.Params["message"];
-		
-		if(obj.GetBool("isPhysX")){
-			daCube.transform.position = new Vector3(obj.GetFloat("x"), obj.GetFloat("y"), obj.GetFloat("z"));
-			daCube.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
-			daCube.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
-		}
-		
-		Debug.Log(obj.GetFloat("x") + " " + obj.GetFloat("y") + " " + obj.GetFloat("z"));
 	}
 	
 	public void OnUserCountChange (BaseEvent evt){
@@ -100,6 +94,15 @@ public class Test1Manager : MonoBehaviour {
 	
 	public void OnObjectMessageReceived (BaseEvent evt){
 		User sender = (User)evt.Params["sender"];
+		ISFSObject obj = (SFSObject)evt.Params["message"];
+		
+		if(obj.GetBool("isPhysX")){
+			daCube.transform.position = new Vector3(obj.GetFloat("x"), obj.GetFloat("y"), obj.GetFloat("z"));
+			daCube.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
+			daCube.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
+		}
+		
+		Debug.Log(obj.GetFloat("x") + " " + obj.GetFloat("y") + " " + obj.GetFloat("z"));
 	}
 	
 	public void OnUserVariablesUpdate (BaseEvent evt){
