@@ -84,6 +84,8 @@
      <Compile Include="Assets\Scripts\LevelManagerScript.cs" />
      <Compile Include="Assets\Scripts\MainCameraScript.cs" />
      <Compile Include="Assets\Scripts\MathTester.cs" />
+     <Compile Include="Assets\Scripts\MenuCameraFollow.cs" />
+     <Compile Include="Assets\Scripts\MenuMainCameraScript.cs" />
      <Compile Include="Assets\Scripts\ObjectLabel.cs" />
      <Compile Include="Assets\Scripts\PathWaypointScript.cs" />
      <Compile Include="Assets\Scripts\PlayerInputController.cs" />
@@ -91,7 +93,20 @@
      <Compile Include="Assets\Scripts\TestCannonScript.cs" />
      <Compile Include="Assets\Scripts\TrackingComputer.cs" />
      <Compile Include="Assets\Scripts\TurretScript.cs" />
+     <Compile Include="Assets\Shaders\Motion Blur\Editor\AddObjectBlur.cs" />
+     <None Include="Assets\Shaders\Motion Blur\Resources\MotionVectors.shader" />
+     <Compile Include="Assets\Shaders\Motion Blur\CameraInfo.cs" />
+     <None Include="Assets\Shaders\Motion Blur\CameraMBlur.shader" />
+     <None Include="Assets\Shaders\Motion Blur\CameraMBlurScript.js" />
+     <None Include="Assets\Shaders\Motion Blur\CameraZBlur.shader" />
+     <None Include="Assets\Shaders\Motion Blur\CameraZoomBlurScript.js" />
+     <None Include="Assets\Shaders\Motion Blur\LIC Blur.shader" />
+     <Compile Include="Assets\Shaders\Motion Blur\MotionBlurEffect.cs" />
+     <Compile Include="Assets\Shaders\Motion Blur\MotionVectorMaterialFactory.cs" />
+     <Compile Include="Assets\Shaders\Motion Blur\ObjectBlur.cs" />
      <None Include="Assets\Shaders\GlobalFog.shader" />
+     <Compile Include="Assets\Six Times Nothing\CustomTerrainScript.cs" />
+     <None Include="Assets\Six Times Nothing\TerrainReplacement.shader" />
      <None Include="Assets\Standard Assets\Editor\Image Effects\BloomAndFlaresEditor.js" />
      <None Include="Assets\Standard Assets\Editor\Image Effects\ColorCorrectionCurvesEditor.js" />
      <None Include="Assets\Standard Assets\Editor\Image Effects\DepthOfFieldEditor.js" />
@@ -174,6 +189,16 @@
      <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\SSAOEffect.cs" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\SunShafts.js" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\Vignetting.js" />
+     <Compile Include="Assets\Tom&apos;s Terrain Tools\Editor\PlaceOnTerrain.cs" />
+     <Compile Include="Assets\Tom&apos;s Terrain Tools\Editor\RandomObjectMap.cs" />
+     <Compile Include="Assets\Tom&apos;s Terrain Tools\Editor\TerrainTools.cs" />
+     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\CraterMaker.cs" />
+     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\CreateCraterOnImpact.cs" />
+     <None Include="Assets\Tom&apos;s Terrain Tools\Scripts\KeepOnSurface.js" />
+     <None Include="Assets\Tom&apos;s Terrain Tools\Scripts\PlaceOnSurface.js" />
+     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\SpawnInArea.cs" />
+     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\TerrainQualitySettings.cs" />
+     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\TreeExplosion.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
