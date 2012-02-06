@@ -1,0 +1,33 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+
+Project("{38D86BD0-1FE5-D4E8-12AE-AE3D5F4F1491}") = "Heavy-Insertion", "Assembly-CSharp-firstpass-vs.csproj", "{22D948FB-2CA6-23C4-3D94-4DA44BCFF2B7}"
+EndProject
+Project("{38D86BD0-1FE5-D4E8-12AE-AE3D5F4F1491}") = "Heavy-Insertion", "Assembly-CSharp-vs.csproj", "{7FB37C7A-0A7B-41E4-8FE1-33B491295651}"
+EndProject
+Project("{38D86BD0-1FE5-D4E8-12AE-AE3D5F4F1491}") = "Heavy-Insertion", "Assembly-CSharp-Editor-vs.csproj", "{B312FBA2-78A8-1DDA-86C5-C9EB9E3BF23C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22D948FB-2CA6-23C4-3D94-4DA44BCFF2B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22D948FB-2CA6-23C4-3D94-4DA44BCFF2B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22D948FB-2CA6-23C4-3D94-4DA44BCFF2B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22D948FB-2CA6-23C4-3D94-4DA44BCFF2B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FB37C7A-0A7B-41E4-8FE1-33B491295651}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FB37C7A-0A7B-41E4-8FE1-33B491295651}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FB37C7A-0A7B-41E4-8FE1-33B491295651}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FB37C7A-0A7B-41E4-8FE1-33B491295651}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B312FBA2-78A8-1DDA-86C5-C9EB9E3BF23C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B312FBA2-78A8-1DDA-86C5-C9EB9E3BF23C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B312FBA2-78A8-1DDA-86C5-C9EB9E3BF23C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B312FBA2-78A8-1DDA-86C5-C9EB9E3BF23C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	
+EndGlobal
