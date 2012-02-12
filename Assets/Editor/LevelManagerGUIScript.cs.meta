@@ -1,6 +1,0 @@
-fileFormatVersion: 1
-guid: 69bf64dfd9a114d48a38da20c0b8c7a7
-MonoImporter:
-  importerVersion: 1
-  defaultReferences:
-    ManagerContainer: {fileID: 100000, guid: c5fedd919786cca4496e40674ab750b4, type: 2}

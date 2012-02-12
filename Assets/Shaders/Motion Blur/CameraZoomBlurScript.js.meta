@@ -1,8 +1,0 @@
-fileFormatVersion: 1
-guid: d8b572358126f0443bfa4923db816370
-MonoImporter:
-  importerVersion: 1
-  defaultReferences:
-    depthFetchShader: {fileID: 4800000, guid: 14768d3865b1342e3a861fbe19ba2db2, type: 1}
-    ApplyShader: {fileID: 4800000, guid: bef4fc49e676d534caeba3986b1e1122, type: 1}
-    compositeShader: {fileID: 4800000, guid: bef4fc49e676d534caeba3986b1e1122, type: 1}

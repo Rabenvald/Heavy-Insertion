@@ -1,6 +1,0 @@
-fileFormatVersion: 1
-guid: 5e13426dae4964c138d8808a27a146df
-MonoImporter:
-  importerVersion: 1
-  defaultReferences:
-    compositeShader: {fileID: 4800000, guid: 0e0a4926182054f03b7bf3fe731616a8, type: 1}
