@@ -1,7 +1,0 @@
-fileFormatVersion: 1
-guid: f5d585d86022948b79134af0c7b0bfde
-MonoImporter:
-  importerVersion: 1
-  defaultReferences:
-    shader: {fileID: 4800000, guid: 33fb8c1dbd1fe4914820ee0d7d638359, type: 1}
-    blurShader: {fileID: 4800000, guid: e97c14fbb5ea04c3a902cc533d7fc5d1, type: 1}

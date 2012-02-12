@@ -124,6 +124,7 @@ public class TestLobby : MonoBehaviour {
 			}
 			else {
 				Debug.Log("Logged in successfully");
+				smartFox.enableLagMonitor(true);
 				PrepareLobby();	
 			}
 		}
@@ -168,8 +169,12 @@ public class TestLobby : MonoBehaviour {
 		currentActiveRoom = room;
 		if(room.Name=="The Lobby" )
 			Application.LoadLevel("TestLobby");
-		else {
+		else if(room.Name == "Test Room"){
 			Application.LoadLevel("Test1");
+			smartFox.Send(new SpectatorToPlayerRequest());
+		}
+		else{
+			Application.LoadLevel("M1");
 			smartFox.Send(new SpectatorToPlayerRequest());
 		}
 		Debug.Log(user.Name + " has entered the room: " + room.Name);
@@ -318,8 +323,19 @@ public class TestLobby : MonoBehaviour {
 		if (GUI.Button (new Rect (80, 110, 85, 24), "Make Test 1")) {
 			Debug.Log("new room ");
 			
-			RoomSettings settings = new RoomSettings("Test Room ");
-			settings.MaxUsers = 5;
+			RoomSettings settings = new RoomSettings("Test Room");
+			settings.MaxUsers = 32;
+			settings.Name = "Test Room";
+			settings.IsGame = true;
+			smartFox.Send(new CreateRoomRequest(settings));
+		}
+		
+		if (GUI.Button (new Rect (80, 130, 85, 24), "Make Game")) {
+			// ****** Create new room ******* //
+			Debug.Log("new room "+username + "'s Room");
+
+			RoomSettings settings = new RoomSettings(username + "'s Room");
+			settings.MaxUsers = 32;
 			settings.IsGame = true;
 			smartFox.Send(new CreateRoomRequest(settings));
 		}

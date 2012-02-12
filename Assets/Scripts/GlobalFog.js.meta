@@ -1,6 +1,0 @@
-fileFormatVersion: 1
-guid: b0469fc3d954afb4ab221a915019d56f
-MonoImporter:
-  importerVersion: 1
-  defaultReferences:
-    fogShader: {fileID: 4800000, guid: acc236010dcc4e64eb8d2b6d9bc24c1e, type: 1}
