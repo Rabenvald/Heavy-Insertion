@@ -1,0 +1,33 @@
+fileFormatVersion: 1
+guid: 10337ad1bd11abca11002b7b44295342
+ModelImporter:
+  importerVersion: 7
+  meshes:
+    scaleFactor: 1
+    useFileUnits: 1
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    normalImportMode: 0
+    tangentImportMode: 1
+    smoothingAngle: 60
+    splitTangents: 1
+  materials:
+    generation: 1
+  animations:
+    generation: 0
+    bakeAnimations: 0
+    animationCompression: 0
+    animationWrapMode: 0
+    splitAnimations: 0
+  nodeInfo:
+    //RootNode:
+    - 100000
+    - 400000
+    - 3300000
+    - 2300000
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: Bamboo

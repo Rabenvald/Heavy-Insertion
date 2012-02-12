@@ -10,6 +10,9 @@ public abstract class InputController : MonoBehaviour {
     public float Strafe;
     public float Jump;
 
+    public float MouseX;
+    public float MouseY;
+
     public bool PrimaryFire;
     public bool SecondaryFire;
 

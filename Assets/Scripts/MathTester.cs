@@ -81,7 +81,7 @@ public class MathTester : MonoBehaviour
 
     private void SetNextWaypoint()
     {
-        print("NextWaypointSet"); //**************************************
+        //print("NextWaypointSet");
         PrevWaypoint = NextWaypoint;
         PrevWaypointData = NextWaypoint.GetComponent<PathWaypointScript>();
 
@@ -103,37 +103,23 @@ public class MathTester : MonoBehaviour
 
     Vector3 FollowPath()
     {
-        //print("twv Mag: " + transWaypointVector.magnitude);
-        //P
+
         Vector3 futurePosition = rigidbody.transform.position + rigidbody.velocity;
         float AngleBetweenMeNext = Mathf.Acos(Vector3.Dot(futurePosition, transWaypointVector) / (futurePosition.magnitude * transWaypointVector.magnitude));
-        //print(AngleBetweenMeNext);
+
         Vector3 Steering;
         Vector3 RelativeProjection = Vector3.Project(rigidbody.transform.position, transWaypointVector);
         RelVectorToPath = NextWaypoint.transform.position - RelativeProjection;
-        //NearestPointOnPath = rigidbody.transform.position + RelVectorToPath;//(NextWaypoint.transform.position-RelativeProjection)
-        NearestPointOnPath = transWaypointVector.normalized * ((futurePosition - PrevWaypoint.transform.position).magnitude + 2 * Mathf.Cos(AngleBetweenMeNext)) + PrevWaypoint.transform.position; //IT WORKSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS !!!!!!!!!!!!!!!!!!!!!!!!!!!111!!!
-        //NearestPointOnPath = PrevWaypoint.transform.position + (RelativeProjection - transWaypointVector * Mult); //nearest point on the path Mathf.aCos((Pos+predictedLoc)
-        //RelativeVectorFromPrev = RelativeProjection - transWaypointVector * Mult;
-        //RelativeVectorFromNext = RelativeVectorFromPrev - transWaypointVector;
+        NearestPointOnPath = transWaypointVector.normalized * ((futurePosition - PrevWaypoint.transform.position).magnitude + 2 * Mathf.Cos(AngleBetweenMeNext)) + PrevWaypoint.transform.position;
+
         RelativeVectorFromPrev = NearestPointOnPath - PrevWaypoint.transform.position;
         RelativeVectorFromNext = NearestPointOnPath - NextWaypoint.transform.position;
-        //negNearestPointOnPath = NextWaypoint.transform.position - ( RelativeProjection - transWaypointVector );
 
-        //print("wtf Mag: " + (NextWaypoint.transform.position - PrevWaypoint.transform.position).magnitude);
-        /*print("wtf Mag2: " + Vector3.Dot(NextWaypoint.transform.position , PrevWaypoint.transform.position));
-        print("wtf Mag3: " + RelVectorToPath.magnitude);
-        print("wtf Mag4: " + RelativeProjection.magnitude);*/
 
         float PositionRealitiveToWaypoints = (RelativeVectorFromPrev.normalized + RelativeVectorFromNext.normalized).magnitude;
         print(RelativeVectorFromPrev.normalized + ", " + RelativeVectorFromNext.normalized + ", PRtoW Mag: " + PositionRealitiveToWaypoints);
-        //print(RelativeVectorFromPrev + ", " + RelativeVectorFromNext + ", PRtoW Mag: " + PositionRealitiveToWaypoints);
-        /*if (NearestPointOnPath.magnitude > transWaypointVector.magnitude)
-        {
-            NearestPointOnPath = transWaypointVector;
-        }*/
-        //print("VtP: " + NearestPointOnPath + ", Mag: " + (NearestPointOnPath - transform.position).magnitude); //******************************************************
-        Steering = NextWaypoint.transform.position;//Seek(NextWaypoint);
+
+        Steering = NextWaypoint.transform.position;
 
         if (PositionRealitiveToWaypoints > 1.5)
         {
@@ -150,13 +136,13 @@ public class MathTester : MonoBehaviour
 
             if (PositionRealitiveToWaypoints < -1)
             {
-                Steering = PrevWaypoint.transform.position;//Seek(PrevWaypoint);
-                print("Seeking PrevWaypoint");
+                Steering = PrevWaypoint.transform.position;
+                //print("Seeking PrevWaypoint");
             }
             else if ((NearestPointOnPath - (rigidbody.transform.position + rigidbody.velocity)).magnitude > NextWaypointData.PathRadius)
             {
-                print("Off Path");//******************************************************
-                Steering = NearestPointOnPath;//Seek(NearestPointOnPath); //+ vectorTowardsPath * (rigidbody.velocity.magnitude / 10)
+                //print("Off Path");
+                Steering = NearestPointOnPath;
             }
         }
 

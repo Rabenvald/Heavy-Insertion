@@ -1,0 +1,133 @@
+fileFormatVersion: 1
+guid: ddfef4c3e8d1c4748a7934ff0c8efdf0
+ModelImporter:
+  importerVersion: 7
+  meshes:
+    scaleFactor: 1
+    useFileUnits: 1
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    normalImportMode: 0
+    tangentImportMode: 1
+    smoothingAngle: 60
+    splitTangents: 1
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    Starboard_MissileBay1:
+    - 100000
+    - 400000
+    - 3300000
+    - 2300000
+    Port_Fang_Turret:
+    - 100002
+    - 400002
+    - 3300002
+    - 2300002
+    Starboard_MissileBay5:
+    - 100004
+    - 400004
+    - 3300004
+    - 2300004
+    Starboard_MissileBay4:
+    - 100006
+    - 400006
+    - 3300006
+    - 2300006
+    Port_MissileBay4:
+    - 100008
+    - 400008
+    - 3300008
+    - 2300008
+    Port_MissileBay1:
+    - 100010
+    - 400010
+    - 3300010
+    - 2300010
+    Starboard_MissileBay2:
+    - 100012
+    - 400012
+    - 3300012
+    - 2300012
+    Starboard_MissileBay3:
+    - 100014
+    - 400014
+    - 3300014
+    - 2300014
+    Port_MissileBay2:
+    - 100016
+    - 400016
+    - 3300016
+    - 2300016
+    //RootNode:
+    - 100018
+    - 400018
+    - 11100000
+    Port_MissileBay5:
+    - 100020
+    - 400020
+    - 3300018
+    - 2300018
+    Port_MissileBay3:
+    - 100022
+    - 400022
+    - 3300020
+    - 2300020
+    Starboard_Fang_Turret:
+    - 100024
+    - 400024
+    - 3300022
+    - 2300022
+    Terrapin_Hull:
+    - 100026
+    - 400026
+    - 3300024
+    - 2300024
+    Viper_Turret:
+    - 100028
+    - 400028
+    - 3300026
+    - 2300026
+    MainGun:
+    - 100030
+    - 400030
+    - 3300028
+    - 2300028
+    MainGunArmature:
+    - 100032
+    - 400032
+    - 3300030
+    - 2300030
+    Turret_Collar:
+    - 100034
+    - 400034
+    - 3300032
+    - 2300032
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: Starboard_Fang_Turret
+    4300002: Starboard_MissileBay1
+    4300004: Starboard_MissileBay5
+    4300006: Starboard_MissileBay2
+    4300008: Starboard_MissileBay3
+    4300010: Starboard_MissileBay4
+    4300012: Port_MissileBay2
+    4300014: Port_MissileBay1
+    4300016: Port_MissileBay4
+    4300018: Port_MissileBay3
+    4300020: Port_MissileBay5
+    4300022: Turret_Collar
+    4300024: Port_Fang_Turret
+    4300026: MainGunArmature
+    4300028: MainGun
+    4300030: Viper_Turret
+    4300032: Terrapin_Hull

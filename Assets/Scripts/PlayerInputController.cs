@@ -27,7 +27,7 @@ public class PlayerInputController : InputController
         if (Physics.Raycast(ray, out hit, 8000.0f)) //, 1 << 9
         {
             TargetPosition = hit.point;
-            turret.TargetPosition = TargetPosition;
+            turret.FinalTargetPosition = TargetPosition;
             //hit.normal;
             //print("Hit something at: " + hit.point);
         }
@@ -42,5 +42,8 @@ public class PlayerInputController : InputController
         Jump = Input.GetAxis("Jump");
         PrimaryFire = Input.GetButton("Fire1");
         SecondaryFire = Input.GetButton("Fire2");
+        MouseX = Input.GetAxis("Mouse X");
+        MouseY = Input.GetAxis("Mouse Y");
+        //Strafe = Input.GetAxis("Strafe");
     }
 }
