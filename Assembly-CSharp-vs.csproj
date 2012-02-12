@@ -71,6 +71,7 @@
      <Compile Include="Assets\Scripts\LevelManagerScript.cs" />
      <Compile Include="Assets\Scripts\M1Manager.cs" />
      <Compile Include="Assets\Scripts\MainCameraScript.cs" />
+     <Compile Include="Assets\Scripts\MapCameraScript.cs" />
      <Compile Include="Assets\Scripts\MathTester.cs" />
      <Compile Include="Assets\Scripts\MenuCameraFollow.cs" />
      <Compile Include="Assets\Scripts\MenuMainCameraScript.cs" />

@@ -24,6 +24,7 @@ public class MenuMainCameraScript : MonoBehaviour
 	public Texture BestTexture;
 	public Texture AverageTexture;
 	public Texture FastestTexture;
+	public Texture VolumeTexture;
 	
     List<Rect> ButtonLocations;
 
@@ -40,6 +41,8 @@ public class MenuMainCameraScript : MonoBehaviour
     Rect singlePlayerButtonLoc;
     Rect settingsButtonLoc;
     Rect exitButtonLoc;
+	
+	private float volumeSlider = 1F;
 	
 	bool SettingsDisplayMenu;
 	
@@ -131,11 +134,20 @@ public class MenuMainCameraScript : MonoBehaviour
             Application.Quit();
         }
 		
-		else if (SettingsDisplayMenu)
-		{			
+		if (SettingsDisplayMenu)
+		{						
 			GUI.DrawTexture(new Rect(75, 150, (Screen.width * .9f) - 3, Screen.height * .6f), BlankBackground);
 			
+			volumeSlider = GUI.HorizontalSlider(new Rect(500, 432, 200, 50), volumeSlider, 0.0F, 1F);
+			
+			if (GUI.changed)
+			{
+				//Change volume levels on singleton
+			}
+			
 			GUI.DrawTexture(new Rect(200, 200, 256, 64), GrphicsTexture);
+			
+			GUI.DrawTexture(new Rect(200, 400, 256, 64), VolumeTexture);
 			
 			if (GUI.Button(new Rect(200, 300, 256, 64), FastestTexture, blankStyle))
 	        {
@@ -154,6 +166,7 @@ public class MenuMainCameraScript : MonoBehaviour
 	            print("Clicked 'Best'");
 	            QualitySettings.currentLevel = QualityLevel.Fantastic;
 	        }
+			
 		}
     }
 

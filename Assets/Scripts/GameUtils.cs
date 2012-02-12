@@ -1,6 +1,6 @@
 using System.Collections;
 
-public static class GameUtils {
+public static class GameUtils{
 
     public static bool Toggle(bool b)
     {
@@ -9,5 +9,6 @@ public static class GameUtils {
         else b = false;
         return b;
     }
+
 
 }

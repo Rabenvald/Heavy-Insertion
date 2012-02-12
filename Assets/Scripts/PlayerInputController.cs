@@ -37,13 +37,38 @@ public class PlayerInputController : InputController
 
     void Update()
     {
-        Throttle = Input.GetAxis("Vertical");
+         Throttle = Input.GetAxis("Vertical");
         Yaw = Input.GetAxis("Horizontal");
         Jump = Input.GetAxis("Jump");
         PrimaryFire = Input.GetButton("Fire1");
         SecondaryFire = Input.GetButton("Fire2");
-        MouseX = Input.GetAxis("Mouse X");
-        MouseY = Input.GetAxis("Mouse Y");
-        //Strafe = Input.GetAxis("Strafe");
+		Strafe = Input.GetAxis("Strafe");
+		
+		//Code for map and respawn
+		GameObject mapCamera = GameObject.FindWithTag("MapCamera");
+		GameObject mainCamera = GameObject.FindWithTag("MainCamera");
+		if (Input.GetButton("Map"))
+		{	
+			mapCamera.camera.enabled = true;
+			mainCamera.camera.enabled = false;
+			RaycastHit hit;
+			if(Input.GetMouseButtonDown(0))
+			{
+				if(Physics.Raycast(mapCamera.camera.ScreenPointToRay(Input.mousePosition), out hit))
+				{
+					gameObject.transform.position = new Vector3(hit.point.x, 2000, hit.point.z);
+					Hovercraft hover = gameObject.GetComponent<Hovercraft>();
+					hover.respawnTimer = 30;
+				}
+			}
+		}
+		else
+		{
+			if (mapCamera.camera.enabled != false)
+			{
+				mapCamera.camera.enabled = false;
+				mainCamera.camera.enabled = true;
+			}
+		}
     }
 }

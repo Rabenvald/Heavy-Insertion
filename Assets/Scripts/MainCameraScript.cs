@@ -16,16 +16,32 @@ public class MainCameraScript : MonoBehaviour
     int buttonBuffer;
     int buttonWidth;
     int buttonHeight;
+	
+	public Texture MenuTexture;
+	public Texture MainMenuTexture;
+	public Texture SettingsTexture;
+	public Texture ExitTexture;
+	
+	public Texture BlankBackground;
+	
+	public Texture GrphicsTexture;
+	public Texture BestTexture;
+	public Texture AverageTexture;
+	public Texture FastestTexture;
+	public Texture VolumeTexture;
 
     Rect menuButtonLoc;
 
-    Rect multiplayerButtonLoc;
-    Rect singlePlayerButtonLoc;
-    Rect customizeButtonLoc;
     Rect settingsButtonLoc;
+    Rect mainmenuButtonLoc;
     Rect exitButtonLoc;
 
     bool bDisplayMenu;
+	bool SettingsDisplayMenu;
+	
+	private GUIStyle blankStyle = new GUIStyle();
+	
+	private float volumeSlider = 1F;
 
     //Random random; //Camera Shaking
 
@@ -45,19 +61,18 @@ public class MainCameraScript : MonoBehaviour
         shakeInterval = new Vector2(0.001f, 0.1f);
         shakeMagnitude = 20;*/
         bDisplayMenu = false;
-
-        menuButtonLoc = (new Rect(Screen.width * 0.01f, Screen.height * 0.01f, 100, 25));
+		SettingsDisplayMenu = false;
 
         ButtonLocations = new List<Rect>();
+		
+		ButtonLocations.Add(menuButtonLoc = (new Rect(Screen.width * 0.01f, Screen.height * 0.01f, 100, 25)));
 
         buttonBuffer = 10;
-        buttonWidth = 150;
-        buttonHeight = 50;
+        buttonWidth = 100;
+        buttonHeight = 25;
 
-        ButtonLocations.Add(multiplayerButtonLoc = new Rect(Screen.width * 0.25f - 100, Screen.height * 0.5f, buttonWidth, buttonHeight));
-        ButtonLocations.Add(singlePlayerButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
-        ButtonLocations.Add(customizeButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
         ButtonLocations.Add(settingsButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
+        ButtonLocations.Add(mainmenuButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
         ButtonLocations.Add(exitButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
 	}
 
@@ -85,37 +100,69 @@ public class MainCameraScript : MonoBehaviour
 
     void OnGUI()
     {
-        if (GUI.Button(menuButtonLoc, "Menu"))
+        if (GUI.Button(menuButtonLoc, MenuTexture, blankStyle))
         {
             print("Clicked 'Menu'");
             bDisplayMenu = GameUtils.Toggle(bDisplayMenu);
+			if (SettingsDisplayMenu)
+				SettingsDisplayMenu = false;
         }
 
         if (bDisplayMenu)
-        {
-            if (GUI.Button(multiplayerButtonLoc, "Multiplayer"))
-            {
-                print("Clicked 'Multiplayer'");
-            }
-            if (GUI.Button(singlePlayerButtonLoc, "Singleplayer / Debug"))
+		{
+            if (GUI.Button(settingsButtonLoc, SettingsTexture, blankStyle))
+	        {
+	            print("Clicked 'Settings'");
+				SettingsDisplayMenu = !SettingsDisplayMenu;
+	        }
+			
+			if (GUI.Button(mainmenuButtonLoc, MainMenuTexture, blankStyle))
             {
                 print("Clicked 'Singleplayer / Debug'");
-                Application.LoadLevel(0);
+                Application.LoadLevel("Main Menu");
             }
-            if (GUI.Button(customizeButtonLoc, "Customize"))
-            {
-                print("Clicked 'Customize'");
-            }
-            if (GUI.Button(settingsButtonLoc, "Settings"))
-            {
-                print("Clicked 'Settings'");
-            }
-            if (GUI.Button(exitButtonLoc, "Exit"))
-            {
-                print("Clicked 'Exit'");
-                Application.Quit();
-            }
+			
+	        if (GUI.Button(exitButtonLoc, ExitTexture, blankStyle))
+	        {
+	            print("Clicked 'Exit'");
+	            Application.Quit();
+	        }
         }
+		
+		if (SettingsDisplayMenu)
+		{						
+			GUI.DrawTexture(new Rect(75, 150, (Screen.width * .9f) - 3, Screen.height * .6f), BlankBackground);
+			
+			volumeSlider = GUI.HorizontalSlider(new Rect(500, 432, 200, 50), volumeSlider, 0.0F, 1F);
+			
+			if (GUI.changed)
+			{
+				//Change volume levels on singleton
+			}
+			
+			GUI.DrawTexture(new Rect(200, 200, 256, 64), GrphicsTexture);
+			
+			GUI.DrawTexture(new Rect(200, 400, 256, 64), VolumeTexture);
+			
+			if (GUI.Button(new Rect(200, 300, 256, 64), FastestTexture, blankStyle))
+	        {
+	            print("Clicked 'Fastest'");
+	            QualitySettings.currentLevel = QualityLevel.Fastest;
+	        }
+			
+			if (GUI.Button(new Rect(500, 300, 256, 64), AverageTexture, blankStyle))
+	        {
+	            print("Clicked 'Average'");
+	            QualitySettings.currentLevel = QualityLevel.Good;
+	        }
+			
+			if (GUI.Button(new Rect(800, 300, 256, 64), BestTexture, blankStyle))
+	        {
+	            print("Clicked 'Best'");
+	            QualitySettings.currentLevel = QualityLevel.Fantastic;
+	        }
+			
+		}
     }
 
 }

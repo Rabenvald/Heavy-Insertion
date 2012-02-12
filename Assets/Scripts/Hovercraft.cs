@@ -35,6 +35,8 @@ public class Hovercraft : ImportantObject
 
     private GameObject levelParent;
 
+    public float respawnTimer;
+
     public float topSpeed = 100; //(meters/sec) Broken
 
     public bool bTouchingGround;
@@ -45,6 +47,8 @@ public class Hovercraft : ImportantObject
     public Vector3 throttle;
 
     private BoxCollider HovCollider;
+
+    public int Health = 300;
 
     private Vector3 CentralRepulsorOffset = Vector3.zero;
     private Vector3 RightRepulsorOffset = Vector3.zero;
@@ -137,13 +141,28 @@ public class Hovercraft : ImportantObject
 
     void OnCollisionEnter(Collision other ) 
     {
-	
-	    // if we impact the ground at some point:
-	    //print("ouch");
-	    //Todo: add Impact Effects/Sounds here
+
+        // if we impact the ground at some point:
+        //print("ouch");
+        //Todo: add Impact Effects/Sounds here
+        int damage = (int)(other.impactForceSum.magnitude);
+        if (Controller.PlayerControlled)
+        {
+            Debug.Log((int)(other.impactForceSum.magnitude));
+            Debug.Log(Health);
+        }
+        if (respawnTimer > 0 && other.gameObject == GameObject.FindWithTag("Terrain"))
+        {
+            //Do nothing
+        }
+        else if (damage < 50)
+        {
+            Health -= damage;
+        }
+        //if (Health < 0) explode();
     }
 
-    void ApplySteering(float throttleInput, float yawInput, float jumpAndBreakInput)
+    void ApplySteering(float throttleInput, float yawInput, float jumpAndBreakInput, float strafeInput)
     {
         timeSinceLastJump += Time.deltaTime;
 
@@ -178,7 +197,7 @@ public class Hovercraft : ImportantObject
         }
         rigidbody.AddForce(throttle + Physics.gravity, ForceMode.Acceleration);
         rigidbody.AddRelativeTorque(0.0f, yawThrottle, 0.0f, ForceMode.Force);
-
+        rigidbody.AddForce(rigidbody.transform.right * 10 * strafeInput, ForceMode.Acceleration);
         if (jumpAndBreakInput > 0 && timeSinceLastJump >= jumpInterval) //Jump
         {
             rigidbody.AddForce(rigidbody.transform.up * effectiveJumpThrust, ForceMode.Impulse);
@@ -195,6 +214,9 @@ public class Hovercraft : ImportantObject
         float effectiveBreakForce = breakForce;
         float effectiveJumpThrust = jumpThrust;
         float yawThrottle = 0.0f;*/
+        
+        if (respawnTimer > 0)
+            respawnTimer -= Time.fixedDeltaTime;
 
         currentVelocity = rigidbody.velocity.magnitude;
 
@@ -218,7 +240,7 @@ public class Hovercraft : ImportantObject
         // lock down rotation
         levelParent.transform.rotation = Quaternion.identity;
 
-        ApplySteering(Controller.Throttle, Controller.Yaw, Controller.Jump);
+        ApplySteering(Controller.Throttle, Controller.Yaw, Controller.Jump, Controller.Strafe);
 
         //================================= Sounds ==============================
         audio.pitch = currentVelocity / topSpeed + throttle.magnitude / 100 + .5f;
