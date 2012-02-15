@@ -67,6 +67,7 @@
      <Compile Include="Assets\Detonator\System\DetonatorSpray.cs" />
      <None Include="Assets\Detonator\TestScene\DetonatorTest.js" />
      <Compile Include="Assets\Editor\LevelManagerGUIScript.cs" />
+     <Compile Include="Assets\Scripts\NetCode\NetTransform.cs" />
      <Compile Include="Assets\Scripts\Test Scripts\DebugCam.cs" />
      <Compile Include="Assets\Scripts\Test Scripts\JumpingCube.cs" />
      <Compile Include="Assets\Scripts\Test Scripts\SmartFoxConnection.cs" />
@@ -86,14 +87,17 @@
      <Compile Include="Assets\Scripts\InputController.cs" />
      <Compile Include="Assets\Scripts\LevelManagerScript.cs" />
      <Compile Include="Assets\Scripts\MainCameraScript.cs" />
+     <Compile Include="Assets\Scripts\MapCameraScript.cs" />
      <Compile Include="Assets\Scripts\MathTester.cs" />
      <Compile Include="Assets\Scripts\MenuCameraFollow.cs" />
      <Compile Include="Assets\Scripts\MenuMainCameraScript.cs" />
+     <Compile Include="Assets\Scripts\NTPClient.cs" />
      <Compile Include="Assets\Scripts\ObjectLabel.cs" />
      <Compile Include="Assets\Scripts\PathWaypointScript.cs" />
      <Compile Include="Assets\Scripts\PlayerInputController.cs" />
      <Compile Include="Assets\Scripts\ProjectileScript.cs" />
      <Compile Include="Assets\Scripts\TestCannonScript.cs" />
+     <Compile Include="Assets\Scripts\TimeManager.cs" />
      <Compile Include="Assets\Scripts\TrackingComputer.cs" />
      <Compile Include="Assets\Scripts\TurretScript.cs" />
      <Compile Include="Assets\Shaders\Motion Blur\Editor\AddObjectBlur.cs" />
@@ -192,16 +196,6 @@
      <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\SSAOEffect.cs" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\SunShafts.js" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\Vignetting.js" />
-     <Compile Include="Assets\Tom&apos;s Terrain Tools\Editor\PlaceOnTerrain.cs" />
-     <Compile Include="Assets\Tom&apos;s Terrain Tools\Editor\RandomObjectMap.cs" />
-     <Compile Include="Assets\Tom&apos;s Terrain Tools\Editor\TerrainTools.cs" />
-     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\CraterMaker.cs" />
-     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\CreateCraterOnImpact.cs" />
-     <None Include="Assets\Tom&apos;s Terrain Tools\Scripts\KeepOnSurface.js" />
-     <None Include="Assets\Tom&apos;s Terrain Tools\Scripts\PlaceOnSurface.js" />
-     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\SpawnInArea.cs" />
-     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\TerrainQualitySettings.cs" />
-     <Compile Include="Assets\Tom&apos;s Terrain Tools\Scripts\TreeExplosion.cs" />
  <Reference Include="SmartFox2">
  <HintPath>Assets\Plugins\SmartFox2.dll</HintPath>
  </Reference>

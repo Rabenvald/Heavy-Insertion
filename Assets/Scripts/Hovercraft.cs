@@ -72,7 +72,16 @@ public class Hovercraft : ImportantObject
     private float jumpInterval;
     public float timeSinceLastJump;
     public float jumpThrust;
+	
+	private bool dead = false;
 
+    public bool Dead
+    {
+        get
+        {
+            return dead;
+        }
+    }
     // Input
 
     private InputController Controller;
@@ -87,6 +96,7 @@ public class Hovercraft : ImportantObject
 	// Use this for initialization
 	void Start () 
     {
+		Debug.Log(gameObject.transform.childCount);
         if (camTarget == null)
         {
             camTarget = GameObject.Find("CameraFocus");
@@ -146,11 +156,6 @@ public class Hovercraft : ImportantObject
         //print("ouch");
         //Todo: add Impact Effects/Sounds here
         int damage = (int)(other.impactForceSum.magnitude);
-        if (Controller.PlayerControlled)
-        {
-            Debug.Log((int)(other.impactForceSum.magnitude));
-            Debug.Log(Health);
-        }
         if (respawnTimer > 0 && other.gameObject == GameObject.FindWithTag("Terrain"))
         {
             //Do nothing
@@ -214,37 +219,53 @@ public class Hovercraft : ImportantObject
         float effectiveBreakForce = breakForce;
         float effectiveJumpThrust = jumpThrust;
         float yawThrottle = 0.0f;*/
+		
+		if (!dead)
+		{
+			if(Health <= 0)
+			{
+				dead = true;
+				renderer.enabled = false;
+				//Controller.Turret.enabled = false;
+				Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
+				foreach (Renderer r in childRenderers)
+				{
+					r.enabled = false;
+				}
+				
+			}
         
-        if (respawnTimer > 0)
-            respawnTimer -= Time.fixedDeltaTime;
-
-        currentVelocity = rigidbody.velocity.magnitude;
-
-        rigidbody.drag = origionalDrag;
-        rigidbody.angularDrag = origionalAngularDrag;
-
-        bTouchingGround = false;
-
-        CentralRepulsorOffset = rigidbody.transform.up * transform.localScale.y * HovCollider.size.y * 0.49f - HovCollider.center;
-        RightRepulsorOffset = CentralRepulsorOffset + rigidbody.transform.right * transform.localScale.x * HovCollider.size.x * 0.5f;
-        LeftRepulsorOffset = CentralRepulsorOffset - rigidbody.transform.right * transform.localScale.x * HovCollider.size.x * 0.5f;
-        ForwardRepulsorOffset = CentralRepulsorOffset + rigidbody.transform.forward * transform.localScale.z * HovCollider.size.z * 0.5f;
-        BackRepulsorOffset = CentralRepulsorOffset - rigidbody.transform.forward * transform.localScale.z * HovCollider.size.z * 0.5f;
-
-        Lift(CentralRepulsorOffset);
-        Lift(RightRepulsorOffset);
-        Lift(LeftRepulsorOffset);
-        Lift(ForwardRepulsorOffset);
-        Lift(BackRepulsorOffset);
-
-        // lock down rotation
-        levelParent.transform.rotation = Quaternion.identity;
-
-        ApplySteering(Controller.Throttle, Controller.Yaw, Controller.Jump, Controller.Strafe);
-
-        //================================= Sounds ==============================
-        audio.pitch = currentVelocity / topSpeed + throttle.magnitude / 100 + .5f;
-        audio.volume = currentVelocity / topSpeed + throttle.magnitude / 100 + .5f;
+	        if (respawnTimer > 0)
+	            respawnTimer -= Time.fixedDeltaTime;
+	
+	        currentVelocity = rigidbody.velocity.magnitude;
+	
+	        rigidbody.drag = origionalDrag;
+	        rigidbody.angularDrag = origionalAngularDrag;
+	
+	        bTouchingGround = false;
+	
+	        CentralRepulsorOffset = rigidbody.transform.up * transform.localScale.y * HovCollider.size.y * 0.49f - HovCollider.center;
+	        RightRepulsorOffset = CentralRepulsorOffset + rigidbody.transform.right * transform.localScale.x * HovCollider.size.x * 0.5f;
+	        LeftRepulsorOffset = CentralRepulsorOffset - rigidbody.transform.right * transform.localScale.x * HovCollider.size.x * 0.5f;
+	        ForwardRepulsorOffset = CentralRepulsorOffset + rigidbody.transform.forward * transform.localScale.z * HovCollider.size.z * 0.5f;
+	        BackRepulsorOffset = CentralRepulsorOffset - rigidbody.transform.forward * transform.localScale.z * HovCollider.size.z * 0.5f;
+	
+	        Lift(CentralRepulsorOffset);
+	        Lift(RightRepulsorOffset);
+	        Lift(LeftRepulsorOffset);
+	        Lift(ForwardRepulsorOffset);
+	        Lift(BackRepulsorOffset);
+	
+	        // lock down rotation
+	        levelParent.transform.rotation = Quaternion.identity;
+	
+	        ApplySteering(Controller.Throttle, Controller.Yaw, Controller.Jump, Controller.Strafe);
+	
+	        //================================= Sounds ==============================
+	        audio.pitch = currentVelocity / topSpeed + throttle.magnitude / 100 + .5f;
+	        audio.volume = currentVelocity / topSpeed + throttle.magnitude / 100 + .5f;
+		}
         
     }
 
@@ -291,6 +312,21 @@ public class Hovercraft : ImportantObject
             Gizmos.DrawRay(transform.position - BackRepulsorOffset, levelParent.transform.TransformDirection(Vector3.up) * -suspensionRange);
         }
     }
+	
+	public void respawn(Vector3 pos)
+	{
+		gameObject.renderer.enabled = true;
+		gameObject.transform.GetComponentInChildren<TurretScript>().enabled = true;
+		Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
+		foreach (Renderer r in childRenderers)
+		{
+			r.enabled = true;
+		}
+		respawnTimer = 30;
+		dead = false;
+		Health = 300;
+		gameObject.transform.position = pos;
+	}
 
     void OnDestroy()
     {

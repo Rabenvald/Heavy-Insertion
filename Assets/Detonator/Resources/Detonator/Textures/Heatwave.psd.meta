@@ -1,0 +1,29 @@
+fileFormatVersion: 1
+guid: 6afb434a05206a8498be9dcdde17038e
+TextureImporter:
+  importerVersion: 2
+  maxTextureSize: 256
+  textureFormat: -1
+  grayscaleToAlpha: 1
+  npotScale: 0
+  generateCubemap: 0
+  isReadable: 0
+  textureType: 5
+  mipmaps:
+    generation: 0
+    correctGamma: 0
+    border: 0
+    filter: 0
+    fadeout: 0
+    fadeoutStart: 2
+    fadeoutEnd: 3
+  bumpmap:
+    generation: 1
+    external: 1
+    bumpyness: 0.128125
+    filter: 0
+  textureSettings:
+    filterMode: 1
+    anisoLevel: 1
+    mipmapBias: 0
+    wrapMode: 0

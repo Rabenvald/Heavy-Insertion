@@ -19,6 +19,14 @@ public abstract class InputController : MonoBehaviour {
     public bool PlayerControlled = false;
 
     protected TurretScript turret;
+    protected Hovercraft hull;
+    public TurretScript Turret
+    {
+        get
+        {
+            return turret;
+        }
+    }
 
 	// Use this for initialization
 	void Start () 

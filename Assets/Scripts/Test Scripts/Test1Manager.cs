@@ -34,8 +34,14 @@ public class Test1Manager : MonoBehaviour {
 		get { return isPhysX; }	
 	}
 	
+    //string TimeServer = "tick.usno.navy.mil";
+
+    //NTPClient timesyncer;
+
 	void Awake() {
-		instance = this;	
+		instance = this;
+        //timesyncer = new NTPClient(TimeServer);
+        //timesyncer.Connect();
 	}
 	
 	// Use this for initialization
@@ -66,7 +72,22 @@ public class Test1Manager : MonoBehaviour {
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnObjectMessageReceived);
 		smartFox.AddEventListener(SFSEvent.USER_VARIABLES_UPDATE, OnUserVariablesUpdate); 
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariablesUpdate);
+        smartFox.AddEventListener(SFSEvent.UDP_INIT, OnUDPInit);
+        smartFox.InitUDP("129.21.29.6", 9933); //FIX THIS: Should be dynamic ========================================
 	}
+
+    void OnUDPInit(BaseEvent evt) 
+    {
+        if ((bool)evt.Params["success"]) 
+        {
+            // Execute an extension call via UDP
+            smartFox.Send(new ExtensionRequest("udpTest", new SFSObject(), null, true));
+        } 
+        else 
+        {
+            Console.WriteLine("UDP init failed!");
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {

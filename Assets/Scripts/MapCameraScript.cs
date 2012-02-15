@@ -24,6 +24,16 @@ public class MapCameraScript : MonoBehaviour
     {
         enemies = MathTester.FindGameObjectsWithLayer(9);
         player = GameObject.FindWithTag("Player");
+		
+		float terrainWidth = Terrain.activeTerrain.terrainData.size.x;
+		Debug.Log(Terrain.activeTerrain.terrainData.size);
+		
+		float diagonal = Mathf.Sqrt(2 * Mathf.Pow((terrainWidth/2), 2));
+		Debug.Log(diagonal);
+
+		gameObject.transform.position = new Vector3 (terrainWidth/2, (diagonal * Mathf.Tan((30F / 180) * Mathf.PI)) + Terrain.activeTerrain.terrainData.size.y, terrainWidth/2);
+		gameObject.transform.forward = Vector3.down;
+		Debug.Log(gameObject.transform.position);
 	}
 
 	void Update () 

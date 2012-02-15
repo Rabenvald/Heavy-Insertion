@@ -7,7 +7,17 @@ public class PlayerInputController : InputController
     public RaycastHit hit;
     public Vector3 TargetPosition = Vector3.zero;
     public Transform TargetTransfrom;
+    public bool Driving
+    {
+        get
+        {
+            return driving;
+        }
+    }
+    private bool driving = true;
 
+    private GameObject mapCamera;
+    private GameObject mainCamera;
 
     void Awake()
     {
@@ -18,26 +28,31 @@ public class PlayerInputController : InputController
 	void Start () 
     {
         turret = GetComponentInChildren<TurretScript>();
+        hull = GetComponentInChildren<Hovercraft>();
+        mapCamera = GameObject.FindWithTag("MapCamera");
+        mainCamera = GameObject.FindWithTag("MainCamera");
+        //GameObject mainCamera = GameObject.FindWithTag("MainCamera");
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, 8000.0f)) //, 1 << 9
+        if (!hull.Dead && driving)
         {
-            TargetPosition = hit.point;
-            turret.FinalTargetPosition = TargetPosition;
-            //hit.normal;
-            //print("Hit something at: " + hit.point);
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit, 200000.0f)) //, 1 << 9
+            {
+                TargetPosition = hit.point;
+                turret.FinalTargetPosition = TargetPosition;
+                //hit.normal;
+                //print("Hit something at: " + hit.point);
+            }
         }
-        
-        //int hgjh = Input.GetMouseButton(1);
 	}
 
     void Update()
     {
-         Throttle = Input.GetAxis("Vertical");
+        Throttle = Input.GetAxis("Vertical");
         Yaw = Input.GetAxis("Horizontal");
         Jump = Input.GetAxis("Jump");
         PrimaryFire = Input.GetButton("Fire1");
@@ -45,29 +60,31 @@ public class PlayerInputController : InputController
 		Strafe = Input.GetAxis("Strafe");
 		
 		//Code for map and respawn
-		GameObject mapCamera = GameObject.FindWithTag("MapCamera");
-		GameObject mainCamera = GameObject.FindWithTag("MainCamera");
+        //mapCamera = GameObject.FindWithTag("MapCamera");
+		
 		if (Input.GetButton("Map"))
-		{	
+		{
+            driving = false;
 			mapCamera.camera.enabled = true;
+            //Camera.main.enabled = false;
 			mainCamera.camera.enabled = false;
 			RaycastHit hit;
 			if(Input.GetMouseButtonDown(0))
-			{
+			{	
 				if(Physics.Raycast(mapCamera.camera.ScreenPointToRay(Input.mousePosition), out hit))
 				{
-					gameObject.transform.position = new Vector3(hit.point.x, 2000, hit.point.z);
-					Hovercraft hover = gameObject.GetComponent<Hovercraft>();
-					hover.respawnTimer = 30;
+					gameObject.GetComponent<Hovercraft>().respawn(new Vector3(hit.point.x, 2000, hit.point.z));
 				}
 			}
 		}
 		else
 		{
+            driving = true;
 			if (mapCamera.camera.enabled != false)
 			{
 				mapCamera.camera.enabled = false;
-				mainCamera.camera.enabled = true;
+                //Camera.main.enabled = true;
+                mainCamera.camera.enabled = true;
 			}
 		}
     }
