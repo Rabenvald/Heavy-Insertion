@@ -1,8 +1,11 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public abstract class InputController : MonoBehaviour {
-
+	
+	public string id;
+	
     public float Throttle;
     public float Pitch;
     public float Roll;

@@ -69,12 +69,15 @@
      <Compile Include="Assets\Scripts\ImportantObject.cs" />
      <Compile Include="Assets\Scripts\InputController.cs" />
      <Compile Include="Assets\Scripts\LevelManagerScript.cs" />
-     <Compile Include="Assets\Scripts\M1Manager.cs" />
      <Compile Include="Assets\Scripts\MainCameraScript.cs" />
+     <Compile Include="Assets\Scripts\Manager.cs" />
      <Compile Include="Assets\Scripts\MapCameraScript.cs" />
      <Compile Include="Assets\Scripts\MathTester.cs" />
      <Compile Include="Assets\Scripts\MenuCameraFollow.cs" />
      <Compile Include="Assets\Scripts\MenuMainCameraScript.cs" />
+     <Compile Include="Assets\Scripts\NTPClient.cs" />
+     <Compile Include="Assets\Scripts\NetCode\NetTransform.cs" />
+     <Compile Include="Assets\Scripts\NetInputController.cs" />
      <Compile Include="Assets\Scripts\ObjectLabel.cs" />
      <Compile Include="Assets\Scripts\PathWaypointScript.cs" />
      <Compile Include="Assets\Scripts\PlayerInputController.cs" />
@@ -85,6 +88,7 @@
      <Compile Include="Assets\Scripts\Test Scripts\Test1Manager.cs" />
      <Compile Include="Assets\Scripts\Test Scripts\TestLobby.cs" />
      <Compile Include="Assets\Scripts\TestCannonScript.cs" />
+     <Compile Include="Assets\Scripts\TimeManager.cs" />
      <Compile Include="Assets\Scripts\TrackingComputer.cs" />
      <Compile Include="Assets\Scripts\TurretScript.cs" />
      <Compile Include="Assets\Shaders\Motion Blur\CameraInfo.cs" />
