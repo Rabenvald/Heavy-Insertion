@@ -174,7 +174,7 @@ public class TestLobby : MonoBehaviour {
 			smartFox.Send(new SpectatorToPlayerRequest());
 		}
 		else{
-			Application.LoadLevel("M1");
+			Application.LoadLevel("Avalon Hill Proving Grounds");
 			smartFox.Send(new SpectatorToPlayerRequest());
 		}
 		Debug.Log(user.Name + " has entered the room: " + room.Name);
