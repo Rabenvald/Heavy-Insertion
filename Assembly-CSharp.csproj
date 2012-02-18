@@ -75,7 +75,6 @@
      <Compile Include="Assets\Scripts\MathTester.cs" />
      <Compile Include="Assets\Scripts\MenuCameraFollow.cs" />
      <Compile Include="Assets\Scripts\MenuMainCameraScript.cs" />
-     <Compile Include="Assets\Scripts\NTPClient.cs" />
      <Compile Include="Assets\Scripts\NetCode\NetTransform.cs" />
      <Compile Include="Assets\Scripts\NetInputController.cs" />
      <Compile Include="Assets\Scripts\ObjectLabel.cs" />

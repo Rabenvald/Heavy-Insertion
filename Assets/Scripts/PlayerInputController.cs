@@ -91,7 +91,7 @@ public class PlayerInputController : InputController
 
     private GameObject mapCamera;
     private GameObject mainCamera;
-
+	
     void Awake()
     {
         PlayerControlled = true;
@@ -152,7 +152,9 @@ public class PlayerInputController : InputController
 			{	
 				if(Physics.Raycast(mapCamera.camera.ScreenPointToRay(Input.mousePosition), out hit))
 				{
-					gameObject.GetComponent<Hovercraft>().respawn(new Vector3(hit.point.x, 2000, hit.point.z));
+					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
+					gameObject.GetComponent<Hovercraft>().respawn(pos);
+					Manager.Instance.sendSpawnData(pos);
 				}
 			}
 		}
