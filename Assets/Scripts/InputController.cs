@@ -22,12 +22,19 @@ public abstract class InputController : MonoBehaviour {
     public bool PlayerControlled = false;
 
     protected TurretScript turret;
-    protected Hovercraft hull;
     public TurretScript Turret
     {
         get
         {
             return turret;
+        }
+    }
+    protected Hovercraft hull;
+    public Hovercraft Hull
+    {
+        get
+        {
+            return hull;
         }
     }
 

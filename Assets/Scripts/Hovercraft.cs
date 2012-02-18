@@ -96,7 +96,7 @@ public class Hovercraft : ImportantObject
 	// Use this for initialization
 	void Start () 
     {
-		Debug.Log(gameObject.transform.childCount);
+		//Debug.Log(gameObject.transform.childCount);
         if (camTarget == null)
         {
             camTarget = GameObject.Find("CameraFocus");
@@ -202,7 +202,7 @@ public class Hovercraft : ImportantObject
         }
         rigidbody.AddForce(throttle + Physics.gravity, ForceMode.Acceleration);
         rigidbody.AddRelativeTorque(0.0f, yawThrottle, 0.0f, ForceMode.Force);
-        rigidbody.AddForce(rigidbody.transform.right * 10 * strafeInput, ForceMode.Acceleration);
+        rigidbody.AddForce(rigidbody.transform.right * 3 * strafeInput, ForceMode.Acceleration);
         if (jumpAndBreakInput > 0 && timeSinceLastJump >= jumpInterval) //Jump
         {
             rigidbody.AddForce(rigidbody.transform.up * effectiveJumpThrust, ForceMode.Impulse);

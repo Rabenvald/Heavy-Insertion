@@ -3,6 +3,79 @@ using System.Collections;
 
 public class PlayerInputController : InputController
 {
+    private float prevThrottle;
+    public float PrevThrottle
+    {
+        get
+        {
+            return prevThrottle;
+        }
+        set
+        {
+            prevThrottle = value;
+        }
+    }
+    private float prevPitch;
+    public float PrevPitch
+    {
+        get
+        {
+            return prevPitch;
+        }
+        set
+        {
+            prevPitch = value;
+        }
+    }
+    private float prevRoll;
+    public float PrevRoll
+    {
+        get
+        {
+            return prevRoll;
+        }
+        set
+        {
+            prevRoll = value;
+        }
+    }
+    private float prevYaw;
+    public float PrevYaw
+    {
+        get
+        {
+            return prevYaw;
+        }
+        set
+        {
+            prevYaw = value;
+        }
+    }
+    private float prevStrafe;
+    public float PrevStrafe
+    {
+        get
+        {
+            return prevStrafe;
+        }
+        set
+        {
+            prevStrafe = value;
+        }
+    }
+    private float prevJump;
+    public float PrevJump
+    {
+        get
+        {
+            return prevJump;
+        }
+        set
+        {
+            prevJump = value;
+        }
+    }
+
     public Ray ray;
     public RaycastHit hit;
     public Vector3 TargetPosition = Vector3.zero;
@@ -48,6 +121,12 @@ public class PlayerInputController : InputController
                 //print("Hit something at: " + hit.point);
             }
         }
+        /*prevJump = Jump;
+        prevPitch = Pitch;
+        prevRoll = Roll;
+        prevStrafe = Strafe;
+        prevThrottle = Throttle;
+        prevYaw = Yaw;*/
 	}
 
     void Update()

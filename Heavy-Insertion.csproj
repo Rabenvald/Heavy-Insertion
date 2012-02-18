@@ -87,11 +87,12 @@
      <Compile Include="Assets\Scripts\InputController.cs" />
      <Compile Include="Assets\Scripts\LevelManagerScript.cs" />
      <Compile Include="Assets\Scripts\MainCameraScript.cs" />
+     <Compile Include="Assets\Scripts\Manager.cs" />
      <Compile Include="Assets\Scripts\MapCameraScript.cs" />
      <Compile Include="Assets\Scripts\MathTester.cs" />
      <Compile Include="Assets\Scripts\MenuCameraFollow.cs" />
      <Compile Include="Assets\Scripts\MenuMainCameraScript.cs" />
-     <Compile Include="Assets\Scripts\NTPClient.cs" />
+     <Compile Include="Assets\Scripts\NetInputController.cs" />
      <Compile Include="Assets\Scripts\ObjectLabel.cs" />
      <Compile Include="Assets\Scripts\PathWaypointScript.cs" />
      <Compile Include="Assets\Scripts\PlayerInputController.cs" />
