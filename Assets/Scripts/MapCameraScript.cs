@@ -33,7 +33,6 @@ public class MapCameraScript : MonoBehaviour
 
 		gameObject.transform.position = new Vector3 (terrainWidth/2, (diagonal * Mathf.Tan((30F / 180) * Mathf.PI)) + Terrain.activeTerrain.terrainData.size.y, terrainWidth/2);
 		gameObject.transform.forward = Vector3.down;
-		Debug.Log(gameObject.transform.position);
 	}
 
 	void Update () 
@@ -51,9 +50,7 @@ public class MapCameraScript : MonoBehaviour
     void OnGUI()
     {
 		if (gameObject.camera.enabled)
-		{
-	      	player = GameObject.FindWithTag("Player");
-			
+		{	
 			Vector3 screenPos = gameObject.camera.WorldToScreenPoint(new Vector3 (player.transform.position.x, 100, player.transform.position.z));
 			
 			GUI.DrawTexture(new Rect(screenPos.x - 10, Screen.height - screenPos.y - 10, 20, 20), PlayerTexture);

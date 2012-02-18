@@ -317,7 +317,11 @@ public class Manager : MonoBehaviour
         List<GameObject> PhysObjs = new List<GameObject>();
 		//PhysObjects = GameObject.FindGameObjectsWithTag("PhysObj");
         foreach (GameObject g in GameObject.FindGameObjectsWithTag("PhysObj"))
+        {
+            if (!g.GetComponent<NetTag>())
+                g.AddComponent<NetTag>();
             PhysObjs.Add(g);
+        }
         foreach (GameObject p in GameObject.FindGameObjectsWithTag("Player"))
             PhysObjs.Add(p);
         PhysObjects = PhysObjs.ToArray();

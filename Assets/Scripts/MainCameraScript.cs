@@ -16,19 +16,22 @@ public class MainCameraScript : MonoBehaviour
     int buttonBuffer;
     int buttonWidth;
     int buttonHeight;
-	
-	public Texture MenuTexture;
-	public Texture MainMenuTexture;
-	public Texture SettingsTexture;
-	public Texture ExitTexture;
-	
-	public Texture BlankBackground;
-	
-	public Texture GrphicsTexture;
-	public Texture BestTexture;
-	public Texture AverageTexture;
-	public Texture FastestTexture;
-	public Texture VolumeTexture;
+
+    public Texture MenuTexture;
+    public Texture MainMenuTexture;
+    public Texture SettingsTexture;
+    public Texture ExitTexture;
+
+    public Texture BlankBackground;
+
+    public Texture GrphicsTexture;
+    public Texture BestTexture;
+    public Texture AverageTexture;
+    public Texture FastestTexture;
+    public Texture VolumeTexture;
+
+    public Texture HealthArea;
+    public Texture HealthBar;
 
     Rect menuButtonLoc;
 
@@ -37,11 +40,15 @@ public class MainCameraScript : MonoBehaviour
     Rect exitButtonLoc;
 
     bool bDisplayMenu;
-	bool SettingsDisplayMenu;
-	
-	private GUIStyle blankStyle = new GUIStyle();
-	
-	private float volumeSlider = 1F;
+    bool SettingsDisplayMenu;
+
+    private GUIStyle blankStyle = new GUIStyle();
+
+    private float volumeSliderValue = 1F;
+
+    private GameObject player;
+
+    private GameObject[] enemies;
 
     //Random random; //Camera Shaking
 
@@ -74,6 +81,9 @@ public class MainCameraScript : MonoBehaviour
         ButtonLocations.Add(settingsButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
         ButtonLocations.Add(mainmenuButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
         ButtonLocations.Add(exitButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
+
+        player = GameObject.FindGameObjectWithTag("Player");
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
 	}
 
 	void Update () 
@@ -100,69 +110,123 @@ public class MainCameraScript : MonoBehaviour
 
     void OnGUI()
     {
+        //top left button
         if (GUI.Button(menuButtonLoc, MenuTexture, blankStyle))
         {
             print("Clicked 'Menu'");
             bDisplayMenu = GameUtils.Toggle(bDisplayMenu);
-			if (SettingsDisplayMenu)
-				SettingsDisplayMenu = false;
+            if (SettingsDisplayMenu)
+                SettingsDisplayMenu = false;
+        }
+
+        //health
+        GUI.DrawTexture(new Rect(0, Screen.height - 256, 256, 256), HealthArea);
+        float health = player.GetComponent<Hovercraft>().Health;
+        if (health > 0)
+            GUI.DrawTexture(new Rect(0, Screen.height - 156, (health / 310) * 256, 64), HealthBar);
+
+        //Enemy hud and raydar
+        RaycastHit hit;
+        Vector3 rayDirection;
+        Vector3 camRayDirection;
+        Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 5, player.transform.position.z);
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            rayDirection = enemies[i].transform.position - testPos;
+            camRayDirection = enemies[i].transform.position - gameObject.camera.transform.position;
+            if ((Physics.Raycast(testPos, rayDirection, out hit)) && (MathTester.AreVector3Close(hit.point, enemies[i].transform.position, 3)))
+            {
+                if ((Vector3.Angle(camRayDirection, gameObject.camera.transform.forward)) < gameObject.camera.fieldOfView)
+                {
+                    Vector3 screenPos = gameObject.camera.WorldToScreenPoint(enemies[i].transform.position);
+                    GUI.DrawTexture(new Rect(screenPos.x - 10, Screen.height - screenPos.y - 5, 10, 10), BlankBackground);
+                }
+            }
+
         }
 
         if (bDisplayMenu)
-		{
+        {
             if (GUI.Button(settingsButtonLoc, SettingsTexture, blankStyle))
-	        {
-	            print("Clicked 'Settings'");
-				SettingsDisplayMenu = !SettingsDisplayMenu;
-	        }
-			
-			if (GUI.Button(mainmenuButtonLoc, MainMenuTexture, blankStyle))
+            {
+                print("Clicked 'Settings'");
+                SettingsDisplayMenu = !SettingsDisplayMenu;
+            }
+
+            if (GUI.Button(mainmenuButtonLoc, MainMenuTexture, blankStyle))
             {
                 print("Clicked 'Singleplayer / Debug'");
                 Application.LoadLevel("Main Menu");
             }
-			
-	        if (GUI.Button(exitButtonLoc, ExitTexture, blankStyle))
-	        {
-	            print("Clicked 'Exit'");
-	            Application.Quit();
-	        }
+
+            if (GUI.Button(exitButtonLoc, ExitTexture, blankStyle))
+            {
+                print("Clicked 'Exit'");
+                Application.Quit();
+            }
         }
-		
-		if (SettingsDisplayMenu)
-		{						
-			GUI.DrawTexture(new Rect(75, 150, (Screen.width * .9f) - 3, Screen.height * .6f), BlankBackground);
-			
-			volumeSlider = GUI.HorizontalSlider(new Rect(500, 432, 200, 50), volumeSlider, 0.0F, 1F);
-			
-			if (GUI.changed)
-			{
-				//Change volume levels on singleton
-			}
-			
-			GUI.DrawTexture(new Rect(200, 200, 256, 64), GrphicsTexture);
-			
-			GUI.DrawTexture(new Rect(200, 400, 256, 64), VolumeTexture);
-			
-			if (GUI.Button(new Rect(200, 300, 256, 64), FastestTexture, blankStyle))
-	        {
-	            print("Clicked 'Fastest'");
-	            QualitySettings.currentLevel = QualityLevel.Fastest;
-	        }
-			
-			if (GUI.Button(new Rect(500, 300, 256, 64), AverageTexture, blankStyle))
-	        {
-	            print("Clicked 'Average'");
-	            QualitySettings.currentLevel = QualityLevel.Good;
-	        }
-			
-			if (GUI.Button(new Rect(800, 300, 256, 64), BestTexture, blankStyle))
-	        {
-	            print("Clicked 'Best'");
-	            QualitySettings.currentLevel = QualityLevel.Fantastic;
-	        }
-			
-		}
+
+        //Chat - using smartfox API to get the chat between player
+
+        //Time - Use smartfox API to get the time left in the match
+
+        //Scoreboard - Use smartfox API to compare player records
+
+        //Radar - Loop through all current players, raycast to them. If it hits that player, draw them on radar. Also, tanks in motion/shooting show up
+
+        //Draw HUD indicator above enemies
+
+        if (SettingsDisplayMenu)
+        {
+            GUI.DrawTexture(new Rect(75, 150, (Screen.width * .9f) - 3, Screen.height * .6f), BlankBackground);
+
+            volumeSliderValue = GUI.HorizontalSlider(new Rect(500, 432, 200, 50), volumeSliderValue, 0.0F, 1F);
+
+            if (GUI.changed)
+            {
+                //Change volume levels on singleton
+
+            }
+
+            GUI.DrawTexture(new Rect(200, 200, 256, 64), GrphicsTexture);
+
+            GUI.DrawTexture(new Rect(200, 400, 256, 64), VolumeTexture);
+
+            if (GUI.Button(new Rect(200, 300, 256, 64), FastestTexture, blankStyle))
+            {
+                print("Clicked 'Fastest'");
+                QualitySettings.currentLevel = QualityLevel.Fastest;
+            }
+
+            if (GUI.Button(new Rect(500, 300, 256, 64), AverageTexture, blankStyle))
+            {
+                print("Clicked 'Average'");
+                QualitySettings.currentLevel = QualityLevel.Good;
+            }
+
+            if (GUI.Button(new Rect(800, 300, 256, 64), BestTexture, blankStyle))
+            {
+                print("Clicked 'Best'");
+                QualitySettings.currentLevel = QualityLevel.Fantastic;
+            }
+
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        RaycastHit hit;
+        Vector3 rayDirection;
+        Vector3 camRayDirection;
+        Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 10, player.transform.position.z);
+        Debug.Log(enemies.Length);
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            rayDirection = enemies[i].transform.position - testPos;
+            //camRayDirection = enemies[i].transform.position - gameObject.camera.transform.position;
+            Gizmos.DrawRay(testPos, rayDirection);
+
+        }
     }
 
 }

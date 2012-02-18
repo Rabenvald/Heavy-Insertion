@@ -207,4 +207,19 @@ public class MathTester : MonoBehaviour
 
         }
     }
+
+    public static bool AreVector3Close(Vector3 one, Vector3 two, float radius)
+    {
+        if (one.x - two.x < radius)
+        {
+            if (one.y - two.y < radius)
+            {
+                if (one.z - two.z < radius)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

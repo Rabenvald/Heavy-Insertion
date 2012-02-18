@@ -219,21 +219,21 @@ public class Hovercraft : ImportantObject
         float effectiveBreakForce = breakForce;
         float effectiveJumpThrust = jumpThrust;
         float yawThrottle = 0.0f;*/
-		
-		if (!dead)
-		{
-			if(Health <= 0)
-			{
-				dead = true;
-				renderer.enabled = false;
-				//Controller.Turret.enabled = false;
-				Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
-				foreach (Renderer r in childRenderers)
-				{
-					r.enabled = false;
-				}
-				
-			}
+
+        if (!dead)
+        {
+            if (Health <= 0)
+            {
+                dead = true;
+                gameObject.renderer.enabled = false;
+                gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
+                Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
+                foreach (Renderer r in childRenderers)
+                {
+                    r.enabled = false;
+                }
+
+            }
         
 	        if (respawnTimer > 0)
 	            respawnTimer -= Time.fixedDeltaTime;
@@ -315,17 +315,17 @@ public class Hovercraft : ImportantObject
 	
 	public void respawn(Vector3 pos)
 	{
-		gameObject.renderer.enabled = true;
-		gameObject.transform.GetComponentInChildren<TurretScript>().enabled = true;
-		Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
-		foreach (Renderer r in childRenderers)
-		{
-			r.enabled = true;
-		}
-		respawnTimer = 30;
-		dead = false;
-		Health = 300;
-		gameObject.transform.position = pos;
+        gameObject.renderer.enabled = true;
+        gameObject.transform.GetComponentInChildren<TurretScript>().enabled = true;
+        Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
+        foreach (Renderer r in childRenderers)
+        {
+            r.enabled = true;
+        }
+        respawnTimer = 30;
+        dead = false;
+        Health = 300;
+        gameObject.transform.position = pos;
 	}
 
     void OnDestroy()
