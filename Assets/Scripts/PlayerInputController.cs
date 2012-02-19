@@ -147,9 +147,14 @@ public class PlayerInputController : InputController
 				if(Physics.Raycast(mapCamera.camera.ScreenPointToRay(Input.mousePosition), out hit))
 				{
 					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
+<<<<<<< HEAD
 					GetComponent<Hovercraft>().respawn(pos);
 					Manager.Instance.sendSpawnData(pos);
 					Manager.Instance.Spawned = true;
+=======
+					gameObject.GetComponent<Hovercraft>().respawn(pos);
+					Manager.Instance.sendSpawnData(pos);
+>>>>>>> 64dafa3d640f8873c56c96c594962cea73f331ae
 				}
 			}
 		}

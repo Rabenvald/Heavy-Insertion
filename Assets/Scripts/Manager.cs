@@ -145,6 +145,7 @@ public class Manager : MonoBehaviour
 		Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
 	}
 	
+<<<<<<< HEAD
 	private void spawnTank(Vector3 pos, User user){
 		GameObject tank = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
         InputController ic = tank.GetComponent<InputController>();
@@ -159,6 +160,12 @@ public class Manager : MonoBehaviour
 		myTank = tank;
 		updatePhysList();
         localController = GetLocalController();
+=======
+	private void spawnTank(User user, Vector3 pos){
+		GameObject tank = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
+        InputController ic = tank.GetComponent<InputController>();
+		ic.id = user.Id.ToString();  //ID Schema: UserId + Type + InstanceNumber
+>>>>>>> 64dafa3d640f8873c56c96c594962cea73f331ae
 	}
 	
 	public void OnUserLeaveRoom (BaseEvent evt)
@@ -250,7 +257,11 @@ public class Manager : MonoBehaviour
 		else if(obj.ContainsKey("spawnPos")){
 			SFSObject spawn = (SFSObject) obj.GetSFSObject("spawnPos");
 			Vector3 pos = new Vector3(spawn.GetFloat("x"), spawn.GetFloat("y"), spawn.GetFloat("z"));
+<<<<<<< HEAD
 			spawnTank(pos, sender);
+=======
+			spawnTank(sender, pos);
+>>>>>>> 64dafa3d640f8873c56c96c594962cea73f331ae
 			Debug.Log("Spawn Location = " + spawn.GetFloat("x") + ", " + spawn.GetFloat("y") + ", " + spawn.GetFloat("z"));
 		}
 	}
