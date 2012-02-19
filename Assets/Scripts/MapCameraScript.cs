@@ -13,7 +13,8 @@ public class MapCameraScript : MonoBehaviour
 	public Texture TeammateTexture;
 	
 	private GUIStyle blankStyle;
-    
+    private GameObject myself;
+	private GameObject mainCamera;
 
     GameObject[] enemies;
     GameObject player;
@@ -33,13 +34,33 @@ public class MapCameraScript : MonoBehaviour
 
 		gameObject.transform.position = new Vector3 (terrainWidth/2, (diagonal * Mathf.Tan((30F / 180) * Mathf.PI)) + Terrain.activeTerrain.terrainData.size.y, terrainWidth/2);
 		gameObject.transform.forward = Vector3.down;
+		Debug.Log(gameObject.transform.position);
+		
+		myself = GameObject.FindWithTag("MapCamera");
+		Debug.Log(myself.camera.enabled);
+		
+		mainCamera = GameObject.FindWithTag("MainCamera");
+		Debug.Log(mainCamera.camera.enabled);
 	}
 
 	void Update () 
     {
-
-        
-        
+		if(myself.camera.enabled && !Manager.Instance.Spawned){
+			RaycastHit hit;
+			if(Input.GetMouseButtonDown(0))
+			{
+				if(Physics.Raycast(this.camera.ScreenPointToRay(Input.mousePosition), out hit))
+				{
+					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
+					Manager.Instance.spawnMe(pos);
+					Manager.Instance.sendSpawnData(pos);
+					Manager.Instance.Spawned = true;
+					
+					mainCamera.GetComponent<MainCameraScript>().setPlayer();
+				}
+				Debug.Log("SPAWN ME DAMN IT!");
+			}
+		}
 	}
 
     void FixedUpdate()
@@ -50,10 +71,13 @@ public class MapCameraScript : MonoBehaviour
     void OnGUI()
     {
 		if (gameObject.camera.enabled)
-		{	
-			Vector3 screenPos = gameObject.camera.WorldToScreenPoint(new Vector3 (player.transform.position.x, 100, player.transform.position.z));
-			
-			GUI.DrawTexture(new Rect(screenPos.x - 10, Screen.height - screenPos.y - 10, 20, 20), PlayerTexture);
+		{
+	      	player = GameObject.FindWithTag("Player");
+			Vector3 screenPos;
+			if(Manager.Instance.Spawned){
+				screenPos = gameObject.camera.WorldToScreenPoint(new Vector3 (player.transform.position.x, 100, player.transform.position.z));
+				GUI.DrawTexture(new Rect(screenPos.x - 10, Screen.height - screenPos.y - 10, 20, 20), PlayerTexture);
+			}
 			
 			for (int i = 0; i < enemies.Length; i++)
 			{

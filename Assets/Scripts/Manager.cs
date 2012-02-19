@@ -16,14 +16,21 @@ public class Manager : MonoBehaviour
 	private SmartFox smartFox; 
 	private TestLobby lobby;
 	private Room currentRoom;
-    private bool running = false; //Can I delete it mommy? huh? huh? Can I delete it? pleaseeeeeeeeeeee?
 	private GameObject[] PhysObjects;
 
     private PlayerInputController localController;
 
-	public String myId;
-	
+	//important prefabs
 	public GameObject daTank;
+	public GameObject playerTank;
+	public GameObject cameraFocus;
+	public GameObject heatProjectile;
+	public GameObject ATMissile;
+	
+	//my info
+	public String myId;
+	private GameObject myTank;
+	
 	
 	private string clientName;
 	public string ClientName 
@@ -41,7 +48,25 @@ public class Manager : MonoBehaviour
 	public bool IsPhysAuth{
 		get { return isPhysAuth; }	
 	}
-
+	
+	private static bool spawned;
+	public bool Spawned{
+		get { return spawned; }
+        set { spawned = value; }
+	}
+	
+	private static int primaryCount;
+	public int PrimaryCount{
+		get { return primaryCount; }
+		set { primaryCount = value; }
+	}
+	
+	private static int secondaryCount;
+	public int SecondaryCount{
+		get { return secondaryCount; }	
+		set { secondaryCount = value; }
+	}
+	
     public float TimeBetweenUpdates = 0.2f;
     private float LastUpdateTime = 0;
     private uint ObjectSent = 0;
@@ -53,7 +78,6 @@ public class Manager : MonoBehaviour
 	
 	void Start () 
     {
-		running = true; //*Resisting the urge to delete*
 		if (SmartFoxConnection.IsInitialized)
         {
 			smartFox = SmartFoxConnection.Connection;
@@ -74,10 +98,10 @@ public class Manager : MonoBehaviour
         {
 			isPhysAuth = false;	
 		}
+		
+		spawned = false;
 
 		updatePhysList();
-
-        localController = GetLocalController();
 		
 		myId = smartFox.MySelf.Id.ToString();
 		
@@ -108,11 +132,11 @@ public class Manager : MonoBehaviour
 	
 	void FixedUpdate () 
     {
-		//if (!running) return; <<< It is impossible for this to return false... Additionally, bad flow control Ahoy!
 		smartFox.ProcessEvents();
 		updatePhysList();
-
-        sendInputs();
+		
+		if(spawned)
+			sendInputs();
 
         if (isPhysAuth)
         {
@@ -131,13 +155,30 @@ public class Manager : MonoBehaviour
 	
 	public void OnUserEnterRoom (BaseEvent evt)
     {
-		User user = (User)evt.Params["user"];
+		User user = (User)evt.Params["user"];		
+		Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
+	}
 
-        GameObject tank = (GameObject)Instantiate(daTank, new Vector3(2151.378f, 36.38875f, 2893.621f), Quaternion.identity);
+	private void spawnTank(Vector3 pos, User user){
+		GameObject tank = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
         InputController ic = tank.GetComponent<InputController>();
 		ic.id = user.Id.ToString();  //ID Schema: UserId + Type + InstanceNumber
-		
-		Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
+	}
+	
+	
+	public void spawnMe(Vector3 pos){
+		//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
+		GameObject tank = Instantiate(playerTank, pos, Quaternion.identity) as GameObject;
+		//tank.GetComponent<Hovercraft>().SetFocus(cF);
+		myTank = tank;
+		updatePhysList();
+        localController = GetLocalController();
+	}
+	
+	private void spawnTank(User user, Vector3 pos){
+		GameObject tank = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
+        NetTag nt = tank.GetComponent<NetTag>();
+		nt.Id = user.Id.ToString() + "-00-" + "00";  //ID Schema: UserId + Type + InstanceNumber
 	}
 	
 	public void OnUserLeaveRoom (BaseEvent evt)
@@ -226,6 +267,41 @@ public class Manager : MonoBehaviour
                     remoteController.Jump = obj.GetFloat("iJ");
             }
         }
+		else if(obj.ContainsKey("spawnPos")){
+			SFSObject spawn = (SFSObject) obj.GetSFSObject("spawnPos");
+			Vector3 pos = new Vector3(spawn.GetFloat("x"), spawn.GetFloat("y"), spawn.GetFloat("z"));
+			
+			spawnTank(pos, sender);
+			Debug.Log("Spawn Location = " + spawn.GetFloat("x") + ", " + spawn.GetFloat("y") + ", " + spawn.GetFloat("z"));
+		}
+		else if(obj.GetUtfString("Command") == "CreateAttack"){
+			string id = obj.GetUtfString("Id");
+			
+			//parse id to determine type
+			string[] temp = id.Split('-');
+			Debug.Log(temp[0] + " " + temp[1] + " " + temp[2]);
+			int type = int.Parse(temp[1]);
+			
+			//switch to determine what to create
+			switch(type){
+				case 1: //projectile
+					Debug.Log("created projectile for player " + temp[0]);
+					//create projectile
+					//give it the values
+					//give it the id
+					break;
+				case 2: //missile
+					Debug.Log("created missile for player " + temp[0]);
+					//create missile
+					//give it the values
+					//give it the id
+					break;
+				default:
+					break;
+			}
+			
+			Debug.Log("Attack Id: " + id);
+		}
 	}
 	
 	public void OnUserVariablesUpdate (BaseEvent evt)
@@ -246,10 +322,6 @@ public class Manager : MonoBehaviour
 	private void sendTelemetry(GameObject gO)
     {
         SFSObject myData = new SFSObject();
-        
-        myData.PutUtfString("PID", myId);
-        myData.PutBool("PhysMaster", isPhysAuth);
-
         myData.PutFloat("px", gO.transform.position.x);
         myData.PutFloat("py", gO.transform.position.y);
         myData.PutFloat("pz", gO.transform.position.z);
@@ -312,22 +384,57 @@ public class Manager : MonoBehaviour
         }
     }
 	
-	private void updatePhysList() // This is a very expensive operation, it should only be called when a relevant object is created/destroyed
+	public void sendSpawnData(Vector3 pos){
+		SFSObject myData = new SFSObject();
+		SFSObject temp = new SFSObject();
+		temp.PutFloat("x", pos.x);
+		temp.PutFloat("y", pos.y);
+		temp.PutFloat("z", pos.z);
+		
+		myData.PutSFSObject("spawnPos", temp);
+		smartFox.Send(new ObjectMessageRequest(myData));
+	}
+	
+	public void sendAttack(GameObject gO){
+		SFSObject myData = new SFSObject();
+		
+        myData.PutUtfString("Command", "CreateAttack");
+		
+		myData.PutUtfString("Id", gO.GetComponent<NetTag>().Id);
+		
+        myData.PutFloat("px", gO.transform.position.x);
+        myData.PutFloat("py", gO.transform.position.y);
+        myData.PutFloat("pz", gO.transform.position.z);
+
+        myData.PutFloat("rx", gO.transform.rotation.eulerAngles.x);
+        myData.PutFloat("ry", gO.transform.rotation.eulerAngles.y);
+        myData.PutFloat("rz", gO.transform.rotation.eulerAngles.z);
+
+        myData.PutFloat("vx", gO.rigidbody.velocity.x);
+        myData.PutFloat("vy", gO.rigidbody.velocity.y);
+        myData.PutFloat("vz", gO.rigidbody.velocity.z);
+		
+		smartFox.Send(new ObjectMessageRequest(myData));
+		
+		Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
+	}
+	
+	// This is a very expensive operation, it should only be called when a relevant object is created/destroyed
+	public void updatePhysList() 
     {
         List<GameObject> PhysObjs = new List<GameObject>();
 		//PhysObjects = GameObject.FindGameObjectsWithTag("PhysObj");
         foreach (GameObject g in GameObject.FindGameObjectsWithTag("PhysObj"))
-        {
-            if (!g.GetComponent<NetTag>())
-                g.AddComponent<NetTag>();
             PhysObjs.Add(g);
-        }
         foreach (GameObject p in GameObject.FindGameObjectsWithTag("Player"))
+            PhysObjs.Add(p);
+        foreach (GameObject p in GameObject.FindGameObjectsWithTag("Enemy"))
             PhysObjs.Add(p);
         PhysObjects = PhysObjs.ToArray();
 	}
-
-    private PlayerInputController GetLocalController() //Should probably check to see if we are a spectator first...
+	
+	//Should probably check to see if we are a spectator first...
+    private PlayerInputController GetLocalController() 
     {
         Debug.Log(PhysObjects.ToString());
         foreach (GameObject g in PhysObjects)
@@ -339,7 +446,7 @@ public class Manager : MonoBehaviour
         }
         return null;
     }
-
+	
     private NetInputController GetRemoteController(string id)
     {
         foreach (GameObject g in PhysObjects)
@@ -350,5 +457,11 @@ public class Manager : MonoBehaviour
             }
         }
         return null;
+    }
+	
+	void OnDrawGizmos()
+    {
+		Gizmos.DrawIcon(transform.position, "Manager");
+        Gizmos.color = Color.white;
     }
 }

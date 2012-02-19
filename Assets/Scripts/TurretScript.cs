@@ -159,6 +159,12 @@ public class TurretScript : ImportantObject
         projectile.rigidbody.velocity = Muzzle.transform.forward * ProjectileSpeed + randomness + transform.parent.rigidbody.velocity;
         // Recoil
         transform.parent.rigidbody.AddForceAtPosition(-projectile.rigidbody.velocity * projectile.rigidbody.mass, Muzzle.transform.position, ForceMode.Impulse);
+		
+		
+		projectile.GetComponent<NetTag>().Id = Manager.Instance.myId + "-1" + "-" + Manager.Instance.PrimaryCount;
+		Manager.Instance.updatePhysList();
+		Manager.Instance.PrimaryCount++;
+		Manager.Instance.sendAttack(projectile);
     }
 
     private void FireMissile()
@@ -167,6 +173,11 @@ public class TurretScript : ImportantObject
         ATMissile.GetComponent<GuidedProjectileInputController>().TargetPosition = TargetPosition;
         ATMissile.rigidbody.velocity += transform.parent.rigidbody.velocity; 
         // Set its velocity
+		
+		ATMissile.GetComponent<NetTag>().Id = Manager.Instance.myId + "-2" + "-" + Manager.Instance.SecondaryCount;
+		Manager.Instance.updatePhysList();
+		Manager.Instance.SecondaryCount++;
+		Manager.Instance.sendAttack(ATMissile);
     }
 
     /*void OnDrawGizmos()

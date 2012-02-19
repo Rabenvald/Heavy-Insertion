@@ -81,9 +81,9 @@ public class MainCameraScript : MonoBehaviour
         ButtonLocations.Add(settingsButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
         ButtonLocations.Add(mainmenuButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
         ButtonLocations.Add(exitButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x, ButtonLocations[ButtonLocations.Count - 1].y + ButtonLocations[ButtonLocations.Count - 1].height + buttonBuffer, buttonWidth, buttonHeight));
-
-        player = GameObject.FindGameObjectWithTag("Player");
-        enemies = GameObject.FindGameObjectsWithTag("Enemy");
+		
+		setPlayer();
+		setEnemies();
 	}
 
 	void Update () 
@@ -118,33 +118,35 @@ public class MainCameraScript : MonoBehaviour
             if (SettingsDisplayMenu)
                 SettingsDisplayMenu = false;
         }
-
-        //health
-        GUI.DrawTexture(new Rect(0, Screen.height - 256, 256, 256), HealthArea);
-        float health = player.GetComponent<Hovercraft>().Health;
-        if (health > 0)
-            GUI.DrawTexture(new Rect(0, Screen.height - 156, (health / 310) * 256, 64), HealthBar);
-
-        //Enemy hud and raydar
-        RaycastHit hit;
-        Vector3 rayDirection;
-        Vector3 camRayDirection;
-        Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 5, player.transform.position.z);
-        for (int i = 0; i < enemies.Length; i++)
-        {
-            rayDirection = enemies[i].transform.position - testPos;
-            camRayDirection = enemies[i].transform.position - gameObject.camera.transform.position;
-            if ((Physics.Raycast(testPos, rayDirection, out hit)) && (MathTester.AreVector3Close(hit.point, enemies[i].transform.position, 3)))
-            {
-                if ((Vector3.Angle(camRayDirection, gameObject.camera.transform.forward)) < gameObject.camera.fieldOfView)
-                {
-                    Vector3 screenPos = gameObject.camera.WorldToScreenPoint(enemies[i].transform.position);
-                    GUI.DrawTexture(new Rect(screenPos.x - 10, Screen.height - screenPos.y - 5, 10, 10), BlankBackground);
-                }
-            }
-
-        }
-
+		
+		if(Manager.Instance.Spawned){
+	        //health
+	        GUI.DrawTexture(new Rect(0, Screen.height - 256, 256, 256), HealthArea);
+	        float health = player.GetComponent<Hovercraft>().Health;
+	        if (health > 0)
+	            GUI.DrawTexture(new Rect(0, Screen.height - 156, (health / 310) * 256, 64), HealthBar);
+	
+	        //Enemy hud and raydar
+	        RaycastHit hit;
+	        Vector3 rayDirection;
+	        Vector3 camRayDirection;
+	        Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 5, player.transform.position.z);
+	        for (int i = 0; i < enemies.Length; i++)
+	        {
+	            rayDirection = enemies[i].transform.position - testPos;
+	            camRayDirection = enemies[i].transform.position - gameObject.camera.transform.position;
+	            if ((Physics.Raycast(testPos, rayDirection, out hit)) && (MathTester.AreVector3Close(hit.point, enemies[i].transform.position, 3)))
+	            {
+	                if ((Vector3.Angle(camRayDirection, gameObject.camera.transform.forward)) < gameObject.camera.fieldOfView)
+	                {
+	                    Vector3 screenPos = gameObject.camera.WorldToScreenPoint(enemies[i].transform.position);
+	                    GUI.DrawTexture(new Rect(screenPos.x - 10, Screen.height - screenPos.y - 5, 10, 10), BlankBackground);
+	                }
+	            }
+	
+	        }
+		}
+		
         if (bDisplayMenu)
         {
             if (GUI.Button(settingsButtonLoc, SettingsTexture, blankStyle))
@@ -218,7 +220,7 @@ public class MainCameraScript : MonoBehaviour
         RaycastHit hit;
         Vector3 rayDirection;
         Vector3 camRayDirection;
-        Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 10, player.transform.position.z);
+        /*Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 10, player.transform.position.z);
         Debug.Log(enemies.Length);
         for (int i = 0; i < enemies.Length; i++)
         {
@@ -226,7 +228,14 @@ public class MainCameraScript : MonoBehaviour
             //camRayDirection = enemies[i].transform.position - gameObject.camera.transform.position;
             Gizmos.DrawRay(testPos, rayDirection);
 
-        }
+        }*/
     }
-
+	
+	public void setPlayer(){
+        player = GameObject.FindGameObjectWithTag("Player");
+	}
+	
+	public void setEnemies(){
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
+	}
 }
