@@ -160,7 +160,7 @@ public class Hovercraft : ImportantObject
         {
             //Do nothing
         }
-        else if (damage < 50)
+        else if (damage > 50)
         {
             Health -= damage;
         }
@@ -225,14 +225,25 @@ public class Hovercraft : ImportantObject
             if (Health <= 0)
             {
                 dead = true;
-                gameObject.renderer.enabled = false;
+				if(GameObject.FindWithTag("Player") == gameObject){
+					Manager.Instance.Spawned = false;	
+				}
+				
+				SetFocus(GameObject.FindWithTag("Manager"));
+				
+                GameObject.Destroy(gameObject);
+				
+				GameObject temp = GameObject.FindWithTag("MapCamera");
+				temp.camera.enabled = true;
+				
+				/*gameObject.renderer.enabled = false;
                 gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
                 Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
                 foreach (Renderer r in childRenderers)
                 {
                     r.enabled = false;
-                }
-
+                }//*/
+				return;
             }
         
 	        if (respawnTimer > 0)

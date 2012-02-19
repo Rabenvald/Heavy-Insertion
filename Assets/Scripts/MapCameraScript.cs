@@ -45,7 +45,7 @@ public class MapCameraScript : MonoBehaviour
 
 	void Update () 
     {
-		if(myself.camera.enabled){
+		if(myself.camera.enabled && !Manager.Instance.Spawned){
 			RaycastHit hit;
 			if(Input.GetMouseButtonDown(0))
 			{

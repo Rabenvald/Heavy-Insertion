@@ -26,6 +26,8 @@ public class Manager : MonoBehaviour
 	
 	public GameObject playerTank;
 	
+	public GameObject cameraFocus;
+	
 	private GameObject myTank;
 	
 	private string clientName;
@@ -151,7 +153,9 @@ public class Manager : MonoBehaviour
 	
 	
 	public void spawnMe(Vector3 pos){
-		GameObject tank = (GameObject)Instantiate(playerTank, pos, Quaternion.identity);
+		//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
+		GameObject tank = Instantiate(playerTank, pos, Quaternion.identity) as GameObject;
+		//tank.GetComponent<Hovercraft>().SetFocus(cF);
 		myTank = tank;
 		updatePhysList();
         localController = GetLocalController();
