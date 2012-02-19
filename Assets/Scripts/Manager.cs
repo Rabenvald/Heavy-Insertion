@@ -16,7 +16,6 @@ public class Manager : MonoBehaviour
 	private SmartFox smartFox; 
 	private TestLobby lobby;
 	private Room currentRoom;
-    private bool running = false; //Can I delete it mommy? huh? huh? Can I delete it? pleaseeeeeeeeeeee?
 	private GameObject[] PhysObjects;
 
     private PlayerInputController localController;
@@ -24,6 +23,10 @@ public class Manager : MonoBehaviour
 	public String myId;
 	
 	public GameObject daTank;
+	
+	public GameObject playerTank;
+	
+	private GameObject myTank;
 	
 	private string clientName;
 	public string ClientName 
@@ -41,7 +44,13 @@ public class Manager : MonoBehaviour
 	public bool IsPhysAuth{
 		get { return isPhysAuth; }	
 	}
-
+	
+	private static bool spawned;
+	public bool Spawned{
+		get { return spawned; }
+        set { spawned = value; }
+	}
+	
     public float TimeBetweenUpdates = 0.2f;
     private float LastUpdateTime = 0;
     private uint ObjectSent = 0;
@@ -53,7 +62,6 @@ public class Manager : MonoBehaviour
 	
 	void Start () 
     {
-		running = true; //*Resisting the urge to delete*
 		if (SmartFoxConnection.IsInitialized)
         {
 			smartFox = SmartFoxConnection.Connection;
@@ -74,10 +82,10 @@ public class Manager : MonoBehaviour
         {
 			isPhysAuth = false;	
 		}
+		
+		spawned = false;
 
 		updatePhysList();
-
-        localController = GetLocalController();
 		
 		myId = smartFox.MySelf.Id.ToString();
 		
@@ -108,11 +116,11 @@ public class Manager : MonoBehaviour
 	
 	void FixedUpdate () 
     {
-		//if (!running) return; <<< It is impossible for this to return false... Additionally, bad flow control Ahoy!
 		smartFox.ProcessEvents();
 		updatePhysList();
-
-        sendInputs();
+		
+		if(spawned)
+			sendInputs();
 
         if (isPhysAuth)
         {
@@ -131,13 +139,22 @@ public class Manager : MonoBehaviour
 	
 	public void OnUserEnterRoom (BaseEvent evt)
     {
-		User user = (User)evt.Params["user"];
-
-        GameObject tank = (GameObject)Instantiate(daTank, new Vector3(2151.378f, 36.38875f, 2893.621f), Quaternion.identity);
+		User user = (User)evt.Params["user"];		
+		Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
+	}
+	
+	private void spawnTank(Vector3 pos, User user){
+		GameObject tank = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
         InputController ic = tank.GetComponent<InputController>();
 		ic.id = user.Id.ToString();  //ID Schema: UserId + Type + InstanceNumber
-		
-		Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
+	}
+	
+	
+	public void spawnMe(Vector3 pos){
+		GameObject tank = (GameObject)Instantiate(playerTank, pos, Quaternion.identity);
+		myTank = tank;
+		updatePhysList();
+        localController = GetLocalController();
 	}
 	
 	public void OnUserLeaveRoom (BaseEvent evt)
@@ -226,6 +243,12 @@ public class Manager : MonoBehaviour
                     remoteController.Jump = obj.GetFloat("iJ");
             }
         }
+		else if(obj.ContainsKey("spawnPos")){
+			SFSObject spawn = (SFSObject) obj.GetSFSObject("spawnPos");
+			Vector3 pos = new Vector3(spawn.GetFloat("x"), spawn.GetFloat("y"), spawn.GetFloat("z"));
+			spawnTank(pos, sender);
+			Debug.Log("Spawn Location = " + spawn.GetFloat("x") + ", " + spawn.GetFloat("y") + ", " + spawn.GetFloat("z"));
+		}
 	}
 	
 	public void OnUserVariablesUpdate (BaseEvent evt)
@@ -312,22 +335,22 @@ public class Manager : MonoBehaviour
         }
     }
 	
-	private void updatePhysList() // This is a very expensive operation, it should only be called when a relevant object is created/destroyed
+	// This is a very expensive operation, it should only be called when a relevant object is created/destroyed
+	private void updatePhysList() 
     {
         List<GameObject> PhysObjs = new List<GameObject>();
 		//PhysObjects = GameObject.FindGameObjectsWithTag("PhysObj");
         foreach (GameObject g in GameObject.FindGameObjectsWithTag("PhysObj"))
-        {
-            if (!g.GetComponent<NetTag>())
-                g.AddComponent<NetTag>();
             PhysObjs.Add(g);
-        }
         foreach (GameObject p in GameObject.FindGameObjectsWithTag("Player"))
+            PhysObjs.Add(p);
+        foreach (GameObject p in GameObject.FindGameObjectsWithTag("Enemy"))
             PhysObjs.Add(p);
         PhysObjects = PhysObjs.ToArray();
 	}
-
-    private PlayerInputController GetLocalController() //Should probably check to see if we are a spectator first...
+	
+	//Should probably check to see if we are a spectator first...
+    private PlayerInputController GetLocalController() 
     {
         Debug.Log(PhysObjects.ToString());
         foreach (GameObject g in PhysObjects)
@@ -339,7 +362,18 @@ public class Manager : MonoBehaviour
         }
         return null;
     }
-
+	
+	public void sendSpawnData(Vector3 pos){
+		SFSObject myData = new SFSObject();
+		SFSObject temp = new SFSObject();
+		temp.PutFloat("x", pos.x);
+		temp.PutFloat("y", pos.y);
+		temp.PutFloat("z", pos.z);
+		
+		myData.PutSFSObject("spawnPos", temp);
+		smartFox.Send(new ObjectMessageRequest(myData));
+	}
+	
     private NetInputController GetRemoteController(string id)
     {
         foreach (GameObject g in PhysObjects)
@@ -350,5 +384,11 @@ public class Manager : MonoBehaviour
             }
         }
         return null;
+    }
+	
+	void OnDrawGizmos()
+    {
+		Gizmos.DrawIcon(transform.position, "Manager");
+        Gizmos.color = Color.white;
     }
 }

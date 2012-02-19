@@ -80,18 +80,12 @@ public class PlayerInputController : InputController
     public RaycastHit hit;
     public Vector3 TargetPosition = Vector3.zero;
     public Transform TargetTransfrom;
-    public bool Driving
-    {
-        get
-        {
-            return driving;
-        }
-    }
-    private bool driving = true;
+	
+    public bool driving = false;
 
     private GameObject mapCamera;
     private GameObject mainCamera;
-
+	
     void Awake()
     {
         PlayerControlled = true;
@@ -110,7 +104,7 @@ public class PlayerInputController : InputController
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-        if (!hull.Dead && driving)
+        if (!hull.Dead && driving && Camera.current == mainCamera)
         {
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 200000.0f)) //, 1 << 9
@@ -152,17 +146,19 @@ public class PlayerInputController : InputController
 			{	
 				if(Physics.Raycast(mapCamera.camera.ScreenPointToRay(Input.mousePosition), out hit))
 				{
-					gameObject.GetComponent<Hovercraft>().respawn(new Vector3(hit.point.x, 2000, hit.point.z));
+					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
+					GetComponent<Hovercraft>().respawn(pos);
+					Manager.Instance.sendSpawnData(pos);
+					Manager.Instance.Spawned = true;
 				}
 			}
 		}
 		else
 		{
             driving = true;
-			if (mapCamera.camera.enabled != false)
+			if (mapCamera.camera.enabled)
 			{
 				mapCamera.camera.enabled = false;
-                //Camera.main.enabled = true;
                 mainCamera.camera.enabled = true;
 			}
 		}
