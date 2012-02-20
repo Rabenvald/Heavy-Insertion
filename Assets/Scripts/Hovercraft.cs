@@ -82,6 +82,11 @@ public class Hovercraft : ImportantObject
             return dead;
         }
     }
+
+    private GameObject myterrain;
+    private GameObject mySelf;
+    private GameObject manager;
+    private GameObject mapCamera;
     // Input
 
     private InputController Controller;
@@ -96,6 +101,11 @@ public class Hovercraft : ImportantObject
 	// Use this for initialization
 	void Start () 
     {
+        myterrain = GameObject.FindWithTag("Terrain");
+        mySelf = GameObject.FindWithTag("Player");
+        manager = GameObject.FindWithTag("Manager");
+		mapCamera = GameObject.FindWithTag("MapCamera");
+
 		//Debug.Log(gameObject.transform.childCount);
         if (camTarget == null)
         {
@@ -153,10 +163,9 @@ public class Hovercraft : ImportantObject
     {
 
         // if we impact the ground at some point:
-        //print("ouch");
         //Todo: add Impact Effects/Sounds here
         int damage = (int)(other.impactForceSum.magnitude);
-        if (respawnTimer > 0 && other.gameObject == GameObject.FindWithTag("Terrain"))
+        if (respawnTimer > 0 && other.gameObject == myterrain)
         {
             //Do nothing
         }
@@ -225,16 +234,17 @@ public class Hovercraft : ImportantObject
             if (Health <= 0)
             {
                 dead = true;
-				if(GameObject.FindWithTag("Player") == gameObject){
+                if (mySelf == gameObject) //GameObject.FindWithTag("Player")
+                {
 					Manager.Instance.Spawned = false;	
 				}
-				
-				SetFocus(GameObject.FindWithTag("Manager"));
+
+                SetFocus(manager);//GameObject.FindWithTag("Manager")
 				
                 GameObject.Destroy(gameObject);
 				
-				GameObject temp = GameObject.FindWithTag("MapCamera");
-				temp.camera.enabled = true;
+				//GameObject temp = GameObject.FindWithTag("MapCamera");
+				mapCamera.camera.enabled = true;
 				
 				/*gameObject.renderer.enabled = false;
                 gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;

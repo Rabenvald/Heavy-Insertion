@@ -67,6 +67,7 @@
      <Compile Include="Assets\Detonator\System\DetonatorSpray.cs" />
      <None Include="Assets\Detonator\TestScene\DetonatorTest.js" />
      <Compile Include="Assets\Editor\LevelManagerGUIScript.cs" />
+     <Compile Include="Assets\Scripts\NetCode\NetTag.cs" />
      <Compile Include="Assets\Scripts\NetCode\NetTransform.cs" />
      <Compile Include="Assets\Scripts\Test Scripts\DebugCam.cs" />
      <Compile Include="Assets\Scripts\Test Scripts\JumpingCube.cs" />

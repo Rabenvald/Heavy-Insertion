@@ -286,7 +286,8 @@ public class Manager : MonoBehaviour
 			switch(type){
 				case 1: //projectile
 					Debug.Log("created projectile for player " + temp[0]);
-					//create projectile
+                    //GameObject.Instantiate(ATMissile, Muzzle.transform.position + Muzzle.transform.forward * 3, Muzzle.transform.rotation);
+                    //create projectile  //transform.root.gameObject
 					//give it the values
 					//give it the id
 					break;
@@ -384,7 +385,8 @@ public class Manager : MonoBehaviour
         }
     }
 	
-	public void sendSpawnData(Vector3 pos){
+	public void sendSpawnData(Vector3 pos)
+    {
 		SFSObject myData = new SFSObject();
 		SFSObject temp = new SFSObject();
 		temp.PutFloat("x", pos.x);
@@ -395,7 +397,8 @@ public class Manager : MonoBehaviour
 		smartFox.Send(new ObjectMessageRequest(myData));
 	}
 	
-	public void sendAttack(GameObject gO){
+	public void sendAttack(GameObject gO)
+    {
 		SFSObject myData = new SFSObject();
 		
         myData.PutUtfString("Command", "CreateAttack");
@@ -428,8 +431,8 @@ public class Manager : MonoBehaviour
             PhysObjs.Add(g);
         foreach (GameObject p in GameObject.FindGameObjectsWithTag("Player"))
             PhysObjs.Add(p);
-        foreach (GameObject p in GameObject.FindGameObjectsWithTag("Enemy"))
-            PhysObjs.Add(p);
+        foreach (GameObject e in GameObject.FindGameObjectsWithTag("Enemy"))
+            PhysObjs.Add(e);
         PhysObjects = PhysObjs.ToArray();
 	}
 	
@@ -458,7 +461,19 @@ public class Manager : MonoBehaviour
         }
         return null;
     }
-	
+
+    private GameObject GetSyncedObject(string id)
+    {
+        foreach (GameObject g in PhysObjects)
+        {
+            if (g.GetComponent<NetTag>() && g.GetComponent<NetTag>().Id == id)
+            {
+                return g.GetComponent<NetTag>().transform.root.gameObject;
+            }
+        }
+        return null;
+    }
+
 	void OnDrawGizmos()
     {
 		Gizmos.DrawIcon(transform.position, "Manager");
