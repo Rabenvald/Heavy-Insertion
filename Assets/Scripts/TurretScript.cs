@@ -164,7 +164,7 @@ public class TurretScript : ImportantObject
 		projectile.GetComponent<NetTag>().Id = Manager.Instance.myId + "-1" + "-" + Manager.Instance.PrimaryCount;
 		Manager.Instance.updatePhysList();
 		Manager.Instance.PrimaryCount++;
-		Manager.Instance.sendAttack(projectile);
+        Manager.Instance.sendAttack(projectile, projectile.transform.position, projectile.transform.rotation.eulerAngles, projectile.rigidbody.velocity);
     }
 
     private void FireMissile()
@@ -177,7 +177,7 @@ public class TurretScript : ImportantObject
 		ATMissile.GetComponent<NetTag>().Id = Manager.Instance.myId + "-2" + "-" + Manager.Instance.SecondaryCount;
 		Manager.Instance.updatePhysList();
 		Manager.Instance.SecondaryCount++;
-		Manager.Instance.sendAttack(ATMissile);
+        Manager.Instance.sendAttack(ATMissile, ATMissile.transform.position, ATMissile.transform.rotation.eulerAngles, ATMissile.rigidbody.velocity, TargetPosition);
     }
 
     /*void OnDrawGizmos()

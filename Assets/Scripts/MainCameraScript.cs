@@ -186,15 +186,15 @@ public class MainCameraScript : MonoBehaviour
 
             if (GUI.changed)
             {
-                //Change volume levels on singleton
-
+                //Changes volume levels globally
+                AudioListener.volume = volumeSliderValue;
             }
 
             GUI.DrawTexture(new Rect(200, 200, 256, 64), GrphicsTexture);
 
             GUI.DrawTexture(new Rect(200, 400, 256, 64), VolumeTexture);
 
-            if (GUI.Button(new Rect(200, 300, 256, 64), FastestTexture, blankStyle))
+            if (GUI.Button(new Rect(800, 300, 256, 64), FastestTexture, blankStyle)) //Switched the position so best appears in the 4:3 web browser
             {
                 print("Clicked 'Fastest'");
                 QualitySettings.currentLevel = QualityLevel.Fastest;
@@ -206,7 +206,7 @@ public class MainCameraScript : MonoBehaviour
                 QualitySettings.currentLevel = QualityLevel.Good;
             }
 
-            if (GUI.Button(new Rect(800, 300, 256, 64), BestTexture, blankStyle))
+            if (GUI.Button(new Rect(200, 300, 256, 64), BestTexture, blankStyle))
             {
                 print("Clicked 'Best'");
                 QualitySettings.currentLevel = QualityLevel.Fantastic;
@@ -217,10 +217,10 @@ public class MainCameraScript : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        RaycastHit hit;
+        /*RaycastHit hit;
         Vector3 rayDirection;
         Vector3 camRayDirection;
-        /*Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 10, player.transform.position.z);
+        Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 10, player.transform.position.z);
         Debug.Log(enemies.Length);
         for (int i = 0; i < enemies.Length; i++)
         {

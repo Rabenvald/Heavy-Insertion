@@ -2,10 +2,11 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public abstract class InputController : MonoBehaviour {
-	
-	public string id;
-	
+public abstract class InputController : MonoBehaviour
+{
+
+    public string id;
+
     public float Throttle;
     public float Pitch;
     public float Roll;
@@ -38,15 +39,18 @@ public abstract class InputController : MonoBehaviour {
         }
     }
 
-	// Use this for initialization
-	void Start () 
+    public float TimeSinceLastUpdate = 0;
+
+    public Vector3 LastPosition = Vector3.zero;
+    public Vector3 LastRotation = Vector3.zero;
+
+    public Vector3 PositionExtrapolation = Vector3.zero;
+    public Vector3 RotationExtrapolation = Vector3.zero;
+
+    public void Extrapolate()
     {
-        
-	}
-	
-	// Update is called once per frame
-	void Update () 
-    {
-	
-	}
+        TimeSinceLastUpdate = Time.time - TimeSinceLastUpdate;
+        PositionExtrapolation = LastPosition + rigidbody.velocity * TimeSinceLastUpdate;
+        RotationExtrapolation = LastRotation + rigidbody.angularVelocity * TimeSinceLastUpdate;
+    }
 }

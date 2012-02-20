@@ -13,7 +13,7 @@ public class NetTag : MonoBehaviour
         }
         set
         {
-            if (id == "")
+            if (id == "" || id == null)
             {
                 id = value;
             }

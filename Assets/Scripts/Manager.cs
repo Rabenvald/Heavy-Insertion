@@ -67,7 +67,7 @@ public class Manager : MonoBehaviour
 		set { secondaryCount = value; }
 	}
 	
-    public float TimeBetweenUpdates = 0.2f;
+    public float TimeBetweenUpdates = 2.2f;
     private float LastUpdateTime = 0;
     private uint ObjectSent = 0;
 
@@ -146,7 +146,6 @@ public class Manager : MonoBehaviour
                     ObjectSent = 0;
                 sendTelemetry(PhysObjects[ObjectSent]);
                 ObjectSent++;
-
                 LastUpdateTime = 0;
             }
             LastUpdateTime += Time.deltaTime;
@@ -159,11 +158,11 @@ public class Manager : MonoBehaviour
 		Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
 	}
 
-	private void spawnTank(Vector3 pos, User user){
+	/*private void spawnTank(Vector3 pos, User user){
 		GameObject tank = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
         InputController ic = tank.GetComponent<InputController>();
 		ic.id = user.Id.ToString();  //ID Schema: UserId + Type + InstanceNumber
-	}
+	}*/
 	
 	
 	public void spawnMe(Vector3 pos){
@@ -171,14 +170,17 @@ public class Manager : MonoBehaviour
 		GameObject tank = Instantiate(playerTank, pos, Quaternion.identity) as GameObject;
 		//tank.GetComponent<Hovercraft>().SetFocus(cF);
 		myTank = tank;
+        myTank.GetComponent<NetTag>().Id = myId + "-00-" + "00"; 
 		updatePhysList();
         localController = GetLocalController();
 	}
 	
 	private void spawnTank(User user, Vector3 pos){
 		GameObject tank = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
-        NetTag nt = tank.GetComponent<NetTag>();
-		nt.Id = user.Id.ToString() + "-00-" + "00";  //ID Schema: UserId + Type + InstanceNumber
+        //InputController ic = tank.GetComponent<InputController>();
+        //NetTag nt = tank.GetComponent<NetTag>();
+        tank.GetComponent<InputController>().id = user.Id.ToString();
+		tank.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00";  //ID Schema: UserId + Type + InstanceNumber
 	}
 	
 	public void OnUserLeaveRoom (BaseEvent evt)
@@ -203,17 +205,33 @@ public class Manager : MonoBehaviour
 		User sender = (User)evt.Params["sender"];
 		ISFSObject obj = (SFSObject)evt.Params["message"];
         NetInputController remoteController;
+        Debug.Log("Recieved message about" + obj.GetUtfString("PID") + "  I am:" + myId);
 
+        if (obj.ContainsKey("Id"))
+        {
+            Debug.Log("Incomming IDed info");
+            Debug.Log("Its about" + obj.GetUtfString("Id"));
+            //string[] tempId = obj.GetUtfString("Id").Split('-');
+            GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
+            Debug.Log(thisGameObj);
+            thisGameObj.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+
+            thisGameObj.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
+
+            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
+        }
         if (obj.GetUtfString("PID") == myId)
         {
             //localController;
+            //Debug.Log("Recieved message about Me!"); 
             if (obj.ContainsKey("PhysMaster"))
             {
                 if (obj.GetBool("PhysMaster"))
                 {
+                    //Debug.Log("Its from the Phys Master!"); 
                     //remoteController = GetRemoteController(obj.GetUtfString("PID"));
 
-                    //localController.Extrapolate();
+                    localController.Extrapolate();
 
                     localController.Hull.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 
@@ -221,9 +239,10 @@ public class Manager : MonoBehaviour
 
                     localController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
 
+                    //Debug.Log("I was corrected");
                     //remoteController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
 
-                    //localController.TimeSinceLastUpdate = Time.time;
+                    localController.TimeSinceLastUpdate = Time.time;
                 }
             }
 
@@ -267,40 +286,67 @@ public class Manager : MonoBehaviour
                     remoteController.Jump = obj.GetFloat("iJ");
             }
         }
-		else if(obj.ContainsKey("spawnPos")){
+		else if(obj.ContainsKey("spawnPos"))
+        {
 			SFSObject spawn = (SFSObject) obj.GetSFSObject("spawnPos");
 			Vector3 pos = new Vector3(spawn.GetFloat("x"), spawn.GetFloat("y"), spawn.GetFloat("z"));
 			
-			spawnTank(pos, sender);
+			spawnTank(sender, pos);
 			Debug.Log("Spawn Location = " + spawn.GetFloat("x") + ", " + spawn.GetFloat("y") + ", " + spawn.GetFloat("z"));
 		}
-		else if(obj.GetUtfString("Command") == "CreateAttack"){
+		if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
+        {
 			string id = obj.GetUtfString("Id");
-			
+            
 			//parse id to determine type
 			string[] temp = id.Split('-');
-			Debug.Log(temp[0] + " " + temp[1] + " " + temp[2]);
+			//Debug.Log(temp[0] + " " + temp[1] + " " + temp[2]);
+
 			int type = int.Parse(temp[1]);
-			
-			//switch to determine what to create
-			switch(type){
-				case 1: //projectile
-					Debug.Log("created projectile for player " + temp[0]);
-                    //GameObject.Instantiate(ATMissile, Muzzle.transform.position + Muzzle.transform.forward * 3, Muzzle.transform.rotation);
-                    //create projectile  //transform.root.gameObject
-					//give it the values
-					//give it the id
-					break;
-				case 2: //missile
-					Debug.Log("created missile for player " + temp[0]);
-					//create missile
-					//give it the values
-					//give it the id
-					break;
-				default:
-					break;
-			}
-			
+            GameObject NetObject = GetNetObject(temp[0] + "-00-00");
+            //Debug.Log(NetObject);
+
+            //Debug.Log("Type " + type);
+                //switch to determine what to create
+            switch (type)
+            {
+                case 1: //projectile
+                    NetInputController thisRemoteController = NetObject.GetComponent<NetInputController>();
+                    //Debug.Log("RC" + thisRemoteController);
+                    //Debug.Log("RC Muzz: " + thisRemoteController.Turret.Muzzle);
+                    GameObject Muzzle = thisRemoteController.Turret.Muzzle;
+                    //Debug.Log("RC id" + thisRemoteController.id);
+                    if (thisRemoteController != null)
+                    {
+                        Debug.Log("created projectile for player " + temp[0]);
+                        GameObject.Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
+
+                        heatProjectile.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
+                        // Recoil
+                        thisRemoteController.Hull.rigidbody.AddForceAtPosition(-heatProjectile.rigidbody.velocity * heatProjectile.rigidbody.mass, Muzzle.transform.position, ForceMode.Impulse);
+                    }
+                    else
+                    {
+                        Debug.Log("Null Object");
+                    }
+                    //create projectile
+                    //give it the values
+                    //give it the id
+                    break;
+                case 2: //missile
+                    GameObject.Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"),obj.GetFloat("ppy"),obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"),obj.GetFloat("pry"),obj.GetFloat("prz"))));
+                    ATMissile.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
+                    ATMissile.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
+                    Debug.Log("created missile for player " + temp[0]);
+                    //create missile
+                    //give it the values
+                    //give it the id
+                    break;
+                default:
+                    break;
+            }
+            
+            
 			Debug.Log("Attack Id: " + id);
 		}
 	}
@@ -323,6 +369,16 @@ public class Manager : MonoBehaviour
 	private void sendTelemetry(GameObject gO)
     {
         SFSObject myData = new SFSObject();
+        if (gO.GetComponent<Hovercraft>())
+        {
+            string[] temp = gO.GetComponent<NetTag>().Id.Split('-');
+            //Debug.Log(temp[0]gO.GetComponent<NetTag>().Id
+
+            myData.PutUtfString("PID", temp[0]);
+        }
+        myData.PutUtfString("Id", gO.GetComponent<NetTag>().Id);
+        //Debug.Log("Sending data about: " + gO.GetComponent<NetTag>().Id);
+
         myData.PutFloat("px", gO.transform.position.x);
         myData.PutFloat("py", gO.transform.position.y);
         myData.PutFloat("pz", gO.transform.position.z);
@@ -334,6 +390,8 @@ public class Manager : MonoBehaviour
         myData.PutFloat("vx", gO.rigidbody.velocity.x);
         myData.PutFloat("vy", gO.rigidbody.velocity.y);
         myData.PutFloat("vz", gO.rigidbody.velocity.z);
+
+        myData.PutBool("PhysMaster", isPhysAuth);
 
         smartFox.Send(new ObjectMessageRequest(myData));
 	}
@@ -421,6 +479,88 @@ public class Manager : MonoBehaviour
 		
 		Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
 	}
+
+    public void sendAttack(GameObject gO, Vector3 pos, Vector3 rot, Vector3 vel, Vector3 Targ)
+    {
+        SFSObject myData = new SFSObject();
+
+        myData.PutUtfString("Command", "CreateAttack");
+
+        myData.PutUtfString("Id", gO.GetComponent<NetTag>().Id);
+
+        myData.PutFloat("px", gO.transform.position.x);
+        myData.PutFloat("py", gO.transform.position.y);
+        myData.PutFloat("pz", gO.transform.position.z);
+
+        myData.PutFloat("rx", gO.transform.rotation.eulerAngles.x);
+        myData.PutFloat("ry", gO.transform.rotation.eulerAngles.y);
+        myData.PutFloat("rz", gO.transform.rotation.eulerAngles.z);
+
+        myData.PutFloat("vx", gO.rigidbody.velocity.x);
+        myData.PutFloat("vy", gO.rigidbody.velocity.y);
+        myData.PutFloat("vz", gO.rigidbody.velocity.z);
+
+        myData.PutFloat("ppx", pos.x);
+        myData.PutFloat("ppy", pos.y);
+        myData.PutFloat("ppz", pos.z);
+
+        myData.PutFloat("prx", pos.x);
+        myData.PutFloat("pry", pos.y);
+        myData.PutFloat("prz", pos.z);
+
+        myData.PutFloat("pvx", vel.x);
+        myData.PutFloat("pvy", vel.y);
+        myData.PutFloat("pvz", vel.z);
+
+        myData.PutFloat("tx", Targ.x);
+        myData.PutFloat("ty", Targ.y);
+        myData.PutFloat("tz", Targ.z);
+
+        myData.PutBool("PhysMaster", isPhysAuth);
+
+        smartFox.Send(new ObjectMessageRequest(myData));
+
+        Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
+    }
+
+    public void sendAttack(GameObject gO, Vector3 pos, Vector3 rot, Vector3 vel)
+    {
+        SFSObject myData = new SFSObject();
+
+        myData.PutUtfString("Command", "CreateAttack");
+
+        myData.PutUtfString("Id", gO.GetComponent<NetTag>().Id);
+
+        myData.PutFloat("px", gO.transform.position.x);
+        myData.PutFloat("py", gO.transform.position.y);
+        myData.PutFloat("pz", gO.transform.position.z);
+        Debug.Log(gO.GetComponent<NetTag>().Id);
+        myData.PutFloat("rx", gO.transform.rotation.eulerAngles.x);
+        myData.PutFloat("ry", gO.transform.rotation.eulerAngles.y);
+        myData.PutFloat("rz", gO.transform.rotation.eulerAngles.z);
+
+        myData.PutFloat("vx", gO.rigidbody.velocity.x);
+        myData.PutFloat("vy", gO.rigidbody.velocity.y);
+        myData.PutFloat("vz", gO.rigidbody.velocity.z);
+
+        myData.PutFloat("ppx", pos.x);
+        myData.PutFloat("ppy", pos.y);
+        myData.PutFloat("ppz", pos.z);
+
+        myData.PutFloat("prx", pos.x);
+        myData.PutFloat("pry", pos.y);
+        myData.PutFloat("prz", pos.z);
+
+        myData.PutFloat("pvx", vel.x);
+        myData.PutFloat("pvy", vel.y);
+        myData.PutFloat("pvz", vel.z);
+
+        myData.PutBool("PhysMaster", isPhysAuth);
+
+        smartFox.Send(new ObjectMessageRequest(myData));
+
+        Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
+    }
 	
 	// This is a very expensive operation, it should only be called when a relevant object is created/destroyed
 	public void updatePhysList() 
@@ -462,7 +602,7 @@ public class Manager : MonoBehaviour
         return null;
     }
 
-    private GameObject GetSyncedObject(string id)
+    private GameObject GetNetObject(string id)
     {
         foreach (GameObject g in PhysObjects)
         {
