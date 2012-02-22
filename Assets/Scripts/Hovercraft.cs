@@ -68,6 +68,14 @@ public class Hovercraft : ImportantObject
     public float breakForce;
 
     private float currentVelocity;
+	
+	public float CurrVelocity
+	{
+		get
+        {
+            return currentVelocity;
+        }
+	}
 
     private float jumpInterval;
     public float timeSinceLastJump;
@@ -165,7 +173,9 @@ public class Hovercraft : ImportantObject
         // if we impact the ground at some point:
         //Todo: add Impact Effects/Sounds here
         int damage = (int)(other.impactForceSum.magnitude);
-        if (respawnTimer > 0 && other.gameObject == myterrain)
+		
+		//CHANGES HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (other.gameObject == myterrain && Vector3.Angle(gameObject.transform.up, Vector3.up) < 90)
         {
             //Do nothing
         }
@@ -309,14 +319,6 @@ public class Hovercraft : ImportantObject
 
             parent.AddForceAtPosition(counterForce + shockDrag, hit.point);
             bTouchingGround = true;
-        }
-    }
-
-    void OnGUI()
-    {
-        if (Controller.PlayerControlled)
-        {
-            GUI.Box(new Rect(Screen.width * 0.9f, Screen.height * 0.9f, 100, 25), (int)(currentVelocity * 3.6f) + " km/h");
         }
     }
 

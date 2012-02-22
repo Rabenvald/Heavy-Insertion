@@ -33,6 +33,8 @@ public class MainCameraScript : MonoBehaviour
     public Texture HealthArea;
     public Texture HealthBar;
 
+    public Texture Radar;
+
     Rect menuButtonLoc;
 
     Rect settingsButtonLoc;
@@ -84,6 +86,8 @@ public class MainCameraScript : MonoBehaviour
 		
 		setPlayer();
 		setEnemies();
+
+        volumeSliderValue = AudioListener.volume;
 	}
 
 	void Update () 
@@ -118,35 +122,7 @@ public class MainCameraScript : MonoBehaviour
             if (SettingsDisplayMenu)
                 SettingsDisplayMenu = false;
         }
-		
-		if(Manager.Instance.Spawned){
-	        //health
-	        GUI.DrawTexture(new Rect(0, Screen.height - 256, 256, 256), HealthArea);
-	        float health = player.GetComponent<Hovercraft>().Health;
-	        if (health > 0)
-	            GUI.DrawTexture(new Rect(0, Screen.height - 156, (health / 310) * 256, 64), HealthBar);
-	
-	        //Enemy hud and raydar
-	        RaycastHit hit;
-	        Vector3 rayDirection;
-	        Vector3 camRayDirection;
-	        Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 5, player.transform.position.z);
-	        for (int i = 0; i < enemies.Length; i++)
-	        {
-	            rayDirection = enemies[i].transform.position - testPos;
-	            camRayDirection = enemies[i].transform.position - gameObject.camera.transform.position;
-	            if ((Physics.Raycast(testPos, rayDirection, out hit)) && (MathTester.AreVector3Close(hit.point, enemies[i].transform.position, 3)))
-	            {
-	                if ((Vector3.Angle(camRayDirection, gameObject.camera.transform.forward)) < gameObject.camera.fieldOfView)
-	                {
-	                    Vector3 screenPos = gameObject.camera.WorldToScreenPoint(enemies[i].transform.position);
-	                    GUI.DrawTexture(new Rect(screenPos.x - 10, Screen.height - screenPos.y - 5, 10, 10), BlankBackground);
-	                }
-	            }
-	
-	        }
-		}
-		
+
         if (bDisplayMenu)
         {
             if (GUI.Button(settingsButtonLoc, SettingsTexture, blankStyle))
@@ -167,16 +143,6 @@ public class MainCameraScript : MonoBehaviour
                 Application.Quit();
             }
         }
-
-        //Chat - using smartfox API to get the chat between player
-
-        //Time - Use smartfox API to get the time left in the match
-
-        //Scoreboard - Use smartfox API to compare player records
-
-        //Radar - Loop through all current players, raycast to them. If it hits that player, draw them on radar. Also, tanks in motion/shooting show up
-
-        //Draw HUD indicator above enemies
 
         if (SettingsDisplayMenu)
         {
@@ -212,6 +178,49 @@ public class MainCameraScript : MonoBehaviour
                 QualitySettings.currentLevel = QualityLevel.Fantastic;
             }
 
+        }
+
+        if (gameObject.camera.enabled)
+        {
+            if (Manager.Instance.Spawned)
+            {
+                //health
+		        GUI.DrawTexture(new Rect(0, Screen.height - 128, 256, 128), HealthArea);
+				Hovercraft playerCraft = player.GetComponent<Hovercraft>();
+		        float health = playerCraft.Health;
+		        if (health > 0)
+	            	GUI.DrawTexture(new Rect(0, Screen.height - 70, (health / 310) * 256, 64), HealthBar);
+
+                //Spedometer
+                GUI.Box(new Rect(Screen.width - (Screen.width / 16) - 50, Screen.height * 0.7f - 25, 100, 25), (int)(playerCraft.CurrVelocity * 3.6f) + " km/h");
+
+                //Enemy hud and raydar
+                GUI.DrawTexture(new Rect(Screen.width - (Screen.width / 8), Screen.height - (Screen.width / 8), Screen.width / 8, Screen.width / 8), Radar);
+
+                RaycastHit hit;
+                Vector3 rayDirection;
+                Vector3 camRayDirection;
+                Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 5, player.transform.position.z);
+                for (int i = 0; i < enemies.Length; i++)
+                {
+                    rayDirection = enemies[i].transform.position - testPos;
+                    camRayDirection = enemies[i].transform.position - gameObject.camera.transform.position;
+
+                    if ((Physics.Raycast(testPos, rayDirection, out hit)) && (MathTester.AreVector3Close(hit.point, enemies[i].rigidbody.transform.position, 8)))
+                    {
+                        float angle = Vector3.Angle(camRayDirection, gameObject.camera.transform.forward);
+                        float raydarAngle = Vector2.Angle(new Vector2(gameObject.camera.transform.forward.x, gameObject.camera.transform.forward.z), new Vector2(camRayDirection.x, camRayDirection.z));
+						if (gameObject.camera.transform.forward.x < camRayDirection.x)
+							raydarAngle *= -1;
+                        GUI.DrawTexture(new Rect(Screen.width - (Screen.width / 16) + (Mathf.Cos((raydarAngle + 90) * Mathf.Deg2Rad) * (Screen.width / 17)) - 4, Screen.height - (Screen.width / 16) + (Mathf.Sin((raydarAngle - 90) * Mathf.Deg2Rad) * (Screen.width / 17)) - 4, 8, 8), BlankBackground);
+                        if (angle < gameObject.camera.fieldOfView)
+                        {
+                            Vector3 screenPos = gameObject.camera.WorldToScreenPoint(enemies[i].transform.position);
+                            GUI.DrawTexture(new Rect(screenPos.x - 10, Screen.height - screenPos.y - 5, 10, 10), BlankBackground);
+                        }
+                    }
+                }
+            }
         }
     }
 

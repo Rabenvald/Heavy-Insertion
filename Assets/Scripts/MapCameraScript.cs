@@ -23,7 +23,7 @@ public class MapCameraScript : MonoBehaviour
 
 	void Start () 
     {
-        enemies = MathTester.FindGameObjectsWithLayer(9);
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
         player = GameObject.FindWithTag("Player");
 		
 		float terrainWidth = Terrain.activeTerrain.terrainData.size.x;

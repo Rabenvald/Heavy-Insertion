@@ -104,16 +104,20 @@ public class PlayerInputController : InputController
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-        if (!hull.Dead && driving && Camera.current == mainCamera)
+        if (!hull.Dead && driving/* && Camera.current == mainCamera.camera*/ /*mainCamera*/)//mainCamera.camera.enabled)
         {
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            ray = Camera.current.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 200000.0f)) //, 1 << 9
             {
                 TargetPosition = hit.point;
                 turret.FinalTargetPosition = TargetPosition;
                 //hit.normal;
-                //print("Hit something at: " + hit.point);
+                //Debug.Log("Hit something at: " + hit.point);
             }
+        }
+        else
+        {
+            Debug.Log("Hull dead?: " + hull.Dead + " Driving?: " + driving + " Camera??: " + Camera.current);
         }
         /*prevJump = Jump;
         prevPitch = Pitch;

@@ -74,7 +74,7 @@ public class TurretScript : ImportantObject
     void Update()
     {
         //camGimbal.transform.localRotation = Quaternion.Euler(0, (float)camGimbal.transform.localRotation.y + Controller.MouseX, 0);//Quaternion.Slerp(transform.localRotation, Quaternion.Euler(0, camGimbal.transform.localRotation.y + Controller.MouseX, 0), SlerpRotationRate);
-        camGimbal.transform.rotation = camGimbal.transform.rotation * Quaternion.Euler(new Vector3(-Controller.MouseY * Time.deltaTime * 100, Controller.MouseX * Time.deltaTime * 100, 0));
+        //camGimbal.transform.rotation = camGimbal.transform.rotation * Quaternion.Euler(new Vector3(-Controller.MouseY * Time.deltaTime * 100, Controller.MouseX * Time.deltaTime * 100, 0));
     }
 	
 	// Update is called once per frame
@@ -88,8 +88,9 @@ public class TurretScript : ImportantObject
         if (target != null)
         {
 
-            targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TrackingComputer.GetParabolicFiringSolution(PitchComponet.transform.position, target.transform.position, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity, target.rigidbody.velocity)), Time.time * SlerpRotationRate);
+            targetRotation = /*Quaternion.LookRotation(TrackingComputer.GetParabolicFiringSolution(PitchComponet.transform.position, target.transform.position, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity, target.rigidbody.velocity));*/Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TrackingComputer.GetParabolicFiringSolution(PitchComponet.transform.position, target.transform.position, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity, target.rigidbody.velocity)), Time.deltaTime * SlerpRotationRate/*SlerpRotationRate*/);
             //transform.rotation.x = targetRotation
+            //targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TrackingComputer.GetParabolicFiringSolution(PitchComponet.transform.position, target.transform.position, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity, target.rigidbody.velocity)), Time.deltaTime * 1000f);
         }
         else
         {

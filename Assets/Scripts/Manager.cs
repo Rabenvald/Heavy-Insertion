@@ -534,7 +534,7 @@ public class Manager : MonoBehaviour
         myData.PutFloat("px", gO.transform.position.x);
         myData.PutFloat("py", gO.transform.position.y);
         myData.PutFloat("pz", gO.transform.position.z);
-        Debug.Log(gO.GetComponent<NetTag>().Id);
+        //Debug.Log(gO.GetComponent<NetTag>().Id);
         myData.PutFloat("rx", gO.transform.rotation.eulerAngles.x);
         myData.PutFloat("ry", gO.transform.rotation.eulerAngles.y);
         myData.PutFloat("rz", gO.transform.rotation.eulerAngles.z);

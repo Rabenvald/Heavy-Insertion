@@ -42,7 +42,7 @@ public class MenuMainCameraScript : MonoBehaviour
     Rect settingsButtonLoc;
     Rect exitButtonLoc;
 	
-	private float volumeSlider = 1F;
+	private float volumeSliderValue = 1F;
 	
 	bool SettingsDisplayMenu;
 	
@@ -80,6 +80,8 @@ public class MenuMainCameraScript : MonoBehaviour
         ButtonLocations.Add(exitButtonLoc = new Rect(ButtonLocations[ButtonLocations.Count - 1].x + ButtonLocations[ButtonLocations.Count - 1].width + buttonBuffer, ButtonLocations[ButtonLocations.Count - 1].y, buttonWidth, buttonHeight));
 		
 		blankStyle = new GUIStyle();
+		
+		volumeSliderValue = AudioListener.volume;
 	}
 
 	void Update () 
@@ -114,6 +116,7 @@ public class MenuMainCameraScript : MonoBehaviour
         if (GUI.Button(multiplayerButtonLoc, MulitplayerTexture, blankStyle))
         {
             print("Clicked 'Multiplayer'");
+			Application.LoadLevel("TestLobby");
         }
 		
         if (GUI.Button(singlePlayerButtonLoc, SinglePlayerTexture, blankStyle))
@@ -138,11 +141,11 @@ public class MenuMainCameraScript : MonoBehaviour
 		{						
 			GUI.DrawTexture(new Rect(75, 150, (Screen.width * .9f) - 3, Screen.height * .6f), BlankBackground);
 			
-			volumeSlider = GUI.HorizontalSlider(new Rect(500, 432, 200, 50), volumeSlider, 0.0F, 1F);
+			volumeSliderValue = GUI.HorizontalSlider(new Rect(500, 432, 200, 50), volumeSliderValue, 0.0F, 1F);
 			
 			if (GUI.changed)
 			{
-				//Change volume levels on singleton
+				AudioListener.volume = volumeSliderValue;
 			}
 			
 			GUI.DrawTexture(new Rect(200, 200, 256, 64), GrphicsTexture);
