@@ -9,7 +9,7 @@ public class TurretScript : ImportantObject
     public GameObject PitchComponet;
     public GameObject Muzzle;
     public float StabilizationAmount = 0.5f;
-    public float RotationRate = 1;
+    //public float RotationRate = 1;
 
     public float SlerpRotationRate = 1;
 
@@ -83,13 +83,14 @@ public class TurretScript : ImportantObject
         //CurBodyRotation = transform.rotation.eulerAngles;
         //CurPitchComponetRotation = transform.rotation.eulerAngles;
 
-        TargetPosition = Vector3.Lerp(TargetPosition, FinalTargetPosition, Mathf.Clamp(RotationRate / Vector3.Distance(FinalTargetPosition.normalized, TargetPosition.normalized),0.000001f,2));
+        //TargetPosition = Vector3.Lerp(TargetPosition, FinalTargetPosition, Mathf.Clamp(RotationRate / Vector3.Distance(FinalTargetPosition.normalized, TargetPosition.normalized), 0.000001f, 2));
 
         if (target != null)
         {
 
-            targetRotation = /*Quaternion.LookRotation(TrackingComputer.GetParabolicFiringSolution(PitchComponet.transform.position, target.transform.position, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity, target.rigidbody.velocity));*/Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TrackingComputer.GetParabolicFiringSolution(PitchComponet.transform.position, target.transform.position, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity, target.rigidbody.velocity)), Time.deltaTime * SlerpRotationRate/*SlerpRotationRate*/);
-            //transform.rotation.x = targetRotation
+            targetRotation = /*Quaternion.LookRotation(TrackingComputer.GetParabolicFiringSolution(PitchComponet.transform.position, target.transform.position, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity, target.rigidbody.velocity));*/
+                Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TrackingComputer.GetParabolicFiringSolution(PitchComponet.transform.position, target.transform.position, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity, target.rigidbody.velocity)), Time.deltaTime * 1000/*SlerpRotationRate*/);
+
             //targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TrackingComputer.GetParabolicFiringSolution(PitchComponet.transform.position, target.transform.position, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity, target.rigidbody.velocity)), Time.deltaTime * 1000f);
         }
         else
@@ -103,23 +104,13 @@ public class TurretScript : ImportantObject
                 TargetPosition = new Vector3(Mathf.Clamp(TargetPosition.x, -MaxTargetDistance, MaxTargetDistance), Mathf.Clamp(TargetPosition.y, -MaxTargetDistance, MaxTargetDistance), Mathf.Clamp(TargetPosition.z, -MaxTargetDistance, MaxTargetDistance));
                 TargetVector = TrackingComputer.GetParabolicFiringSolution(transform.position, TargetPosition, ProjectileSpeed, Physics.gravity, transform.parent.rigidbody.velocity);
                 TargetVector = new Vector3(Mathf.Clamp(TargetVector.x, -MaxTargetDistance, MaxTargetDistance), Mathf.Clamp(TargetVector.y, -MaxTargetDistance, MaxTargetDistance), Mathf.Clamp(TargetVector.z, -MaxTargetDistance, MaxTargetDistance));
-                //targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(-TargetVector), Time.deltaTime * SlerpRotationRate);
-                targetRotation.eulerAngles = Vector3.RotateTowards(transform.rotation.eulerAngles, Quaternion.LookRotation(-TargetVector).eulerAngles, 0.1f, SlerpRotationRate);
-                //YawtargetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetPosition), Time.deltaTime * 1000f);
+                targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(-TargetVector), Time.deltaTime * 1000); //SlerpRotationRate
+                
+                //targetRotation.eulerAngles = Vector3.RotateTowards(transform.rotation.eulerAngles, Quaternion.LookRotation(-TargetVector).eulerAngles, 0.1f, SlerpRotationRate);
+
             }
             
         }
-
-        /*if(CurPitchComponetRotation.x > 10)//this will limit looking up to 60
-            PitchComponet.transform.rotation = Quaternion.Euler(new Vector3(10, CurPitchComponetRotation.y, CurPitchComponetRotation.z));
-        else if(CurPitchComponetRotation.x < -30)//this will limit looking down to -60
-            PitchComponet.transform.rotation = Quaternion.Euler(new Vector3(-30, CurPitchComponetRotation.y, CurPitchComponetRotation.z));*/
-
-        //XRot = -Mathf.Atan2(targetRotation.eulerAngles.z - transform.position.z, targetRotation.eulerAngles.y - transform.position.y) * (180 / Mathf.PI);
-        //XRot = Mathf.Clamp(XRot, MinXRot, MaxXRot);
-
-        //YRot = -Mathf.Atan2(YawtargetRotation.eulerAngles.x - transform.position.x, YawtargetRotation.eulerAngles.z - transform.position.z) * (180 / Mathf.PI);
-        //YRot = Mathf.Clamp(YRot, -StabilizationAmount, StabilizationAmount);
 
         PitchComponet.transform.eulerAngles = new Vector3(Mathf.Clamp(targetRotation.eulerAngles.x, -MaxTargetDistance, MaxTargetDistance), Mathf.Clamp(transform.eulerAngles.y, -MaxTargetDistance, MaxTargetDistance), Mathf.Clamp(transform.eulerAngles.z, -MaxTargetDistance, MaxTargetDistance));
 
@@ -128,11 +119,7 @@ public class TurretScript : ImportantObject
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, YRot, transform.eulerAngles.z);
         //seeker.transform.LookAt(transform.parent.transform.up, TargetPosition-transform.position);
         transform.LookAt(TargetPosition, transform.parent.transform.up);
-        //transform.LookAt(transform.position + seeker.transform.up, transform.parent.transform.up);
-        //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(seeker.transform.up, transform.parent.transform.up), Time.deltaTime * 10000f);
-        //PitchComponet.transform.rotation = Quaternion.Euler(new Vector3(Mathf.Clamp(CurBodyRotation.x, -30, 10), CurPitchComponetRotation.y, CurPitchComponetRotation.z));
-        //transform.rotation = Quaternion.Euler(new Vector3(Mathf.Clamp(CurBodyRotation.x, -StabilizationAmount, StabilizationAmount), CurBodyRotation.y, Mathf.Clamp(CurBodyRotation.z, -StabilizationAmount, StabilizationAmount)));
-
+        
         transform.localEulerAngles = new Vector3(0,transform.localEulerAngles.y,0); 
 
         if (Time.time - lastFired > FireRate && transform.parent.GetComponent<InputController>().PrimaryFire)

@@ -98,7 +98,6 @@ public class PlayerInputController : InputController
         hull = GetComponentInChildren<Hovercraft>();
         mapCamera = GameObject.FindWithTag("MapCamera");
         mainCamera = GameObject.FindWithTag("MainCamera");
-        //GameObject mainCamera = GameObject.FindWithTag("MainCamera");
 	}
 	
 	// Update is called once per frame
@@ -110,7 +109,7 @@ public class PlayerInputController : InputController
             if (Physics.Raycast(ray, out hit, 200000.0f)) //, 1 << 9
             {
                 TargetPosition = hit.point;
-                turret.FinalTargetPosition = TargetPosition;
+                turret.TargetPosition = TargetPosition; //FinalTargetPosition
                 //hit.normal;
                 //Debug.Log("Hit something at: " + hit.point);
             }
