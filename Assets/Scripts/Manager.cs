@@ -17,6 +17,7 @@ public class Manager : MonoBehaviour
 	private TestLobby lobby;
 	private Room currentRoom;
 	private GameObject[] PhysObjects;
+	private SFSArray physHierarchy;
 
     private PlayerInputController localController;
 
@@ -112,8 +113,8 @@ public class Manager : MonoBehaviour
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnObjectMessageReceived);
 		smartFox.AddEventListener(SFSEvent.USER_VARIABLES_UPDATE, OnUserVariablesUpdate); 
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariablesUpdate);
+		smartFox.AddEventListener(SFSEvent.EXTENSION_RESPONSE, onExtensionResponse);
         //smartFox.AddEventListener(SFSEvent.UDP_INIT, OnUDPInit);
-		//smartFox.AddEventListener(SFSEvent.EXTENSION_RESPONSE, onExtensionResponse);
         //smartFox.InitUDP("129.21.29.6", 9933); //FIX THIS: Should be dynamic ========================================
 	}
 
@@ -363,7 +364,11 @@ public class Manager : MonoBehaviour
 	
 	public void onExtensionResponse(BaseEvent evt)
     {
-		
+		ISFSObject obj = (SFSObject)evt.Params.Params;
+		//prolly shoulda named it something more meaningful for it's return, but data is the string in the send in the extension
+		if(evt.Params.cmd == "data"){ 
+			physHierarchy = obj.GetSFSArray("hierarchy");
+		}
 	}
 	
 	private void sendTelemetry(GameObject gO)
