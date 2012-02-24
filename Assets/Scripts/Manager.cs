@@ -260,11 +260,17 @@ public class Manager : MonoBehaviour
                 {
                     remoteController = GetRemoteController(obj.GetUtfString("PID"));
 
+                    
+
+                    remoteController.LastPosition = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+
+                    remoteController.LastRotation = new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz"));
+
                     remoteController.Extrapolate();
 
-                    remoteController.Hull.transform.position = remoteController.LastPosition = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz")) + remoteController.PositionExtrapolation;
+                    remoteController.Hull.transform.position = remoteController.PositionExtrapolation;
 
-                    remoteController.Hull.transform.rotation = Quaternion.Euler(remoteController.LastRotation = new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")) + remoteController.RotationExtrapolation);
+                    remoteController.Hull.transform.rotation = Quaternion.Euler(remoteController.RotationExtrapolation);
 
                     remoteController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
                     
