@@ -2,13 +2,14 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Manager.cs">
     <Files>
+      <File FileName="Assets\Scripts\PlayerInputController.cs" Line="108" Column="1" />
       <File FileName="Assets\Scripts\Manager.cs" Line="291" Column="22" />
       <File FileName="Assets\Scripts\Hovercraft.cs" Line="59" Column="42" />
       <File FileName="Assets\Scripts\MainCameraScript.cs" Line="70" Column="30" />
       <File FileName="Assets\Scripts\Test Scripts\TestLobby.cs" Line="86" Column="9" />
       <File FileName="Assets\Scripts\ImportantObject.cs" Line="33" Column="1" />
       <File FileName="Assets\Scripts\CameraFollow.cs" Line="29" Column="46" />
-      <File FileName="Assets\Scripts\TurretScript.cs" Line="172" Column="29" />
+      <File FileName="Assets\Scripts\TurretScript.cs" Line="172" Column="6" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -21,8 +21,8 @@ public class Manager : MonoBehaviour
     private PlayerInputController localController;
 
 	//important prefabs
-	public GameObject daTank;
-	public GameObject playerTank;
+	public GameObject OtherPlayerTankPrefab;
+	public GameObject playerTankPrefab;
 	public GameObject cameraFocus;
 	public GameObject heatProjectile;
 	public GameObject ATMissile;
@@ -167,7 +167,7 @@ public class Manager : MonoBehaviour
 	
 	public void spawnMe(Vector3 pos){
 		//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
-		GameObject tank = Instantiate(playerTank, pos, Quaternion.identity) as GameObject;
+		GameObject tank = Instantiate(playerTankPrefab, pos, Quaternion.identity) as GameObject;
 		//tank.GetComponent<Hovercraft>().SetFocus(cF);
 		myTank = tank;
         myTank.GetComponent<NetTag>().Id = myId + "-00-" + "00"; 
@@ -176,7 +176,7 @@ public class Manager : MonoBehaviour
 	}
 	
 	private void spawnTank(User user, Vector3 pos){
-		GameObject tank = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
+		GameObject tank = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
         //InputController ic = tank.GetComponent<InputController>();
         //NetTag nt = tank.GetComponent<NetTag>();
         tank.GetComponent<InputController>().id = user.Id.ToString();
@@ -380,12 +380,14 @@ public class Manager : MonoBehaviour
 		int type = int.Parse(temp[1]);
 		
 		GameObject newObject;
+
+        Debug.Log("Make new shit");
 		
 		switch (type)
         {
             case 00: //tank
 				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
-				newObject = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
+				newObject = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
 		        //InputController ic = tank.GetComponent<InputController>();
 		        //NetTag nt = tank.GetComponent<NetTag>();
 		        newObject.GetComponent<InputController>().id = user.Id.ToString();
@@ -414,6 +416,7 @@ public class Manager : MonoBehaviour
 				break;
 			
 			default:
+                Debug.Log("Type was: " + type);
 				break;
 		}
 	}
@@ -462,6 +465,7 @@ public class Manager : MonoBehaviour
             SFSObject myData = new SFSObject();
 
             myData.PutUtfString("PID", myId);
+            myData.PutUtfString("Id", myTank.GetComponent<NetTag>().Id);
 
             myData.PutBool("inputs", true);
 
