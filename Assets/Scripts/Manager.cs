@@ -133,7 +133,6 @@ public class Manager : MonoBehaviour
 	void FixedUpdate () 
     {
 		smartFox.ProcessEvents();
-		updatePhysList();
 		
 		if(spawned)
 			sendInputs();
@@ -165,7 +164,8 @@ public class Manager : MonoBehaviour
 	}*/
 	
 	
-	public void spawnMe(Vector3 pos){
+	public void spawnMe(Vector3 pos)
+    {
 		//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
 		GameObject tank = Instantiate(playerTankPrefab, pos, Quaternion.identity) as GameObject;
 		//tank.GetComponent<Hovercraft>().SetFocus(cF);
@@ -238,6 +238,8 @@ public class Manager : MonoBehaviour
 
                     localController.Extrapolate();
 
+                    localController.Hull.Health = obj.GetInt("Health");
+
                     localController.Hull.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 
                     localController.Hull.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
@@ -260,7 +262,7 @@ public class Manager : MonoBehaviour
                 {
                     remoteController = GetRemoteController(obj.GetUtfString("PID"));
 
-                    
+                    remoteController.Hull.Health = obj.GetInt("Health");
 
                     remoteController.LastPosition = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 
@@ -277,6 +279,9 @@ public class Manager : MonoBehaviour
                     //remoteController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
 
                     remoteController.TimeSinceLastUpdate = Time.time;
+
+                    if (remoteController.Hull.Health <= 0)
+                        updatePhysList();
                 }
             }
 
@@ -441,6 +446,7 @@ public class Manager : MonoBehaviour
             //Debug.Log(temp[0]gO.GetComponent<NetTag>().Id
 
             myData.PutUtfString("PID", temp[0]);
+            myData.PutInt("Health", gO.GetComponent<Hovercraft>().Health);
         }
         myData.PutUtfString("Id", gO.GetComponent<NetTag>().Id);
         //Debug.Log("Sending data about: " + gO.GetComponent<NetTag>().Id);
@@ -458,6 +464,8 @@ public class Manager : MonoBehaviour
         myData.PutFloat("vz", gO.rigidbody.velocity.z);
 
         myData.PutBool("PhysMaster", isPhysAuth);
+
+
 
         smartFox.Send(new ObjectMessageRequest(myData));
 	}

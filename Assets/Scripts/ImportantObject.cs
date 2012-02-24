@@ -1,8 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-public class ImportantObject : MonoBehaviour {
+public class ImportantObject : MonoBehaviour 
+{
     public GameObject camTarget;
+    public int Health;
 	// Use this for initialization
 	void Start () 
     {
@@ -48,5 +50,10 @@ public class ImportantObject : MonoBehaviour {
     public void OffsetFocus(Vector3 offset)
     {
         camTarget.transform.localPosition = offset;
+    }
+
+    void OnDestroy()
+    {
+        Manager.Instance.updatePhysList();
     }
 }

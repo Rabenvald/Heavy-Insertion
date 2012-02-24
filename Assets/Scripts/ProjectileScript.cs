@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-public class ProjectileScript : MonoBehaviour
+public class ProjectileScript : ImportantObject
 {
     public GameObject ImpactExplosion;
-    public int Health = 300;
+    //public int Health = 300;
     public float Spin = 10;
     // Max age
     public float MaximumAge = 10.0f;
@@ -15,6 +15,7 @@ public class ProjectileScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Health = 300;
         age = 0.0f;
         rigidbody.AddRelativeTorque(Vector3.forward * Spin, ForceMode.Force);
     }

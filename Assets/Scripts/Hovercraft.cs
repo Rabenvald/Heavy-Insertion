@@ -48,7 +48,7 @@ public class Hovercraft : ImportantObject
 
     private BoxCollider HovCollider;
 
-    public int Health = 300;
+    //public int Health = 300;
 
     private Vector3 CentralRepulsorOffset = Vector3.zero;
     private Vector3 RightRepulsorOffset = Vector3.zero;
@@ -109,6 +109,8 @@ public class Hovercraft : ImportantObject
 	// Use this for initialization
 	void Start () 
     {
+        Health = 300;
+
         myterrain = GameObject.FindWithTag("Terrain");
         mySelf = GameObject.FindWithTag("Player");
         manager = GameObject.FindWithTag("Manager");
