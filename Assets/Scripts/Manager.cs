@@ -17,7 +17,6 @@ public class Manager : MonoBehaviour
 	private TestLobby lobby;
 	private Room currentRoom;
 	private GameObject[] PhysObjects;
-	private SFSArray physHierarchy;
 
     private PlayerInputController localController;
 
@@ -113,8 +112,8 @@ public class Manager : MonoBehaviour
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnObjectMessageReceived);
 		smartFox.AddEventListener(SFSEvent.USER_VARIABLES_UPDATE, OnUserVariablesUpdate); 
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariablesUpdate);
-		smartFox.AddEventListener(SFSEvent.EXTENSION_RESPONSE, onExtensionResponse);
         //smartFox.AddEventListener(SFSEvent.UDP_INIT, OnUDPInit);
+		//smartFox.AddEventListener(SFSEvent.EXTENSION_RESPONSE, onExtensionResponse);
         //smartFox.InitUDP("129.21.29.6", 9933); //FIX THIS: Should be dynamic ========================================
 	}
 
@@ -206,7 +205,7 @@ public class Manager : MonoBehaviour
 		User sender = (User)evt.Params["sender"];
 		ISFSObject obj = (SFSObject)evt.Params["message"];
         NetInputController remoteController;
-        Debug.Log("Recieved message about" + obj.GetUtfString("PID") + "  I am:" + myId);
+        Debug.Log("Recieved message about" + obj.GetUtfString("PID") + ".  I am:" + myId);
 
         if (obj.ContainsKey("Id"))
         {
@@ -214,6 +213,11 @@ public class Manager : MonoBehaviour
             Debug.Log("Its about" + obj.GetUtfString("Id"));
             //string[] tempId = obj.GetUtfString("Id").Split('-');
             GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
+			if (thisGameObj == null)
+			{
+				CreateNewGameObject(obj, sender);
+				thisGameObj = GetNetObject(obj.GetUtfString("Id"));
+			}
             Debug.Log(thisGameObj);
             thisGameObj.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 
@@ -287,6 +291,9 @@ public class Manager : MonoBehaviour
                     remoteController.Jump = obj.GetFloat("iJ");
             }
         }
+		
+		//Trying out a new function to handle spawning dynamically, by creating a new object if we get a message abotu an object we don't have
+		
 		else if(obj.ContainsKey("spawnPos"))
         {
 			SFSObject spawn = (SFSObject) obj.GetSFSObject("spawnPos");
@@ -362,13 +369,58 @@ public class Manager : MonoBehaviour
 		Room room = (Room)evt.Params["room"];
 	}
 	
+	public void CreateNewGameObject(ISFSObject obj, User user)
+	{
+		string id = obj.GetUtfString("Id");
+            
+		//parse id to determine type
+		string[] temp = id.Split('-');
+		//Debug.Log(temp[0] + " " + temp[1] + " " + temp[2]);
+
+		int type = int.Parse(temp[1]);
+		
+		GameObject newObject;
+		
+		switch (type)
+        {
+            case 00: //tank
+				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+				newObject = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
+		        //InputController ic = tank.GetComponent<InputController>();
+		        //NetTag nt = tank.GetComponent<NetTag>();
+		        newObject.GetComponent<InputController>().id = user.Id.ToString();
+				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + temp[2];
+				updatePhysList();
+				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);
+				break;
+			
+			case 1: //projectile
+				newObject = (GameObject)Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
+				heatProjectile.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz"));
+				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-1-" + temp[2];
+				primaryCount++;
+				updatePhysList();
+				Debug.Log("Spawning New Projectile with ID: " + newObject.GetComponent<NetTag>().Id);
+				break;
+			
+			case 2: //missile
+				newObject = (GameObject)Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"),obj.GetFloat("ppy"),obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"),obj.GetFloat("pry"),obj.GetFloat("prz"))));
+                ATMissile.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
+                ATMissile.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz"));
+				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-2-" + temp[2];
+				secondaryCount++;
+				updatePhysList();
+				Debug.Log("Spawning New Missile with ID: " + newObject.GetComponent<NetTag>().Id);
+				break;
+			
+			default:
+				break;
+		}
+	}
+	
 	public void onExtensionResponse(BaseEvent evt)
     {
-		ISFSObject obj = (SFSObject)evt.Params.Params;
-		//prolly shoulda named it something more meaningful for it's return, but data is the string in the send in the extension
-		if(evt.Params.cmd == "data"){ 
-			physHierarchy = obj.GetSFSArray("hierarchy");
-		}
+		
 	}
 	
 	private void sendTelemetry(GameObject gO)

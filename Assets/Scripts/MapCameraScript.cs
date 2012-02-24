@@ -36,6 +36,8 @@ public class MapCameraScript : MonoBehaviour
 		gameObject.transform.forward = Vector3.down;
 		Debug.Log(gameObject.transform.position);
 		
+		gameObject.camera.orthographicSize = terrainWidth/2;
+		
 		myself = GameObject.FindWithTag("MapCamera");
 		Debug.Log(myself.camera.enabled);
 		
@@ -54,6 +56,7 @@ public class MapCameraScript : MonoBehaviour
 					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
 					Manager.Instance.spawnMe(pos);
 					Manager.Instance.sendSpawnData(pos);
+					
 					Manager.Instance.Spawned = true;
 					
 					mainCamera.GetComponent<MainCameraScript>().setPlayer();

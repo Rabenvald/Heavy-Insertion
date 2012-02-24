@@ -156,8 +156,11 @@ public class Hovercraft : ImportantObject
         //Camera.main.transform.parent = transform;
         //Camera.main.transform.localPosition = new Vector3(0.0f, 5.0f, -42.0f);
         //Camera.main.transform.eulerAngles = new Vector3(4.150256f, 0, 0);
-        /*if (Controller.PlayerControlled)
-            TakeFocus (new Vector3(0, 0.5f, 0));*/
+        if (Controller.PlayerControlled)
+		{
+            TakeFocus(new Vector3(0,0,0));
+			Debug.Log("tried to set camera");
+		}
 	}
 	
 	// Update is called once per frame
@@ -244,12 +247,13 @@ public class Hovercraft : ImportantObject
             if (Health <= 0)
             {
                 dead = true;
-                if (mySelf == gameObject) //GameObject.FindWithTag("Player")
+                if (Controller.PlayerControlled) //changed from myself to keep consistency
                 {
 					Manager.Instance.Spawned = false;	
 				}
-
-                SetFocus(manager);//GameObject.FindWithTag("Manager")
+				
+				if (Controller.PlayerControlled)
+               		SetFocus(manager);//GameObject.FindWithTag("Manager")
 				
                 GameObject.Destroy(gameObject);
 				

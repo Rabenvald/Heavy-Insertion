@@ -145,7 +145,8 @@ public class PlayerInputController : InputController
             //Camera.main.enabled = false;
 			mainCamera.camera.enabled = false;
 			RaycastHit hit;
-			if(Input.GetMouseButtonDown(0))
+			
+			/*if(Input.GetMouseButtonDown(0))
 			{	
 				if(Physics.Raycast(mapCamera.camera.ScreenPointToRay(Input.mousePosition), out hit))
 				{
@@ -154,7 +155,7 @@ public class PlayerInputController : InputController
 					Manager.Instance.sendSpawnData(pos);
 					Manager.Instance.Spawned = true;
 				}
-			}
+			}*/
 		}
 		else
 		{
