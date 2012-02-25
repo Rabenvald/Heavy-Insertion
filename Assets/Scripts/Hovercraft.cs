@@ -257,18 +257,18 @@ public class Hovercraft : ImportantObject
 				if (Controller.PlayerControlled)
                		SetFocus(manager);//GameObject.FindWithTag("Manager")
 				
-                GameObject.Destroy(gameObject);
+                //GameObject.Destroy(gameObject);
 				
 				//GameObject temp = GameObject.FindWithTag("MapCamera");
 				mapCamera.camera.enabled = true;
 				
-				/*gameObject.renderer.enabled = false;
+				gameObject.renderer.enabled = false;
                 gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
                 Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
                 foreach (Renderer r in childRenderers)
                 {
                     r.enabled = false;
-                }//*/
+                }//
 				return;
             }
         

@@ -92,7 +92,7 @@ public class Manager : MonoBehaviour
 
 		if(currentRoom.UserCount == 1)
         {
-			isPhysAuth = true;	
+			isPhysAuth = true;
 		}
 		else
         {
@@ -113,7 +113,7 @@ public class Manager : MonoBehaviour
 		smartFox.AddEventListener(SFSEvent.USER_VARIABLES_UPDATE, OnUserVariablesUpdate); 
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariablesUpdate);
         //smartFox.AddEventListener(SFSEvent.UDP_INIT, OnUDPInit);
-		//smartFox.AddEventListener(SFSEvent.EXTENSION_RESPONSE, onExtensionResponse);
+		smartFox.AddEventListener(SFSEvent.EXTENSION_RESPONSE, onExtensionResponse);
         //smartFox.InitUDP("129.21.29.6", 9933); //FIX THIS: Should be dynamic ========================================
 	}
 
@@ -137,15 +137,20 @@ public class Manager : MonoBehaviour
 		if(spawned)
 			sendInputs();
 
-        if (isPhysAuth)
+        if (isPhysAuth && PhysObjects.Length > 0)
         {
             if (LastUpdateTime >= TimeBetweenUpdates)
             {
                 if (ObjectSent < PhysObjects.Length)
-                    ObjectSent = 0;
-                sendTelemetry(PhysObjects[ObjectSent]);
-                ObjectSent++;
-                LastUpdateTime = 0;
+				{
+	                sendTelemetry(PhysObjects[ObjectSent]);
+	                ObjectSent++;
+	                LastUpdateTime = 0;
+				}
+				else
+				{
+					ObjectSent = 0;
+				}
             }
             LastUpdateTime += Time.deltaTime;
         }
@@ -397,14 +402,14 @@ public class Manager : MonoBehaviour
 		switch (type)
         {
             case 00: //tank
-				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+				/*Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 				newObject = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
 		        //InputController ic = tank.GetComponent<InputController>();
 		        //NetTag nt = tank.GetComponent<NetTag>();
 		        newObject.GetComponent<InputController>().id = user.Id.ToString();
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + temp[2];
 				updatePhysList();
-				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);
+				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);*/
 				break;
 			
 			case 1: //projectile
