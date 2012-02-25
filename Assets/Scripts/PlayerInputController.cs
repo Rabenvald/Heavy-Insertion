@@ -105,15 +105,17 @@ public class PlayerInputController : InputController
     {
         if (!hull.Dead && driving/* && Camera.current == mainCamera.camera*/ /*mainCamera*/)//mainCamera.camera.enabled)
         {
-            Debug.Log(Camera.current);
-            ray = Camera.current.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit, 200000.0f)) //, 1 << 9
-            {
-                TargetPosition = hit.point;
-                turret.TargetPosition = TargetPosition; //FinalTargetPosition
-                //hit.normal;
-                //Debug.Log("Hit something at: " + hit.point);
-            }
+            //Debug.Log(Camera.current);
+			if(Camera.current != null){
+	            ray = Camera.current.ScreenPointToRay(Input.mousePosition);
+	            if (Physics.Raycast(ray, out hit, 200000.0f)) //, 1 << 9
+	            {
+	                TargetPosition = hit.point;
+	                turret.TargetPosition = TargetPosition; //FinalTargetPosition
+	                //hit.normal;
+	                //Debug.Log("Hit something at: " + hit.point);
+	            }
+			}
         }
         else
         {
@@ -143,11 +145,10 @@ public class PlayerInputController : InputController
 		{
             driving = false;
 			mapCamera.camera.enabled = true;
-            //Camera.main.enabled = false;
 			mainCamera.camera.enabled = false;
-			RaycastHit hit;
 			
-			/*if(Input.GetMouseButtonDown(0))
+			/*RaycastHit hit;
+			if(Input.GetMouseButtonDown(0))
 			{	
 				if(Physics.Raycast(mapCamera.camera.ScreenPointToRay(Input.mousePosition), out hit))
 				{
@@ -161,11 +162,8 @@ public class PlayerInputController : InputController
 		else
 		{
             driving = true;
-			if (mapCamera.camera.enabled)
-			{
-				mapCamera.camera.enabled = false;
-                mainCamera.camera.enabled = true;
-			}
+			mapCamera.camera.enabled = false;
+            mainCamera.camera.enabled = true;
 		}
     }
 }

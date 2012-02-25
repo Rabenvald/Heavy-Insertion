@@ -95,6 +95,7 @@ public class Hovercraft : ImportantObject
     private GameObject mySelf;
     private GameObject manager;
     private GameObject mapCamera;
+	private GameObject mainCamera;
     // Input
 
     private InputController Controller;
@@ -115,6 +116,7 @@ public class Hovercraft : ImportantObject
         mySelf = GameObject.FindWithTag("Player");
         manager = GameObject.FindWithTag("Manager");
 		mapCamera = GameObject.FindWithTag("MapCamera");
+		mainCamera = GameObject.FindWithTag("MainCamera");
 
 		//Debug.Log(gameObject.transform.childCount);
         if (camTarget == null)
@@ -257,18 +259,19 @@ public class Hovercraft : ImportantObject
 				if (Controller.PlayerControlled)
                		SetFocus(manager);//GameObject.FindWithTag("Manager")
 				
-                //GameObject.Destroy(gameObject);
+                GameObject.Destroy(gameObject);
 				
 				//GameObject temp = GameObject.FindWithTag("MapCamera");
 				mapCamera.camera.enabled = true;
+				mainCamera.camera.enabled = false;
 				
-				gameObject.renderer.enabled = false;
+				/*gameObject.renderer.enabled = false;
                 gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
                 Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
                 foreach (Renderer r in childRenderers)
                 {
                     r.enabled = false;
-                }//
+                }//*/
 				return;
             }
         
