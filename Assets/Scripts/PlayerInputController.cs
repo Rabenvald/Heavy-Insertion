@@ -105,6 +105,7 @@ public class PlayerInputController : InputController
     {
         if (!hull.Dead && driving/* && Camera.current == mainCamera.camera*/ /*mainCamera*/)//mainCamera.camera.enabled)
         {
+            Debug.Log(Camera.current);
             ray = Camera.current.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 200000.0f)) //, 1 << 9
             {

@@ -414,7 +414,10 @@ public class Manager : MonoBehaviour
 			
 			case 1: //projectile
 				newObject = (GameObject)Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
-				heatProjectile.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz"));
+                newObject.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz"));
+
+                newObject.transform.position += newObject.rigidbody.velocity.normalized * 7;
+
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-1-" + temp[2];
 				primaryCount++;
 				updatePhysList();
@@ -423,8 +426,11 @@ public class Manager : MonoBehaviour
 			
 			case 2: //missile
 				newObject = (GameObject)Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"),obj.GetFloat("ppy"),obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"),obj.GetFloat("pry"),obj.GetFloat("prz"))));
-                ATMissile.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
-                ATMissile.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz"));
+                newObject.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"), obj.GetFloat("ty"), obj.GetFloat("tz")); //ATMissile
+                newObject.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); //ATMissile
+
+                newObject.transform.position += newObject.rigidbody.velocity.normalized * 7;
+
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-2-" + temp[2];
 				secondaryCount++;
 				updatePhysList();
