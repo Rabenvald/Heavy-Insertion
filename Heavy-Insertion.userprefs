@@ -1,15 +1,13 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Manager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\PlayerInputController.cs">
     <Files>
-      <File FileName="Assets\Scripts\PlayerInputController.cs" Line="108" Column="1" />
-      <File FileName="Assets\Scripts\Manager.cs" Line="291" Column="22" />
-      <File FileName="Assets\Scripts\Hovercraft.cs" Line="59" Column="42" />
+      <File FileName="Assets\Scripts\PlayerInputController.cs" Line="109" Column="31" />
+      <File FileName="Assets\Scripts\Hovercraft.cs" Line="247" Column="36" />
       <File FileName="Assets\Scripts\MainCameraScript.cs" Line="70" Column="30" />
-      <File FileName="Assets\Scripts\Test Scripts\TestLobby.cs" Line="86" Column="9" />
-      <File FileName="Assets\Scripts\ImportantObject.cs" Line="33" Column="1" />
       <File FileName="Assets\Scripts\CameraFollow.cs" Line="29" Column="46" />
-      <File FileName="Assets\Scripts\TurretScript.cs" Line="172" Column="6" />
+      <File FileName="Assets\Scripts\MapCameraScript.cs" Line="63" Column="54" />
+      <File FileName="Assets\Scripts\Manager.cs" Line="181" Column="18" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

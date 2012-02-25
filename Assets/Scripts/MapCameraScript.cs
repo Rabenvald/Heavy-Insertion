@@ -54,14 +54,16 @@ public class MapCameraScript : MonoBehaviour
 				if(Physics.Raycast(this.camera.ScreenPointToRay(Input.mousePosition), out hit))
 				{
 					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
+					mainCamera.camera.enabled = true;
+					myself.camera.enabled = false;
 					Manager.Instance.spawnMe(pos);
 					Manager.Instance.sendSpawnData(pos);
-					
-					Manager.Instance.Spawned = true;
-					
 					mainCamera.GetComponent<MainCameraScript>().setPlayer();
+					Debug.Log(Camera.main);
+					Debug.Log("MapCamera = " + myself.camera.enabled);
+					Debug.Log("MainCamera = " + mainCamera.camera.enabled);
 				}
-				Debug.Log("SPAWN ME DAMN IT!");
+				Debug.Log("I am spawned");
 			}
 		}
 	}

@@ -178,6 +178,7 @@ public class Manager : MonoBehaviour
         myTank.GetComponent<NetTag>().Id = myId + "-00-" + "00"; 
 		updatePhysList();
         localController = GetLocalController();
+		spawned = true;
 	}
 	
 	private void spawnTank(User user, Vector3 pos){
@@ -241,7 +242,7 @@ public class Manager : MonoBehaviour
                     //Debug.Log("Its from the Phys Master!"); 
                     //remoteController = GetRemoteController(obj.GetUtfString("PID"));
 
-                    localController.Extrapolate();
+                    //localController.Extrapolate();
 
                     localController.Hull.Health = obj.GetInt("Health");
 
@@ -250,7 +251,9 @@ public class Manager : MonoBehaviour
                     localController.Hull.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
 
                     localController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
-
+					
+					Debug.Log("My position: " + localController.Hull.transform.position);
+					
                     //Debug.Log("I was corrected");
                     //remoteController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
 
@@ -268,23 +271,27 @@ public class Manager : MonoBehaviour
                     remoteController = GetRemoteController(obj.GetUtfString("PID"));
 
                     remoteController.Hull.Health = obj.GetInt("Health");
+					
+					//remoteController.LastPosition
+                    remoteController.Hull.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+					
+					//remoteController.LastRotation
+                    remoteController.Hull.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
 
-                    remoteController.LastPosition = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+                    //remoteController.Extrapolate();
 
-                    remoteController.LastRotation = new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz"));
+                    //remoteController.Hull.transform.position = remoteController.PositionExtrapolation;
 
-                    remoteController.Extrapolate();
-
-                    remoteController.Hull.transform.position = remoteController.PositionExtrapolation;
-
-                    remoteController.Hull.transform.rotation = Quaternion.Euler(remoteController.RotationExtrapolation);
+                    //remoteController.Hull.transform.rotation = Quaternion.Euler(remoteController.RotationExtrapolation);
 
                     remoteController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
                     
                     //remoteController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
 
                     remoteController.TimeSinceLastUpdate = Time.time;
-
+					
+					Debug.Log("User " + obj.GetUtfString("PID") + "'s position: " + remoteController.Hull.transform.position);
+					
                     if (remoteController.Hull.Health <= 0)
                         updatePhysList();
                 }
@@ -294,17 +301,35 @@ public class Manager : MonoBehaviour
             {
                 remoteController = GetRemoteController(obj.GetUtfString("PID"));
                 if (obj.ContainsKey("iT"))
+				{
                     remoteController.Throttle = obj.GetFloat("iT");
+					Debug.Log("iT = " + obj.GetFloat("iT"));
+				}
                 if (obj.ContainsKey("iP"))
+				{
                     remoteController.Pitch = obj.GetFloat("iP");
+					Debug.Log("iP = " + obj.GetFloat("iP"));
+				}
                 if (obj.ContainsKey("iR"))
+				{
                     remoteController.Roll = obj.GetFloat("iR");
+					Debug.Log("iR = " + obj.GetFloat("iR"));
+				}
                 if (obj.ContainsKey("iY"))
+				{
                     remoteController.Yaw = obj.GetFloat("iY");
+					Debug.Log("iY = " + obj.GetFloat("iY"));
+				}
                 if (obj.ContainsKey("iS"))
+				{
                     remoteController.Strafe = obj.GetFloat("iS");
+					Debug.Log("iS = " + obj.GetFloat("iS"));
+				}
                 if (obj.ContainsKey("iJ"))
+				{
                     remoteController.Jump = obj.GetFloat("iJ");
+					Debug.Log("iJ = " + obj.GetFloat("iJ"));
+				}
             }
         }
 		
@@ -397,19 +422,19 @@ public class Manager : MonoBehaviour
 		
 		GameObject newObject;
 
-        Debug.Log("Make new shit");
+        Debug.Log("Make new stuff");
 		
 		switch (type)
         {
             case 00: //tank
-				/*Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 				newObject = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
 		        //InputController ic = tank.GetComponent<InputController>();
 		        //NetTag nt = tank.GetComponent<NetTag>();
 		        newObject.GetComponent<InputController>().id = user.Id.ToString();
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + temp[2];
 				updatePhysList();
-				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);*/
+				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
 			
 			case 1: //projectile
