@@ -146,6 +146,7 @@ public class PlayerInputController : InputController
             driving = false;
 			mapCamera.camera.enabled = true;
 			mainCamera.camera.enabled = false;
+            Screen.showCursor = false;
 			
 			/*RaycastHit hit;
 			if(Input.GetMouseButtonDown(0))
@@ -164,6 +165,7 @@ public class PlayerInputController : InputController
             driving = true;
 			mapCamera.camera.enabled = false;
             mainCamera.camera.enabled = true;
+            Screen.showCursor = true;
 		}
     }
 }

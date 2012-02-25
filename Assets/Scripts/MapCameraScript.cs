@@ -11,10 +11,16 @@ public class MapCameraScript : MonoBehaviour
 	public Texture PlayerTexture;
 	public Texture EnemyTexture;
 	public Texture TeammateTexture;
+
+    public Texture ValidArea;
+    public Texture InvalidArea;
 	
 	private GUIStyle blankStyle;
     private GameObject myself;
 	private GameObject mainCamera;
+	
+	private bool drawCheck = false;
+    private float terrainWidth;
 
     GameObject[] enemies;
     GameObject player;
@@ -26,7 +32,7 @@ public class MapCameraScript : MonoBehaviour
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
         player = GameObject.FindWithTag("Player");
 		
-		float terrainWidth = Terrain.activeTerrain.terrainData.size.x;
+		terrainWidth = Terrain.activeTerrain.terrainData.size.x;
 		Debug.Log(Terrain.activeTerrain.terrainData.size);
 		
 		float diagonal = Mathf.Sqrt(2 * Mathf.Pow((terrainWidth/2), 2));
@@ -43,29 +49,41 @@ public class MapCameraScript : MonoBehaviour
 		
 		mainCamera = GameObject.FindWithTag("MainCamera");
 		Debug.Log(mainCamera.camera.enabled);
+
+        Screen.showCursor = false;
 	}
 
 	void Update () 
     {
-		if(myself.camera.enabled && !Manager.Instance.Spawned){
-			RaycastHit hit;
-			if(Input.GetMouseButtonDown(0))
-			{
-				if(Physics.Raycast(this.camera.ScreenPointToRay(Input.mousePosition), out hit))
-				{
+        if (myself.camera.enabled && !Manager.Instance.Spawned)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(this.camera.ScreenPointToRay(Input.mousePosition), out hit)
+                && MathTester.AreVector3Close(new Vector3(hit.point.x, 0, hit.point.z), new Vector3(terrainWidth / 2, 0, terrainWidth / 2), terrainWidth / 4))
+            {
+                drawCheck = true;
+                if (Input.GetMouseButtonDown(0))
+                {
 					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
 					mainCamera.camera.enabled = true;
 					myself.camera.enabled = false;
 					Manager.Instance.spawnMe(pos);
 					Manager.Instance.sendSpawnData(pos);
 					mainCamera.GetComponent<MainCameraScript>().setPlayer();
-					Debug.Log(Camera.main);
+                    Screen.showCursor = true;
+					
+                    Debug.Log(Camera.main);
 					Debug.Log("MapCamera = " + myself.camera.enabled);
 					Debug.Log("MainCamera = " + mainCamera.camera.enabled);
 				}
-				Debug.Log("I am spawned");
 			}
+			
+			else
+				drawCheck = false;
 		}
+		else
+			drawCheck = false;
+		
 	}
 
     void FixedUpdate()
@@ -89,6 +107,11 @@ public class MapCameraScript : MonoBehaviour
 				screenPos = gameObject.camera.WorldToScreenPoint(new Vector3 (enemies[i].transform.position.x, 100, enemies[i].transform.position.z));
 				GUI.DrawTexture(new Rect(screenPos.x - 10, Screen.height - screenPos.y - 10, 20, 20), EnemyTexture);
 			}
+			
+			if (drawCheck)
+				GUI.DrawTexture(new Rect(Input.mousePosition.x - 16, Screen.height - Input.mousePosition.y - 16, 32, 32), ValidArea);
+			else
+				GUI.DrawTexture(new Rect(Input.mousePosition.x - 16, Screen.height - Input.mousePosition.y - 16, 32, 32), InvalidArea);
 		}
     }
     

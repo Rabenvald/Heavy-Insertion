@@ -210,11 +210,11 @@ public class MathTester : MonoBehaviour
 
     public static bool AreVector3Close(Vector3 one, Vector3 two, float radius)
     {
-        if (one.x - two.x < radius)
+        if (Mathf.Abs(one.x - two.x) < radius)
         {
-            if (one.y - two.y < radius)
+            if (Mathf.Abs(one.y - two.y) < radius)
             {
-                if (one.z - two.z < radius)
+                if (Mathf.Abs(one.z - two.z) < radius)
                 {
                     return true;
                 }

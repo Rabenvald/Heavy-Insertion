@@ -357,6 +357,7 @@ public class Manager : MonoBehaviour
 
             //Debug.Log("Type " + type);
                 //switch to determine what to create
+            GameObject proj;
             switch (type)
             {
                 case 1: //projectile
@@ -368,11 +369,11 @@ public class Manager : MonoBehaviour
                     if (thisRemoteController != null)
                     {
                         Debug.Log("created projectile for player " + temp[0]);
-                        GameObject.Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
+                        proj = (GameObject)GameObject.Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
 
-                        heatProjectile.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
+                        proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
                         // Recoil
-                        thisRemoteController.Hull.rigidbody.AddForceAtPosition(-heatProjectile.rigidbody.velocity * heatProjectile.rigidbody.mass, Muzzle.transform.position, ForceMode.Impulse);
+                        thisRemoteController.Hull.rigidbody.AddForceAtPosition(-proj.rigidbody.velocity * proj.rigidbody.mass, Muzzle.transform.position, ForceMode.Impulse);
                     }
                     else
                     {
@@ -383,9 +384,9 @@ public class Manager : MonoBehaviour
                     //give it the id
                     break;
                 case 2: //missile
-                    GameObject.Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"),obj.GetFloat("ppy"),obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"),obj.GetFloat("pry"),obj.GetFloat("prz"))));
-                    ATMissile.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
-                    ATMissile.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
+                    proj = (GameObject)GameObject.Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
+                    proj.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
+                    proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
                     Debug.Log("created missile for player " + temp[0]);
                     //create missile
                     //give it the values
