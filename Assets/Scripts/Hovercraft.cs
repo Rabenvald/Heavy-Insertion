@@ -264,7 +264,7 @@ public class Hovercraft : ImportantObject
 				//GameObject temp = GameObject.FindWithTag("MapCamera");
 				mapCamera.camera.enabled = true;
 				mainCamera.camera.enabled = false;
-				mainCamera.setEnemies();
+				mainCamera.GetComponent<MainCameraScript>().setEnemies();
 				
 				/*gameObject.renderer.enabled = false;
                 gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
