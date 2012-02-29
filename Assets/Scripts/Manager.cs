@@ -226,20 +226,6 @@ public class Manager : MonoBehaviour
 			}
            	//Debug.Log(thisGameObj);
 			
-			//if the object has any position, rotation, velocity, or angular velocity data
-			if(tempId[1] != "00")
-			{
-				//Debug.Log("PX and other values are set");
-				
-	            thisGameObj.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
-	
-	            thisGameObj.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
-	
-	            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
-				
-				thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
-			}
-			
 			//checking if self
 			if (tempId[0] == myId && tempId[1] == "00")
 	        {
@@ -346,7 +332,7 @@ public class Manager : MonoBehaviour
 					}
 	            }
 	        }//if the object is not a tank, update its data
-			/*else if(tempId[1] != "00") //commented out temporarily
+			else if(tempId[1] != "00")
 			{
 				//Debug.Log("PX and other values are set");
 				
@@ -356,8 +342,8 @@ public class Manager : MonoBehaviour
 	
 	            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
 				
-				//thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
-			}*/
+				thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+			}
 			//spawning a tank - this might no longer be needed
 			if(obj.ContainsKey("spawnPos"))
 	        {
