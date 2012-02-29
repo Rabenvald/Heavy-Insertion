@@ -35,6 +35,11 @@ public class MainCameraScript : MonoBehaviour
 
     public Texture Radar;
 
+    public bool typing;
+    private string newMessage = "";
+    private ArrayList messages = new ArrayList();
+    private Vector2 chatScrollPosition;
+
     Rect menuButtonLoc;
 
     Rect settingsButtonLoc;
@@ -88,6 +93,8 @@ public class MainCameraScript : MonoBehaviour
 		setEnemies();
 
         volumeSliderValue = AudioListener.volume;
+
+        typing = false;
 	}
 
 	void Update () 
@@ -123,6 +130,7 @@ public class MainCameraScript : MonoBehaviour
                 SettingsDisplayMenu = false;
         }
 
+        //to display other menu buttons
         if (bDisplayMenu)
         {
             if (GUI.Button(settingsButtonLoc, SettingsTexture, blankStyle))
@@ -144,6 +152,7 @@ public class MainCameraScript : MonoBehaviour
             }
         }
 
+        //to display settings
         if (SettingsDisplayMenu)
         {
             GUI.DrawTexture(new Rect(75, 150, (Screen.width * .9f) - 3, Screen.height * .6f), BlankBackground);
@@ -180,6 +189,7 @@ public class MainCameraScript : MonoBehaviour
 
         }
 
+        //if this camera is enabled and we are alive
         if (gameObject.camera.enabled)
         {
             if (Manager.Instance.Spawned)
@@ -222,7 +232,48 @@ public class MainCameraScript : MonoBehaviour
                 }
             }
         }
+
+        //chat
+        GUI.Box(new Rect(10, Screen.height - 128 - 330, 300, 300), "Chat");
+
+        GUILayout.BeginArea(new Rect(20, 110, 300, 300));
+        chatScrollPosition = GUILayout.BeginScrollView(chatScrollPosition, GUILayout.Width(300), GUILayout.Height(300));
+        GUILayout.BeginVertical();
+        foreach (string message in messages)
+        {
+            //this displays text from messages arraylist in the chat window
+            GUILayout.Label(message);
+        }
+        GUILayout.EndVertical();
+        GUILayout.EndScrollView();
+        GUILayout.EndArea();
+
+        if (typing)
+        {
+            GUI.SetNextControlName("MyTextField");
+            newMessage = GUI.TextField(new Rect(10, Screen.height - 128 - 24, 300, 20), newMessage, 50);
+            GUI.FocusControl("MyTextField");
+            if (GUI.Button(new Rect(315, Screen.height - 128 - 26, 90, 24), "Send") || (Event.current.type == EventType.keyDown && Event.current.character == '\n'))
+            {
+                sendMsg();
+            }
+        }
     }
+
+    public void messageReceived(string msg)
+    {
+        messages.Add(msg);
+        chatScrollPosition.y = Mathf.Infinity;
+    }
+
+    public void sendMsg()
+    {
+        if (newMessage != "")
+            Manager.Instance.SendMsg(newMessage);
+        newMessage = "";
+        typing = false;
+    }
+
 
     void OnDrawGizmos()
     {

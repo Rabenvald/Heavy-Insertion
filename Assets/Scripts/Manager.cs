@@ -206,6 +206,27 @@ public class Manager : MonoBehaviour
 		smartFox.RemoveAllEventListeners();
 	}
 
+    //chat
+    void OnPublicMessage(BaseEvent evt)
+    {
+        try
+        {
+            string message = (string)evt.Params["message"];
+            User sender = (User)evt.Params["sender"];
+            GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>().messageReceived(sender.Name + ": " + message);
+        }
+        catch (Exception ex)
+        {
+            Debug.Log("Exception handling public message: " + ex.Message + ex.StackTrace);
+        }
+    }
+
+    //chat
+    public void SendMsg(string msg)
+    {
+        smartFox.Send(new PublicMessageRequest(msg));
+    }
+
     public void OnObjectMessageReceived(BaseEvent evt) //You do not recieve these messages from yourself
     {
 		User sender = (User)evt.Params["sender"];

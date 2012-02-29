@@ -39,6 +39,8 @@ public class TurretScript : ImportantObject
     public Vector3 TargetVector = Vector3.zero;
     public Transform TargetTransform;
 
+    private MainCameraScript mainCamScript;
+
     public float ProjectileSpeed = 4000.0f;
     public float FireRate = 1.5f;
     private float lastFired = 0.0f;
@@ -70,6 +72,8 @@ public class TurretScript : ImportantObject
             StabilizationAmount *= -1;
         if (transform.parent.GetComponent<InputController>().PlayerControlled)
             SetFocus(camGimbal, new Vector3(0, 0.5f, 0));
+
+        mainCamScript = GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>();
 	}
     void Update()
     {
@@ -120,18 +124,21 @@ public class TurretScript : ImportantObject
         //seeker.transform.LookAt(transform.parent.transform.up, TargetPosition-transform.position);
         transform.LookAt(TargetPosition, transform.parent.transform.up);
         
-        transform.localEulerAngles = new Vector3(0,transform.localEulerAngles.y,0); 
+        transform.localEulerAngles = new Vector3(0,transform.localEulerAngles.y,0);
 
-        if (Time.time - lastFired > FireRate && transform.parent.GetComponent<InputController>().PrimaryFire)
+        if (mainCamScript.typing == false)
         {
-            Fire();
-            lastFired = Time.time;
-        }
+            if (Time.time - lastFired > FireRate && transform.parent.GetComponent<InputController>().PrimaryFire)
+            {
+                Fire();
+                lastFired = Time.time;
+            }
 
-        if (Time.time - lastFired > FireRate && transform.parent.GetComponent<InputController>().SecondaryFire)
-        {
-            FireMissile();
-            lastFired = Time.time;
+            if (Time.time - lastFired > FireRate && transform.parent.GetComponent<InputController>().SecondaryFire)
+            {
+                FireMissile();
+                lastFired = Time.time;
+            }
         }
     }
 

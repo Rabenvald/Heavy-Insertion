@@ -224,28 +224,34 @@ public class TestLobby : MonoBehaviour {
 	
 	
 	void OnGUI() {
-		if (smartFox == null) return;
-		screenW = Screen.width;
-		GUI.skin = gSkin;
-				
-		// Login
-		if (!isLoggedIn) {
-			DrawLoginGUI();
-		}
-		
-		else if (currentActiveRoom != null) 
-		{
-			
-			// ****** Show full interface only in the Lobby ******* //
-			if(currentActiveRoom.Name == "The Lobby")
-			{
-				DrawLobbyGUI();
-			}
-			
-			// ****** In other rooms, just show roomlist for switching ******* //
-			DrawRoomsGUI();
-			
-		}
+        if (Application.loadedLevelName == "TestLobby")
+        {
+            if (smartFox == null) return;
+            screenW = Screen.width;
+            //GUI.skin = gSkin;
+
+            // Login
+            if (!isLoggedIn)
+            {
+                DrawLoginGUI();
+            }
+
+            else if (currentActiveRoom != null)
+            {
+
+                // ****** Show full interface only in the Lobby ******* //
+                if (currentActiveRoom.Name == "The Lobby")
+                {
+                    DrawLobbyGUI();
+                }
+
+                // ****** In other rooms, just show roomlist for switching ******* //
+                DrawRoomsGUI();
+            }
+
+            if (GUI.Button(new Rect(10, 10, 100, 20), "Main Menu"))
+                Application.LoadLevel("Main Menu");
+        }
 	}
 	
 	
