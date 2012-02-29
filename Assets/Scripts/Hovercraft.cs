@@ -259,8 +259,6 @@ public class Hovercraft : ImportantObject
 				if (Controller.PlayerControlled)
                		SetFocus(manager);//GameObject.FindWithTag("Manager")
 				
-                GameObject.Destroy(gameObject);
-				
 				//GameObject temp = GameObject.FindWithTag("MapCamera");
 				mapCamera.camera.enabled = true;
 				mainCamera.camera.enabled = false;

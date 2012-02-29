@@ -181,6 +181,7 @@ public class Manager : MonoBehaviour
         //NetTag nt = tank.GetComponent<NetTag>();
         tank.GetComponent<InputController>().id = user.Id.ToString();
 		tank.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00";  //ID Schema: UserId + Type + InstanceNumber
+		updatePhysList();
 	}
 	
 	public void OnUserLeaveRoom (BaseEvent evt)
@@ -191,7 +192,10 @@ public class Manager : MonoBehaviour
 	public void OnUserCountChange (BaseEvent evt)
     {
 		User user = (User)evt.Params["user"];
-		
+		if(currentRoom.UserCount == 1)
+        {
+			isPhysAuth = true;
+		}
 		//Debug.Log ("User count change based on " + user.Name + " with user Id of " + user.Id);
 	}
 	
@@ -241,11 +245,16 @@ public class Manager : MonoBehaviour
 			
             GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
 			
+			Debug.Log(thisGameObj);
+			
 			if (thisGameObj == null)
 			{
+				Debug.Log("Should be null and spawning an object of type: " + tempId[1]);
+				
 				CreateNewGameObject(obj, sender);
 				thisGameObj = GetNetObject(obj.GetUtfString("Id"));
 			}
+			
            	//Debug.Log(thisGameObj);
 			
 			//checking if self
@@ -280,6 +289,11 @@ public class Manager : MonoBehaviour
 						//Debug.Log("My position: " + localController.Hull.transform.position);
 	
 	                    localController.TimeSinceLastUpdate = Time.time;
+						
+						if(localController.Hull.Health <= 0)
+						{
+							Destroy(localController.Hull);
+						}
 	                }
 	            }
 	        }
@@ -324,6 +338,7 @@ public class Manager : MonoBehaviour
 						//Debug.Log("User " + obj.GetUtfString("PID") + "'s position: " + remoteController.Hull.transform.position);
 						
 	                    if (remoteController.Hull.Health <= 0)
+							Destroy(remoteController.Hull);
 	                        updatePhysList();
 	                }
 	            }
@@ -469,7 +484,7 @@ public class Manager : MonoBehaviour
 		
 		switch (type)
         {
-            /*case 00: //tank
+            case 00: //tank
 				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 				newObject = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
 		        //InputController ic = tank.GetComponent<InputController>();
@@ -478,7 +493,7 @@ public class Manager : MonoBehaviour
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + temp[2];
 				updatePhysList();
 				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);
-				break;*/
+				break;
 			
 			case 1: //projectile
 				newObject = (GameObject)Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));

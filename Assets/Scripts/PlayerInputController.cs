@@ -82,6 +82,7 @@ public class PlayerInputController : InputController
     public Transform TargetTransfrom;
 	
     public bool driving = false;
+	private bool enterJustPressed;
 
     private GameObject mapCamera;
     private GameObject mainCamera;
