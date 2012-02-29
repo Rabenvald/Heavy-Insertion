@@ -95,19 +95,19 @@ public class TestLobby : MonoBehaviour {
 		bool success = (bool)evt.Params["success"];
 		string error = (string)evt.Params["errorMessage"];
 		
-		Debug.Log("On Connection callback got: " + success + " (error? : <" + error + ">)");
+		//Debug.Log("On Connection callback got: " + success + " (error? : <" + error + ">)");
 
 		if (success) {
 			SmartFoxConnection.Connection = smartFox;
 
-			Debug.Log("Sending login request");
+			//Debug.Log("Sending login request");
 			smartFox.Send(new LoginRequest(username, "", zone));
 
 		}
 	}
 
 	public void OnConnectionLost(BaseEvent evt) {
-		Debug.Log("OnConnectionLost");
+		//Debug.Log("OnConnectionLost");
 		isLoggedIn = false;
 		UnregisterSFSSceneCallbacks();
 		currentActiveRoom = null;
@@ -120,10 +120,10 @@ public class TestLobby : MonoBehaviour {
 		try {
 			if (evt.Params.ContainsKey("success") && !(bool)evt.Params["success"]) {
 				loginErrorMessage = (string)evt.Params["errorMessage"];
-				Debug.Log("Login error: "+loginErrorMessage);
+				//Debug.Log("Login error: "+loginErrorMessage);
 			}
 			else {
-				Debug.Log("Logged in successfully");
+				//Debug.Log("Logged in successfully");
 				smartFox.enableLagMonitor(true);
 				PrepareLobby();	
 			}
@@ -138,7 +138,7 @@ public class TestLobby : MonoBehaviour {
 	}
 	
 	void OnLogout(BaseEvent evt) {
-		Debug.Log("OnLogout");
+		//Debug.Log("OnLogout");
 		isLoggedIn = false;
 		currentActiveRoom = null;
 		smartFox.Disconnect();
@@ -154,7 +154,7 @@ public class TestLobby : MonoBehaviour {
 	{
 		Room room = (Room)evt.Params["room"];
 		SetupRoomList();
-		Debug.Log("Room added: "+room.Name);
+		//Debug.Log("Room added: "+room.Name);
 	}
 	
 	public void OnRoomCreationError(BaseEvent evt)
@@ -177,7 +177,7 @@ public class TestLobby : MonoBehaviour {
 			Application.LoadLevel("M1");
 			smartFox.Send(new SpectatorToPlayerRequest());
 		}
-		Debug.Log(user.Name + " has entered the room: " + room.Name);
+		//Debug.Log(user.Name + " has entered the room: " + room.Name);
 	}
 	
 	public void OnUserEnterRoom(BaseEvent evt) {
@@ -206,7 +206,7 @@ public class TestLobby : MonoBehaviour {
 			messages.Add(sender.Name +": "+ message);
 			
 			chatScrollPosition.y = Mathf.Infinity;
-			Debug.Log("User " + sender.Name + " said: " + message); 
+			//Debug.Log("User " + sender.Name + " said: " + message); 
 		}
 		catch (Exception ex) {
 			Debug.Log("Exception handling public message: "+ex.Message+ex.StackTrace);
@@ -217,7 +217,7 @@ public class TestLobby : MonoBehaviour {
 	//PrepareLobby is called from OnLogin, the callback for login
 	//so we can be assured that login was successful
 	private void PrepareLobby() {
-		Debug.Log("Setting up the lobby");
+		//Debug.Log("Setting up the lobby");
 		SetupRoomList();
 		isLoggedIn = true;
 	}
@@ -321,7 +321,7 @@ public class TestLobby : MonoBehaviour {
 		}
 		// Game Room button
 		if (GUI.Button (new Rect (80, 110, 85, 24), "Make Test 1")) {
-			Debug.Log("new room ");
+			//Debug.Log("new room ");
 			
 			RoomSettings settings = new RoomSettings("Test Room");
 			settings.MaxUsers = 32;
@@ -332,7 +332,7 @@ public class TestLobby : MonoBehaviour {
 		
 		if (GUI.Button (new Rect (80, 130, 85, 24), "Make Game")) {
 			// ****** Create new room ******* //
-			Debug.Log("new room "+username + "'s Room");
+			//Debug.Log("new room "+username + "'s Room");
 
 			RoomSettings settings = new RoomSettings(username + "'s Room");
 			settings.MaxUsers = 32;
@@ -376,7 +376,7 @@ public class TestLobby : MonoBehaviour {
 		roomNameStrings = rooms.ToArray();
 		roomFullStrings = roomsFull.ToArray();
 		
-		Debug.Log("Room list is set up");
+		//Debug.Log("Room list is set up");
 		
 		if (smartFox.LastJoinedRoom==null) {
 			smartFox.Send(new JoinRoomRequest("The Lobby"));

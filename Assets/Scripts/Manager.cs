@@ -206,7 +206,8 @@ public class Manager : MonoBehaviour
 		ISFSObject obj = (SFSObject)evt.Params["message"];
         NetInputController remoteController;
 		
-       // Debug.Log("Recieved message about" + obj.GetUtfString("PID") + ".  I am:" + myId);
+       	// Debug.Log("Recieved message about" + obj.GetUtfString("PID") + ".  I am:" + myId);
+		//Debug.Log("Obj contains spawnPos? " + obj.ContainsKey("spawnPos"));
 		
 		//making sure that the object has an Id
         if (obj.ContainsKey("Id"))
@@ -235,6 +236,11 @@ public class Manager : MonoBehaviour
 	            {
 	                if (obj.GetBool("PhysMaster"))
 	                {
+						//Debug.Log("Local Controller: ");
+						/*Debug.Log("Position: " + obj.GetFloat("px") + ", " +  obj.GetFloat("py") + ", " + obj.GetFloat("pz") + "\n" +
+						          "Rotation: " + obj.GetFloat("rx") + ", " +  obj.GetFloat("ry") + ", " + obj.GetFloat("rz") + "\n" +
+						          "Velocity: " + obj.GetFloat("vx") + ", " +  obj.GetFloat("vy") + ", " + obj.GetFloat("vz") + "\n" +
+						          "Ang Vel.: " + obj.GetFloat("ax") + ", " +  obj.GetFloat("ay") + ", " + obj.GetFloat("az"));*/
 	                    //Debug.Log("Its from the Phys Master!"); 
 	                    //remoteController = GetRemoteController(obj.GetUtfString("PID"));
 	
@@ -265,6 +271,11 @@ public class Manager : MonoBehaviour
 					//if from physics master
 	                if (obj.GetBool("PhysMaster"))
 	                {
+						//Debug.Log("Remote Controller: " + obj.GetUtfString("Id"));
+						/*Debug.Log("Position: " + obj.GetFloat("px") + ", " +  obj.GetFloat("py") + ", " + obj.GetFloat("pz") + "\n" +
+						          "Rotation: " + obj.GetFloat("rx") + ", " +  obj.GetFloat("ry") + ", " + obj.GetFloat("rz") + "\n" +
+						          "Velocity: " + obj.GetFloat("vx") + ", " +  obj.GetFloat("vy") + ", " + obj.GetFloat("vz") + "\n" +
+						          "Ang Vel.: " + obj.GetFloat("ax") + ", " +  obj.GetFloat("ay") + ", " + obj.GetFloat("az"));*/
 						//set all the data for the other tanks
 						
 	                    remoteController = GetRemoteController(tempId[0]);
@@ -295,6 +306,8 @@ public class Manager : MonoBehaviour
 	                        updatePhysList();
 	                }
 	            }
+				
+				//Debug.Log(tempId[0] + " " + tempId[1] + " " + tempId[2]);
 				
 				//regardless who from, update values based on inputs from user
 	            if (obj.ContainsKey("inputs"))
@@ -335,6 +348,8 @@ public class Manager : MonoBehaviour
 			else if(tempId[1] != "00")
 			{
 				//Debug.Log("PX and other values are set");
+				//Debug.Log("inside checking if not a tank: " + tempId[0] + " " + tempId[1] + " " + tempId[2]);
+				//Debug.Log("thisGameObj's id: " + thisGameObj.GetComponent<NetTag>().Id);
 				
 	            thisGameObj.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 	
@@ -343,14 +358,6 @@ public class Manager : MonoBehaviour
 	            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
 				
 				thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
-			}
-			//spawning a tank - this might no longer be needed
-			if(obj.ContainsKey("spawnPos"))
-	        {
-				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
-				spawnTank(sender, pos);
-				
-				Debug.Log("Spawn Location = " + obj.GetFloat("px") + ", " + obj.GetFloat("py") + ", " + obj.GetFloat("pz"));
 			}
 			//create attack
 			if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
@@ -406,6 +413,12 @@ public class Manager : MonoBehaviour
 	                    break;
 	            }
         	}
+		}//spawning a tank - this might no longer be needed
+		else if(obj.ContainsKey("spawnPos"))
+        {
+			Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+			Debug.Log(pos);
+			spawnTank(sender, pos);
 		}
 	}
 	
@@ -435,7 +448,7 @@ public class Manager : MonoBehaviour
 		
 		switch (type)
         {
-            case 00: //tank
+            /*case 00: //tank
 				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 				newObject = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
 		        //InputController ic = tank.GetComponent<InputController>();
@@ -444,7 +457,7 @@ public class Manager : MonoBehaviour
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + temp[2];
 				updatePhysList();
 				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);
-				break;
+				break;*/
 			
 			case 1: //projectile
 				newObject = (GameObject)Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
@@ -455,7 +468,7 @@ public class Manager : MonoBehaviour
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-1-" + temp[2];
 				primaryCount++;
 				updatePhysList();
-				Debug.Log("Spawning New Projectile with ID: " + newObject.GetComponent<NetTag>().Id);
+				//Debug.Log("Spawning New Projectile with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
 			
 			case 2: //missile
@@ -468,11 +481,11 @@ public class Manager : MonoBehaviour
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-2-" + temp[2];
 				secondaryCount++;
 				updatePhysList();
-				Debug.Log("Spawning New Missile with ID: " + newObject.GetComponent<NetTag>().Id);
+				//Debug.Log("Spawning New Missile with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
 			
 			default:
-                Debug.Log("Type was: " + type);
+                //Debug.Log("Type was: " + type);
 				break;
 		}
 	}
@@ -529,6 +542,12 @@ public class Manager : MonoBehaviour
         myData.PutBool("PhysMaster", isPhysAuth);
 
         smartFox.Send(new ObjectMessageRequest(myData));
+		
+		//Debug.Log("Sent Data for " + gO.GetComponent<NetTag>().Id);
+		/*Debug.Log("Position: " + gO.transform.position.x + ", " +  gO.transform.position.y + ", " + gO.transform.position.z + "\n" +
+		          "Rotation: " + gO.transform.rotation.eulerAngles.x + ", " +  gO.transform.rotation.eulerAngles.y + ", " + gO.transform.rotation.eulerAngles.z + "\n" +
+		          "Velocity: " + gO.rigidbody.velocity.x + ", " +  gO.rigidbody.velocity.y + ", " + gO.rigidbody.velocity.z + "\n" +
+		          "Ang Vel.: " + gO.rigidbody.angularVelocity.x + ", " +  gO.rigidbody.angularVelocity.y + ", " + gO.rigidbody.angularVelocity.z);*/
 	}
 
     private void sendInputs()

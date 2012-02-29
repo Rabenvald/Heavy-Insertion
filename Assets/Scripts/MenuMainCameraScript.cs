@@ -115,25 +115,25 @@ public class MenuMainCameraScript : MonoBehaviour
         //}
         if (GUI.Button(multiplayerButtonLoc, MulitplayerTexture, blankStyle))
         {
-            print("Clicked 'Multiplayer'");
+            //print("Clicked 'Multiplayer'");
 			Application.LoadLevel("TestLobby");
         }
 		
         if (GUI.Button(singlePlayerButtonLoc, SinglePlayerTexture, blankStyle))
         {
-            print("Clicked 'Singleplayer / Debug'");
+            //print("Clicked 'Singleplayer / Debug'");
             Application.LoadLevel("Avalon Hill Proving Grounds");
         }
 		
         if (GUI.Button(settingsButtonLoc, SettingsTexture, blankStyle))
         {
-            print("Clicked 'Settings'");
+            //print("Clicked 'Settings'");
 			SettingsDisplayMenu = !SettingsDisplayMenu;
         }
 		
         if (GUI.Button(exitButtonLoc, ExitTexture, blankStyle))
         {
-            print("Clicked 'Exit'");
+            //print("Clicked 'Exit'");
             Application.Quit();
         }
 		
