@@ -160,7 +160,7 @@ public class Manager : MonoBehaviour
 	public void OnUserEnterRoom (BaseEvent evt)
     {
 		User user = (User)evt.Params["user"];		
-		Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
+		//Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
 	}
 
 	public void spawnMe(Vector3 pos)
@@ -192,7 +192,7 @@ public class Manager : MonoBehaviour
     {
 		User user = (User)evt.Params["user"];
 		
-		Debug.Log ("User count change based on " + user.Name + " with user Id of " + user.Id);
+		//Debug.Log ("User count change based on " + user.Name + " with user Id of " + user.Id);
 	}
 	
 	public void OnConnectionLost (BaseEvent evt)
@@ -237,7 +237,7 @@ public class Manager : MonoBehaviour
 	
 	            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
 				
-				//thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+				thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
 			}
 			
 			//checking if self
@@ -262,10 +262,9 @@ public class Manager : MonoBehaviour
 	
 	                    localController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
 						
-						Debug.Log("My position: " + localController.Hull.transform.position);
+	                    localController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
 						
-	                    //Debug.Log("I was corrected");
-	                    //localController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+						//Debug.Log("My position: " + localController.Hull.transform.position);
 	
 	                    localController.TimeSinceLastUpdate = Time.time;
 	                }
@@ -300,7 +299,7 @@ public class Manager : MonoBehaviour
 	
 	                    remoteController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
 	                    
-	                    //remoteController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+	                    remoteController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
 	
 	                    remoteController.TimeSinceLastUpdate = Time.time;
 						
@@ -446,7 +445,7 @@ public class Manager : MonoBehaviour
 		
 		GameObject newObject;
 
-        Debug.Log("Make new stuff");
+        //Debug.Log("Make new stuff");
 		
 		switch (type)
         {
@@ -626,7 +625,7 @@ public class Manager : MonoBehaviour
 		
 		smartFox.Send(new ObjectMessageRequest(myData));
 		
-		Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
+		//Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
 	}
 
     public void sendAttack(GameObject gO, Vector3 pos, Vector3 rot, Vector3 vel, Vector3 Targ)
@@ -669,7 +668,7 @@ public class Manager : MonoBehaviour
 
         smartFox.Send(new ObjectMessageRequest(myData));
 
-        Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
+        //Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
     }
 
     public void sendAttack(GameObject gO, Vector3 pos, Vector3 rot, Vector3 vel)
@@ -683,7 +682,7 @@ public class Manager : MonoBehaviour
         myData.PutFloat("px", gO.transform.position.x);
         myData.PutFloat("py", gO.transform.position.y);
         myData.PutFloat("pz", gO.transform.position.z);
-        //Debug.Log(gO.GetComponent<NetTag>().Id);
+		
         myData.PutFloat("rx", gO.transform.rotation.eulerAngles.x);
         myData.PutFloat("ry", gO.transform.rotation.eulerAngles.y);
         myData.PutFloat("rz", gO.transform.rotation.eulerAngles.z);
@@ -708,7 +707,7 @@ public class Manager : MonoBehaviour
 
         smartFox.Send(new ObjectMessageRequest(myData));
 
-        Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
+        //Debug.Log("Type of attack: " + gO.GetComponent<NetTag>().Id);
     }
 	
 	// This is a very expensive operation, it should only be called when a relevant object is created/destroyed
@@ -728,7 +727,7 @@ public class Manager : MonoBehaviour
 	//Should probably check to see if we are a spectator first...
     private PlayerInputController GetLocalController() 
     {
-        Debug.Log(PhysObjects.ToString());
+        //Debug.Log(PhysObjects.ToString());
         foreach (GameObject g in PhysObjects)
         {
             if (g.GetComponent<PlayerInputController>())
