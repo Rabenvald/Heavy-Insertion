@@ -113,6 +113,7 @@ public class Manager : MonoBehaviour
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnObjectMessageReceived);
 		smartFox.AddEventListener(SFSEvent.USER_VARIABLES_UPDATE, OnUserVariablesUpdate); 
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariablesUpdate);
+		smartFox.AddEventListener(SFSEvent.PUBLIC_MESSAGE, OnPublicMessage);
         //smartFox.AddEventListener(SFSEvent.UDP_INIT, OnUDPInit);
 		smartFox.AddEventListener(SFSEvent.EXTENSION_RESPONSE, onExtensionResponse);
         //smartFox.InitUDP("129.21.29.6", 9933); //FIX THIS: Should be dynamic ========================================
@@ -181,6 +182,7 @@ public class Manager : MonoBehaviour
         //NetTag nt = tank.GetComponent<NetTag>();
         tank.GetComponent<InputController>().id = user.Id.ToString();
 		tank.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00";  //ID Schema: UserId + Type + InstanceNumber
+		updatePhysList();
 	}
 	
 	public void OnUserLeaveRoom (BaseEvent evt)
@@ -469,7 +471,7 @@ public class Manager : MonoBehaviour
 		
 		switch (type)
         {
-            /*case 00: //tank
+            case 00: //tank
 				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 				newObject = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
 		        //InputController ic = tank.GetComponent<InputController>();
@@ -478,7 +480,7 @@ public class Manager : MonoBehaviour
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + temp[2];
 				updatePhysList();
 				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);
-				break;*/
+				break;
 			
 			case 1: //projectile
 				newObject = (GameObject)Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
