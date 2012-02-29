@@ -17,6 +17,7 @@ public class Manager : MonoBehaviour
 	private TestLobby lobby;
 	private Room currentRoom;
 	private GameObject[] PhysObjects;
+	private SFSArray hierarchy;
 
     private PlayerInputController localController;
 
@@ -162,13 +163,6 @@ public class Manager : MonoBehaviour
 		Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
 	}
 
-	/*private void spawnTank(Vector3 pos, User user){
-		GameObject tank = (GameObject)Instantiate(daTank, pos, Quaternion.identity);
-        InputController ic = tank.GetComponent<InputController>();
-		ic.id = user.Id.ToString();  //ID Schema: UserId + Type + InstanceNumber
-	}*/
-	
-	
 	public void spawnMe(Vector3 pos)
     {
 		//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
@@ -211,193 +205,222 @@ public class Manager : MonoBehaviour
 		User sender = (User)evt.Params["sender"];
 		ISFSObject obj = (SFSObject)evt.Params["message"];
         NetInputController remoteController;
-        Debug.Log("Recieved message about" + obj.GetUtfString("PID") + ".  I am:" + myId);
-
+		
+       // Debug.Log("Recieved message about" + obj.GetUtfString("PID") + ".  I am:" + myId);
+		
+		//making sure that the object has an Id
         if (obj.ContainsKey("Id"))
         {
-            Debug.Log("Incomming IDed info");
-            Debug.Log("Its about" + obj.GetUtfString("Id"));
-            //string[] tempId = obj.GetUtfString("Id").Split('-');
+            //Debug.Log("Incomming IDed info");
+            //Debug.Log("Its about" + obj.GetUtfString("Id"));
+			
+			//split up the id string
+            string[] tempId = obj.GetUtfString("Id").Split('-');
+			
             GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
+			
 			if (thisGameObj == null)
 			{
 				CreateNewGameObject(obj, sender);
 				thisGameObj = GetNetObject(obj.GetUtfString("Id"));
 			}
-            Debug.Log(thisGameObj);
-            thisGameObj.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
-
-            thisGameObj.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
-
-            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
-        }
-        if (obj.GetUtfString("PID") == myId)
-        {
-            //localController;
-            //Debug.Log("Recieved message about Me!"); 
-            if (obj.ContainsKey("PhysMaster"))
-            {
-                if (obj.GetBool("PhysMaster"))
-                {
-                    //Debug.Log("Its from the Phys Master!"); 
-                    //remoteController = GetRemoteController(obj.GetUtfString("PID"));
-
-                    //localController.Extrapolate();
-
-                    localController.Hull.Health = obj.GetInt("Health");
-
-                    localController.Hull.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
-
-                    localController.Hull.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
-
-                    localController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
-					
-					Debug.Log("My position: " + localController.Hull.transform.position);
-					
-                    //Debug.Log("I was corrected");
-                    //remoteController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
-
-                    localController.TimeSinceLastUpdate = Time.time;
-                }
-            }
-
-        }
-        else if (GetRemoteController(obj.GetUtfString("PID")) != null)
-        {
-            if (obj.ContainsKey("PhysMaster"))
-            {
-                if (obj.GetBool("PhysMaster"))
-                {
-                    remoteController = GetRemoteController(obj.GetUtfString("PID"));
-
-                    remoteController.Hull.Health = obj.GetInt("Health");
-					
-					//remoteController.LastPosition
-                    remoteController.Hull.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
-					
-					//remoteController.LastRotation
-                    remoteController.Hull.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
-
-                    //remoteController.Extrapolate();
-
-                    //remoteController.Hull.transform.position = remoteController.PositionExtrapolation;
-
-                    //remoteController.Hull.transform.rotation = Quaternion.Euler(remoteController.RotationExtrapolation);
-
-                    remoteController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
-                    
-                    //remoteController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
-
-                    remoteController.TimeSinceLastUpdate = Time.time;
-					
-					Debug.Log("User " + obj.GetUtfString("PID") + "'s position: " + remoteController.Hull.transform.position);
-					
-                    if (remoteController.Hull.Health <= 0)
-                        updatePhysList();
-                }
-            }
-
-            if (obj.ContainsKey("inputs"))
-            {
-                remoteController = GetRemoteController(obj.GetUtfString("PID"));
-                if (obj.ContainsKey("iT"))
-				{
-                    remoteController.Throttle = obj.GetFloat("iT");
-					Debug.Log("iT = " + obj.GetFloat("iT"));
-				}
-                if (obj.ContainsKey("iP"))
-				{
-                    remoteController.Pitch = obj.GetFloat("iP");
-					Debug.Log("iP = " + obj.GetFloat("iP"));
-				}
-                if (obj.ContainsKey("iR"))
-				{
-                    remoteController.Roll = obj.GetFloat("iR");
-					Debug.Log("iR = " + obj.GetFloat("iR"));
-				}
-                if (obj.ContainsKey("iY"))
-				{
-                    remoteController.Yaw = obj.GetFloat("iY");
-					Debug.Log("iY = " + obj.GetFloat("iY"));
-				}
-                if (obj.ContainsKey("iS"))
-				{
-                    remoteController.Strafe = obj.GetFloat("iS");
-					Debug.Log("iS = " + obj.GetFloat("iS"));
-				}
-                if (obj.ContainsKey("iJ"))
-				{
-                    remoteController.Jump = obj.GetFloat("iJ");
-					Debug.Log("iJ = " + obj.GetFloat("iJ"));
-				}
-            }
-        }
-		
-		//Trying out a new function to handle spawning dynamically, by creating a new object if we get a message abotu an object we don't have
-		
-		else if(obj.ContainsKey("spawnPos"))
-        {
-			SFSObject spawn = (SFSObject) obj.GetSFSObject("spawnPos");
-			Vector3 pos = new Vector3(spawn.GetFloat("x"), spawn.GetFloat("y"), spawn.GetFloat("z"));
+           	//Debug.Log(thisGameObj);
 			
-			spawnTank(sender, pos);
-			Debug.Log("Spawn Location = " + spawn.GetFloat("x") + ", " + spawn.GetFloat("y") + ", " + spawn.GetFloat("z"));
-		}
-		if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
-        {
-			string id = obj.GetUtfString("Id");
-            
-			//parse id to determine type
-			string[] temp = id.Split('-');
-			//Debug.Log(temp[0] + " " + temp[1] + " " + temp[2]);
-
-			int type = int.Parse(temp[1]);
-            GameObject NetObject = GetNetObject(temp[0] + "-00-00");
-            //Debug.Log(NetObject);
-
-            //Debug.Log("Type " + type);
-                //switch to determine what to create
-            GameObject proj;
-            switch (type)
-            {
-                case 1: //projectile
-                    NetInputController thisRemoteController = NetObject.GetComponent<NetInputController>();
-                    //Debug.Log("RC" + thisRemoteController);
-                    //Debug.Log("RC Muzz: " + thisRemoteController.Turret.Muzzle);
-                    GameObject Muzzle = thisRemoteController.Turret.Muzzle;
-                    //Debug.Log("RC id" + thisRemoteController.id);
-                    if (thisRemoteController != null)
-                    {
-                        Debug.Log("created projectile for player " + temp[0]);
-                        proj = (GameObject)GameObject.Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
-
-                        proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
-                        // Recoil
-                        thisRemoteController.Hull.rigidbody.AddForceAtPosition(-proj.rigidbody.velocity * proj.rigidbody.mass, Muzzle.transform.position, ForceMode.Impulse);
-                    }
-                    else
-                    {
-                        Debug.Log("Null Object");
-                    }
-                    //create projectile
-                    //give it the values
-                    //give it the id
-                    break;
-                case 2: //missile
-                    proj = (GameObject)GameObject.Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
-                    proj.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
-                    proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
-                    Debug.Log("created missile for player " + temp[0]);
-                    //create missile
-                    //give it the values
-                    //give it the id
-                    break;
-                default:
-                    break;
-            }
-            
-            
-			Debug.Log("Attack Id: " + id);
+			//if the object has any position, rotation, velocity, or angular velocity data
+			if(tempId[1] != "00")
+			{
+				//Debug.Log("PX and other values are set");
+				
+	            thisGameObj.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+	
+	            thisGameObj.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
+	
+	            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
+				
+				//thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+			}
+			
+			//checking if self
+			if (tempId[0] == myId && tempId[1] == "00")
+	        {
+	            //localController;
+	            //Debug.Log("Recieved message about Me!"); 
+	            if (obj.ContainsKey("PhysMaster"))
+	            {
+	                if (obj.GetBool("PhysMaster"))
+	                {
+	                    //Debug.Log("Its from the Phys Master!"); 
+	                    //remoteController = GetRemoteController(obj.GetUtfString("PID"));
+	
+	                    //localController.Extrapolate();
+	
+	                    localController.Hull.Health = obj.GetInt("Health");
+	
+	                    localController.Hull.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+	
+	                    localController.Hull.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
+	
+	                    localController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
+						
+						Debug.Log("My position: " + localController.Hull.transform.position);
+						
+	                    //Debug.Log("I was corrected");
+	                    //localController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+	
+	                    localController.TimeSinceLastUpdate = Time.time;
+	                }
+	            }
+	        }
+			//if not self, and object already exists also a tank
+			else if (tempId[0] != myId && GetRemoteController(tempId[0]) != null && tempId[1] == "00")
+	        {
+				//if PhysMaster value is in the object
+	            if (obj.ContainsKey("PhysMaster"))
+	            {
+					//if from physics master
+	                if (obj.GetBool("PhysMaster"))
+	                {
+						//set all the data for the other tanks
+						
+	                    remoteController = GetRemoteController(obj.GetUtfString("PID"));
+	
+	                    remoteController.Hull.Health = obj.GetInt("Health");
+						
+						//remoteController.LastPosition
+	                    remoteController.Hull.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+						
+						//remoteController.LastRotation
+	                    remoteController.Hull.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
+	
+	                    //remoteController.Extrapolate();
+	
+	                    //remoteController.Hull.transform.position = remoteController.PositionExtrapolation;
+	
+	                    //remoteController.Hull.transform.rotation = Quaternion.Euler(remoteController.RotationExtrapolation);
+	
+	                    remoteController.Hull.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
+	                    
+	                    //remoteController.Hull.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+	
+	                    remoteController.TimeSinceLastUpdate = Time.time;
+						
+						//Debug.Log("User " + obj.GetUtfString("PID") + "'s position: " + remoteController.Hull.transform.position);
+						
+	                    if (remoteController.Hull.Health <= 0)
+	                        updatePhysList();
+	                }
+	            }
+				
+				//regardless who from, update values based on inputs from user
+	            if (obj.ContainsKey("inputs"))
+	            {
+	                remoteController = GetRemoteController(obj.GetUtfString("PID"));
+	                if (obj.ContainsKey("iT"))
+					{
+	                    remoteController.Throttle = obj.GetFloat("iT");
+						//Debug.Log("iT = " + obj.GetFloat("iT"));
+					}
+	                if (obj.ContainsKey("iP"))
+					{
+	                    remoteController.Pitch = obj.GetFloat("iP");
+						//Debug.Log("iP = " + obj.GetFloat("iP"));
+					}
+	                if (obj.ContainsKey("iR"))
+					{
+	                    remoteController.Roll = obj.GetFloat("iR");
+						//Debug.Log("iR = " + obj.GetFloat("iR"));
+					}
+	                if (obj.ContainsKey("iY"))
+					{
+	                    remoteController.Yaw = obj.GetFloat("iY");
+						//Debug.Log("iY = " + obj.GetFloat("iY"));
+					}
+	                if (obj.ContainsKey("iS"))
+					{
+	                    remoteController.Strafe = obj.GetFloat("iS");
+						//Debug.Log("iS = " + obj.GetFloat("iS"));
+					}
+	                if (obj.ContainsKey("iJ"))
+					{
+	                    remoteController.Jump = obj.GetFloat("iJ");
+						//Debug.Log("iJ = " + obj.GetFloat("iJ"));
+					}
+	            }
+	        }//if the object is not a tank, update its data
+			/*else if(tempId[1] != "00") //commented out temporarily
+			{
+				//Debug.Log("PX and other values are set");
+				
+	            thisGameObj.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+	
+	            thisGameObj.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
+	
+	            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
+				
+				//thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+			}*/
+			//spawning a tank - this might no longer be needed
+			if(obj.ContainsKey("spawnPos"))
+	        {
+				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+				spawnTank(sender, pos);
+				
+				Debug.Log("Spawn Location = " + obj.GetFloat("px") + ", " + obj.GetFloat("py") + ", " + obj.GetFloat("pz"));
+			}
+			//create attack
+			if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
+	        {
+				string id = obj.GetUtfString("Id");
+	            
+				//parse id to determine type
+				string[] temp = id.Split('-');
+				//Debug.Log(temp[0] + " " + temp[1] + " " + temp[2]);
+	
+				int type = int.Parse(temp[1]);
+	            GameObject NetObject = GetNetObject(temp[0] + "-00-00");
+	            //Debug.Log(NetObject);
+	
+	            //Debug.Log("Type " + type);
+	                //switch to determine what to create
+	            GameObject proj;
+	            switch (type)
+	            {
+	                case 1: //projectile
+	                    NetInputController thisRemoteController = NetObject.GetComponent<NetInputController>();
+	                    //Debug.Log("RC" + thisRemoteController);
+	                    //Debug.Log("RC Muzz: " + thisRemoteController.Turret.Muzzle);
+	                    GameObject Muzzle = thisRemoteController.Turret.Muzzle;
+	                    //Debug.Log("RC id" + thisRemoteController.id);
+	                    if (thisRemoteController != null)
+	                    {
+	                        Debug.Log("created projectile for player " + temp[0]);
+	                        proj = (GameObject)GameObject.Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
+	
+	                        proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
+	                        // Recoil
+	                        thisRemoteController.Hull.rigidbody.AddForceAtPosition(-proj.rigidbody.velocity * proj.rigidbody.mass, Muzzle.transform.position, ForceMode.Impulse);
+	                    }
+	                    else
+	                    {
+	                        Debug.Log("Null Object");
+	                    }
+	                    //create projectile
+	                    //give it the values
+	                    //give it the id
+	                    break;
+	                case 2: //missile
+	                    proj = (GameObject)GameObject.Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
+	                    proj.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
+	                    proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
+	                    Debug.Log("created missile for player " + temp[0]);
+	                    //create missile
+	                    //give it the values
+	                    //give it the id
+	                    break;
+	                default:
+	                    break;
+	            }
+        	}
 		}
 	}
 	
@@ -469,9 +492,23 @@ public class Manager : MonoBehaviour
 		}
 	}
 	
+	//receives messages from server extension which handles the physics list
 	public void onExtensionResponse(BaseEvent evt)
     {
+		SFSObject obj;
 		
+		//if there was proper detection of who has the lowest ping
+		if(evt.Params["data"] != null)
+		{
+			obj = evt.Params["data"] as SFSObject;
+			hierarchy = obj.GetSFSArray("hierarchy") as SFSArray;
+		}
+		//if there was no proper detection, at least turn an array to use that is likely not optimal
+		else if(evt.Params["randomData"] != null)
+		{
+			obj = evt.Params["randomData"] as SFSObject;
+			hierarchy = obj.GetSFSArray("hierarchy") as SFSArray;
+		}
 	}
 	
 	private void sendTelemetry(GameObject gO)
@@ -482,7 +519,7 @@ public class Manager : MonoBehaviour
             string[] temp = gO.GetComponent<NetTag>().Id.Split('-');
             //Debug.Log(temp[0]gO.GetComponent<NetTag>().Id
 
-            myData.PutUtfString("PID", temp[0]);
+            //myData.PutUtfString("PID", temp[0]);
             myData.PutInt("Health", gO.GetComponent<Hovercraft>().Health);
         }
         myData.PutUtfString("Id", gO.GetComponent<NetTag>().Id);
@@ -499,10 +536,12 @@ public class Manager : MonoBehaviour
         myData.PutFloat("vx", gO.rigidbody.velocity.x);
         myData.PutFloat("vy", gO.rigidbody.velocity.y);
         myData.PutFloat("vz", gO.rigidbody.velocity.z);
-
+		
+		myData.PutFloat("ax", gO.rigidbody.angularVelocity.x);
+		myData.PutFloat("ay", gO.rigidbody.angularVelocity.y);
+		myData.PutFloat("az", gO.rigidbody.angularVelocity.z);
+		
         myData.PutBool("PhysMaster", isPhysAuth);
-
-
 
         smartFox.Send(new ObjectMessageRequest(myData));
 	}
@@ -515,7 +554,7 @@ public class Manager : MonoBehaviour
         {
             SFSObject myData = new SFSObject();
 
-            myData.PutUtfString("PID", myId);
+            //myData.PutUtfString("PID", myId);
             myData.PutUtfString("Id", myTank.GetComponent<NetTag>().Id);
 
             myData.PutBool("inputs", true);
@@ -558,12 +597,10 @@ public class Manager : MonoBehaviour
 	public void sendSpawnData(Vector3 pos)
     {
 		SFSObject myData = new SFSObject();
-		SFSObject temp = new SFSObject();
-		temp.PutFloat("x", pos.x);
-		temp.PutFloat("y", pos.y);
-		temp.PutFloat("z", pos.z);
-		
-		myData.PutSFSObject("spawnPos", temp);
+		myData.PutBool("spawnPos", true);
+		myData.PutFloat("px", pos.x);
+		myData.PutFloat("py", pos.y);
+		myData.PutFloat("pz", pos.z);
 		smartFox.Send(new ObjectMessageRequest(myData));
 	}
 	

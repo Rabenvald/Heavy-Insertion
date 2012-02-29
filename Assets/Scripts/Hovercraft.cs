@@ -163,7 +163,7 @@ public class Hovercraft : ImportantObject
         if (Controller.PlayerControlled)
 		{
             TakeFocus(new Vector3(0,0,0));
-			Debug.Log("tried to set camera");
+			//Debug.Log("tried to set camera");
 		}
 	}
 	
@@ -264,6 +264,7 @@ public class Hovercraft : ImportantObject
 				//GameObject temp = GameObject.FindWithTag("MapCamera");
 				mapCamera.camera.enabled = true;
 				mainCamera.camera.enabled = false;
+				mainCamera.setEnemies();
 				
 				/*gameObject.renderer.enabled = false;
                 gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
