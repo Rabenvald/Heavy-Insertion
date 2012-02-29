@@ -193,7 +193,10 @@ public class Manager : MonoBehaviour
 	public void OnUserCountChange (BaseEvent evt)
     {
 		User user = (User)evt.Params["user"];
-		
+		if(currentRoom.UserCount == 1)
+        {
+			isPhysAuth = true;
+		}
 		//Debug.Log ("User count change based on " + user.Name + " with user Id of " + user.Id);
 	}
 	
@@ -243,11 +246,16 @@ public class Manager : MonoBehaviour
 			
             GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
 			
+			Debug.Log(thisGameObj);
+			
 			if (thisGameObj == null)
 			{
+				Debug.Log("Should be null and spawning an object of type: " + tempId[1]);
+				
 				CreateNewGameObject(obj, sender);
 				thisGameObj = GetNetObject(obj.GetUtfString("Id"));
 			}
+			
            	//Debug.Log(thisGameObj);
 			
 			//checking if self
@@ -282,6 +290,11 @@ public class Manager : MonoBehaviour
 						//Debug.Log("My position: " + localController.Hull.transform.position);
 	
 	                    localController.TimeSinceLastUpdate = Time.time;
+						
+						if(localController.Hull.Health <= 0)
+						{
+							Destroy(localController.Hull);
+						}
 	                }
 	            }
 	        }
@@ -326,6 +339,7 @@ public class Manager : MonoBehaviour
 						//Debug.Log("User " + obj.GetUtfString("PID") + "'s position: " + remoteController.Hull.transform.position);
 						
 	                    if (remoteController.Hull.Health <= 0)
+							Destroy(remoteController.Hull);
 	                        updatePhysList();
 	                }
 	            }

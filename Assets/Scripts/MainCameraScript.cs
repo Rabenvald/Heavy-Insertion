@@ -213,7 +213,10 @@ public class MainCameraScript : MonoBehaviour
                 Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 5, player.transform.position.z);
                 for (int i = 0; i < enemies.Length; i++)
                 {
-                    rayDirection = enemies[i].transform.position - testPos;
+                    if(enemies[i] == null)
+						break;
+					
+					rayDirection = enemies[i].transform.position - testPos;
                     camRayDirection = enemies[i].transform.position - gameObject.camera.transform.position;
 
                     if ((Physics.Raycast(testPos, rayDirection, out hit)) && (MathTester.AreVector3Close(hit.point, enemies[i].rigidbody.transform.position, 8)))
