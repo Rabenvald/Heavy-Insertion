@@ -294,6 +294,7 @@ public class Manager : MonoBehaviour
 						if(localController.Hull.Health <= 0)
 						{
 							Destroy(localController.Hull);
+	                        updatePhysList();
 						}
 	                }
 	            }
@@ -339,8 +340,10 @@ public class Manager : MonoBehaviour
 						//Debug.Log("User " + obj.GetUtfString("PID") + "'s position: " + remoteController.Hull.transform.position);
 						
 	                    if (remoteController.Hull.Health <= 0)
+						{
 							Destroy(remoteController.Hull);
 	                        updatePhysList();
+						}
 	                }
 	            }
 				

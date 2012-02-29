@@ -250,19 +250,7 @@ public class Hovercraft : ImportantObject
         {
             if (Health <= 0)
             {
-                dead = true;
-                if (Controller.PlayerControlled) //changed from myself to keep consistency
-                {
-					Manager.Instance.Spawned = false;	
-				}
-				
-				if (Controller.PlayerControlled)
-               		SetFocus(manager);//GameObject.FindWithTag("Manager")
-				
-				//GameObject temp = GameObject.FindWithTag("MapCamera");
-				mapCamera.camera.enabled = true;
-				mainCamera.camera.enabled = false;
-				mainCamera.GetComponent<MainCameraScript>().setEnemies();
+                 kill();
 				
 				/*gameObject.renderer.enabled = false;
                 gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
@@ -367,4 +355,22 @@ public class Hovercraft : ImportantObject
         //Kill Explosion
         //Kill self
     }
+	
+	public void kill()
+	{
+		dead = true;
+        if (Controller.PlayerControlled) //changed from myself to keep consistency
+        {
+			Manager.Instance.Spawned = false;	
+		}
+		
+		if (Controller.PlayerControlled)
+       		SetFocus(manager);
+		
+		GameObject.Destroy(gameObject);
+		
+		mapCamera.camera.enabled = true;
+		mainCamera.camera.enabled = false;
+		mainCamera.GetComponent<MainCameraScript>().setEnemies();
+	}
 }
