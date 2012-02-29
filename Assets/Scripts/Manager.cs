@@ -267,7 +267,7 @@ public class Manager : MonoBehaviour
 	                {
 						//set all the data for the other tanks
 						
-	                    remoteController = GetRemoteController(obj.GetUtfString("PID"));
+	                    remoteController = GetRemoteController(tempId[0]);
 	
 	                    remoteController.Hull.Health = obj.GetInt("Health");
 						
@@ -299,7 +299,7 @@ public class Manager : MonoBehaviour
 				//regardless who from, update values based on inputs from user
 	            if (obj.ContainsKey("inputs"))
 	            {
-	                remoteController = GetRemoteController(obj.GetUtfString("PID"));
+	                remoteController = GetRemoteController(tempId[0]);
 	                if (obj.ContainsKey("iT"))
 					{
 	                    remoteController.Throttle = obj.GetFloat("iT");
