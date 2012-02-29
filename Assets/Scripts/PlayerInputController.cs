@@ -119,7 +119,7 @@ public class PlayerInputController : InputController
         }
         else
         {
-            Debug.Log("Hull dead?: " + hull.Dead + " Driving?: " + driving + " Camera??: " + Camera.current);
+            //Debug.Log("Hull dead?: " + hull.Dead + " Driving?: " + driving + " Camera??: " + Camera.current);
         }
         /*prevJump = Jump;
         prevPitch = Pitch;

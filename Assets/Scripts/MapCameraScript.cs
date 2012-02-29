@@ -33,22 +33,22 @@ public class MapCameraScript : MonoBehaviour
         player = GameObject.FindWithTag("Player");
 		
 		terrainWidth = Terrain.activeTerrain.terrainData.size.x;
-		Debug.Log(Terrain.activeTerrain.terrainData.size);
+		//Debug.Log(Terrain.activeTerrain.terrainData.size);
 		
 		float diagonal = Mathf.Sqrt(2 * Mathf.Pow((terrainWidth/2), 2));
-		Debug.Log(diagonal);
+		//Debug.Log(diagonal);
 
 		gameObject.transform.position = new Vector3 (terrainWidth/2, (diagonal * Mathf.Tan((30F / 180) * Mathf.PI)) + Terrain.activeTerrain.terrainData.size.y, terrainWidth/2);
 		gameObject.transform.forward = Vector3.down;
-		Debug.Log(gameObject.transform.position);
+		//Debug.Log(gameObject.transform.position);
 		
 		gameObject.camera.orthographicSize = terrainWidth/2;
 		
 		myself = GameObject.FindWithTag("MapCamera");
-		Debug.Log(myself.camera.enabled);
+		//Debug.Log(myself.camera.enabled);
 		
 		mainCamera = GameObject.FindWithTag("MainCamera");
-		Debug.Log(mainCamera.camera.enabled);
+		//Debug.Log(mainCamera.camera.enabled);
 
         Screen.showCursor = false;
 	}

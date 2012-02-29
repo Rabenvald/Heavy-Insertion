@@ -19,9 +19,13 @@ public class PhysicsDeterminer extends BaseServerEventHandler {
 		Room theRoom = (Room) event.getParameter(SFSEventParam.ROOM);
 		List<User> temp = theRoom.getUserList();
 		users = (User[]) temp.toArray(); //setting the user list to an array
+		SFSObject obj = SFSObject.newInstance(); //used to be sent
 		
-		//sort the array by pings
-		users = mergeSort(users);
+		boolean flag = UserListHasVariable("Ping");
+		if(flag){
+			//sort the array by pings
+			users = mergeSort(users);
+		}
 		
 		//convert User[] to an SFSArray 
 		//******* at the moment just copies only ids from the sorted users array to SFSArray of userIds *****//
@@ -30,9 +34,24 @@ public class PhysicsDeterminer extends BaseServerEventHandler {
 		}
 		
 		//create and send an object with the array to everyone in the room
-		SFSObject obj = SFSObject.newInstance();
 		obj.putSFSArray("hierarchy", userIds);
-		send("data",obj, temp);
+		
+		//send data and name it based on if pings were set or not
+		if(flag){
+			send("data",obj, temp);
+		}
+		else{
+			send("randomData",obj, temp);
+		}
+	}
+	
+	//quick check to make sure everyone in the user list has the variable
+	private boolean UserListHasVariable(String str){
+		for(int i=0; i < users.length; i++){
+			if(!users[i].containsVariable(str))
+				return false;
+		}
+		return true;
 	}
 	
 	//recursive sort to sort the users by ping

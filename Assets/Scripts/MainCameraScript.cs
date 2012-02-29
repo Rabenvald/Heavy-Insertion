@@ -204,7 +204,7 @@ public class MainCameraScript : MonoBehaviour
                 //Spedometer
                 GUI.Box(new Rect(Screen.width - (Screen.width / 16) - 50, Screen.height * 0.7f - 25, 100, 25), (int)(playerCraft.CurrVelocity * 3.6f) + " km/h");
 
-                //Enemy hud and raydar
+                //Enemy hud and radar
                 GUI.DrawTexture(new Rect(Screen.width - (Screen.width / 8), Screen.height - (Screen.width / 8), Screen.width / 8, Screen.width / 8), Radar);
 
                 RaycastHit hit;
