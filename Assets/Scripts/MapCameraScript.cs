@@ -16,7 +16,6 @@ public class MapCameraScript : MonoBehaviour
     public Texture InvalidArea;
 	
 	private GUIStyle blankStyle;
-    private GameObject myself;
 	private GameObject mainCamera;
 	
 	private bool drawCheck = false;
@@ -44,9 +43,6 @@ public class MapCameraScript : MonoBehaviour
 		
 		gameObject.camera.orthographicSize = terrainWidth/2;
 		
-		myself = GameObject.FindWithTag("MapCamera");
-		//Debug.Log(myself.camera.enabled);
-		
 		mainCamera = GameObject.FindWithTag("MainCamera");
 		//Debug.Log(mainCamera.camera.enabled);
 
@@ -55,7 +51,7 @@ public class MapCameraScript : MonoBehaviour
 
 	void Update () 
     {
-        if (myself.camera.enabled && !Manager.Instance.Spawned)
+        if (gameObject.camera.enabled && !Manager.Instance.Spawned)
         {
             RaycastHit hit;
             if (Physics.Raycast(this.camera.ScreenPointToRay(Input.mousePosition), out hit)
@@ -67,14 +63,14 @@ public class MapCameraScript : MonoBehaviour
 					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
 					mainCamera.transform.position = new Vector3(hit.point.x, 1700, hit.point.z);
 					mainCamera.camera.enabled = true;
-					myself.camera.enabled = false;
+					gameObject.camera.enabled = false;
 					Manager.Instance.spawnMe(pos);
 					Manager.Instance.sendSpawnData(pos);
 					mainCamera.GetComponent<MainCameraScript>().setPlayer();
                     Screen.showCursor = true;
 					
                     Debug.Log(Camera.main);
-					Debug.Log("MapCamera = " + myself.camera.enabled);
+					Debug.Log("MapCamera = " + gameObject.camera.enabled);
 					Debug.Log("MainCamera = " + mainCamera.camera.enabled);
 				}
 			}
@@ -115,5 +111,9 @@ public class MapCameraScript : MonoBehaviour
 				GUI.DrawTexture(new Rect(Input.mousePosition.x - 16, Screen.height - Input.mousePosition.y - 16, 32, 32), InvalidArea);
 		}
     }
+	
+	public void setEnemies(){
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
+	}
     
 }

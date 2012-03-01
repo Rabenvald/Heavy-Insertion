@@ -195,10 +195,13 @@ public class Manager : MonoBehaviour
 			obj.GetComponent<Hovercraft>().respawn(pos);
 		}
 		else{
-			GameObject tank = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
+			/*GameObject tank = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
 	        tank.GetComponent<InputController>().id = user.Id.ToString();
 			tank.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00"; //ID Schema: UserId + Type + InstanceNumber
-			updatePhysList();	
+			updatePhysList();
+			GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>().setEnemies();
+			GameObject.FindWithTag("MapCamera").GetComponent<MapCameraScript>().setEnemies();
+			Debug.Log("I made an enemy");*/
 		}
 	}
 	
@@ -299,10 +302,20 @@ public class Manager : MonoBehaviour
 	                    //remoteController = GetRemoteController(obj.GetUtfString("PID"));
 	
 	                    //localController.Extrapolate();
+						
+						int tempHealth = obj.GetInt("Health");
+						Vector3 tempPos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+						
+						//if the server hasnt declared me dead, and i think I'm dead, and the server has my health above 0, then i am not dead. Respawn me
+						if (localController.Hull.knownDead == false && localController.Hull.Dead && tempHealth > 0)
+						{
+							spawnMe(tempPos);
+							GameObject.FindWithTag("MainCamera").transform.position = new Vector3(tempPos.x, tempPos.y, tempPos.z);
+						}
 	
-	                    localController.Hull.Health = obj.GetInt("Health");
-	
-	                    localController.Hull.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+	                    localController.Hull.Health = tempHealth;
+						
+	                    localController.Hull.transform.position = tempPos;
 	
 	                    localController.Hull.transform.rotation = Quaternion.Euler(new Vector3(obj.GetFloat("rx"), obj.GetFloat("ry"), obj.GetFloat("rz")));
 	
@@ -316,6 +329,7 @@ public class Manager : MonoBehaviour
 						
 						if(localController.Hull.Health <= 0)
 						{
+							localController.Hull.knownDead = true;
 							localController.Hull.kill();
 	                        //updatePhysList();
 						}
@@ -339,8 +353,15 @@ public class Manager : MonoBehaviour
 						//set all the data for the other tanks
 						
 	                    remoteController = GetRemoteController(tempId[0]);
+						
+						int tempHealth = obj.GetInt("Health");
+						Vector3 tempPos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+						
+						//if the server hasnt declared this dead, and i think its dead, and the server has its health above 0, then its not dead. Respawn me
+						if (remoteController.Hull.knownDead == false && remoteController.Hull.Dead && tempHealth > 0)
+							spawnTank(thisGameObj, sender, tempPos);
 	
-	                    remoteController.Hull.Health = obj.GetInt("Health");
+	                    remoteController.Hull.Health = tempHealth;
 						
 						//remoteController.LastPosition
 	                    remoteController.Hull.transform.position = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
@@ -364,6 +385,7 @@ public class Manager : MonoBehaviour
 						
 	                    if (remoteController.Hull.Health <= 0)
 						{
+							remoteController.Hull.knownDead = true;
 							remoteController.Hull.kill();
 	                        //updatePhysList();
 						}
@@ -510,7 +532,8 @@ public class Manager : MonoBehaviour
 		        newObject.GetComponent<InputController>().id = user.Id.ToString();
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00";
 				updatePhysList();
-				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);
+				GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>().setEnemies();
+				GameObject.FindWithTag("MapCamera").GetComponent<MapCameraScript>().setEnemies();
 				break;
 			
 			case 1: //projectile
@@ -562,8 +585,15 @@ public class Manager : MonoBehaviour
 	private void sendTelemetry(GameObject gO)
     {
         SFSObject myData = new SFSObject();
-        if (gO.GetComponent<Hovercraft>())
+		Hovercraft goHovercraft = gO.GetComponent<Hovercraft>();
+        if (goHovercraft)
         {
+			if (goHovercraft.Dead)
+			{
+				if (goHovercraft.knownDead)
+					return;
+				goHovercraft.knownDead = true;
+			}
             string[] temp = gO.GetComponent<NetTag>().Id.Split('-');
             //Debug.Log(temp[0]gO.GetComponent<NetTag>().Id
 

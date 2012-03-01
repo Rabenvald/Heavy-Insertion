@@ -45,6 +45,9 @@ public class Hovercraft : ImportantObject
 
     public float throttleInput;
     public Vector3 throttle;
+	
+	//bool declaring if we have been broadcast as dead
+	public bool knownDead;
 
     private BoxCollider HovCollider;
 
@@ -92,7 +95,6 @@ public class Hovercraft : ImportantObject
     }
 
     private GameObject myterrain;
-    private GameObject mySelf;
     private GameObject manager;
     private GameObject mapCamera;
 	private GameObject mainCamera;
@@ -113,7 +115,6 @@ public class Hovercraft : ImportantObject
         Health = 300;
 
         myterrain = GameObject.FindWithTag("Terrain");
-        mySelf = GameObject.FindWithTag("Player");
         manager = GameObject.FindWithTag("Manager");
 		mapCamera = GameObject.FindWithTag("MapCamera");
 		mainCamera = GameObject.FindWithTag("MainCamera");
@@ -165,6 +166,8 @@ public class Hovercraft : ImportantObject
             TakeFocus(new Vector3(0,0,0));
 			//Debug.Log("tried to set camera");
 		}
+		
+		knownDead = false;
 	}
 	
 	// Update is called once per frame
@@ -182,7 +185,7 @@ public class Hovercraft : ImportantObject
         int damage = (int)(other.impactForceSum.magnitude);
 		
 		//CHANGES HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (other.gameObject == myterrain && Vector3.Angle(gameObject.transform.up, Vector3.up) < 90)
+        if (other.gameObject == myterrain && Vector3.Angle(gameObject.transform.up, Vector3.up) < 60)
         {
             //Do nothing
         }
@@ -330,9 +333,11 @@ public class Hovercraft : ImportantObject
 		transform.collider.enabled = true;
         gameObject.transform.GetComponentInChildren<TurretScript>().enabled = true;
 		Controller.enabled = true;
-        dead = false;
         Health = 300;
         gameObject.transform.position = pos;
+		dead = false;
+		knownDead = false;
+		Controller.Turret.respawnTimer = 5;
 	}
 	
 	public void kill()
@@ -350,7 +355,6 @@ public class Hovercraft : ImportantObject
 		
 		mapCamera.camera.enabled = true;
 		mainCamera.camera.enabled = false;
-		mainCamera.GetComponent<MainCameraScript>().setEnemies();
 		
 		transform.rigidbody.Sleep();
 		transform.collider.enabled = false;

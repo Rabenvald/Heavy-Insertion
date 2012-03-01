@@ -43,6 +43,9 @@ public class TurretScript : ImportantObject
 
     public float ProjectileSpeed = 4000.0f;
     public float FireRate = 1.5f;
+	
+	public float respawnTimer;
+	
     private float lastFired = 0.0f;
 
     private Vector3 randomness = Vector3.zero;
@@ -74,6 +77,8 @@ public class TurretScript : ImportantObject
             SetFocus(camGimbal, new Vector3(0, 0.5f, 0));
 
         mainCamScript = GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>();
+		
+		respawnTimer = 5;
 	}
     void Update()
     {
@@ -88,7 +93,10 @@ public class TurretScript : ImportantObject
         //CurPitchComponetRotation = transform.rotation.eulerAngles;
 
         //TargetPosition = Vector3.Lerp(TargetPosition, FinalTargetPosition, Mathf.Clamp(RotationRate / Vector3.Distance(FinalTargetPosition.normalized, TargetPosition.normalized), 0.000001f, 2));
-
+		
+		if (respawnTimer > 0)
+			respawnTimer -= Time.fixedDeltaTime;
+		
         if (target != null)
         {
 
@@ -126,7 +134,7 @@ public class TurretScript : ImportantObject
         
         transform.localEulerAngles = new Vector3(0,transform.localEulerAngles.y,0);
 
-        if (mainCamScript.typing == false)
+        if (mainCamScript.typing == false && respawnTimer <= 0)
         {
             if (Time.time - lastFired > FireRate && transform.parent.GetComponent<InputController>().PrimaryFire)
             {
@@ -147,8 +155,9 @@ public class TurretScript : ImportantObject
         randomness.x = Random.Range(-2, 2);
         randomness.y = Random.Range(-2, 2);
         randomness.z = Random.Range(-2, 2);
-
-        GameObject projectile = (GameObject)Instantiate(Projectile, Muzzle.transform.position + Muzzle.transform.forward , Muzzle.transform.rotation);
+		
+		//had projectiles spawn furth out, to avoid collision with self. Helps, but no fix
+        GameObject projectile = (GameObject)Instantiate(Projectile, Muzzle.transform.position + (Muzzle.transform.forward * 3), Muzzle.transform.rotation);
 
         // Set its velocity
         projectile.rigidbody.velocity = Muzzle.transform.forward * ProjectileSpeed + randomness + transform.parent.rigidbody.velocity;
@@ -164,7 +173,7 @@ public class TurretScript : ImportantObject
 
     private void FireMissile()
     {
-        GameObject ATMissile = (GameObject)Instantiate(Missile, Muzzle.transform.position + Muzzle.transform.forward * 3, Muzzle.transform.rotation);
+        GameObject ATMissile = (GameObject)Instantiate(Missile, Muzzle.transform.position + (Muzzle.transform.forward * 3), Muzzle.transform.rotation);
         ATMissile.GetComponent<GuidedProjectileInputController>().TargetPosition = TargetPosition;
         ATMissile.rigidbody.velocity += transform.parent.rigidbody.velocity; 
         // Set its velocity

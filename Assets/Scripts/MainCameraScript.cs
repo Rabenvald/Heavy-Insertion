@@ -202,7 +202,7 @@ public class MainCameraScript : MonoBehaviour
 	            	GUI.DrawTexture(new Rect(0, Screen.height - 70, (health / 310) * 256, 64), HealthBar);
 
                 //Spedometer
-                GUI.Box(new Rect(Screen.width - (Screen.width / 16) - 50, Screen.height * 0.7f - 25, 100, 25), (int)(playerCraft.CurrVelocity * 3.6f) + " km/h");
+                GUI.Box(new Rect(Screen.width - (Screen.width / 16) - 50, Screen.height - (Screen.width / 8) - 25, 100, 25), (int)(playerCraft.CurrVelocity * 3.6f) + " km/h");
 
                 //Enemy hud and radar
                 GUI.DrawTexture(new Rect(Screen.width - (Screen.width / 8), Screen.height - (Screen.width / 8), Screen.width / 8, Screen.width / 8), Radar);
@@ -210,7 +210,7 @@ public class MainCameraScript : MonoBehaviour
                 RaycastHit hit;
                 Vector3 rayDirection;
                 Vector3 camRayDirection;
-                Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 5, player.transform.position.z);
+                Vector3 testPos = new Vector3(player.transform.position.x, player.transform.position.y + 4, player.transform.position.z);
                 for (int i = 0; i < enemies.Length; i++)
                 {
                     if(enemies[i] == null)
@@ -218,14 +218,25 @@ public class MainCameraScript : MonoBehaviour
 					
 					rayDirection = enemies[i].transform.position - testPos;
                     camRayDirection = enemies[i].transform.position - gameObject.camera.transform.position;
+					camRayDirection.Normalize();
+					rayDirection.Normalize();
 
-                    if ((Physics.Raycast(testPos, rayDirection, out hit)) && (MathTester.AreVector3Close(hit.point, enemies[i].rigidbody.transform.position, 8)))
+                    if ((Physics.Raycast(testPos, rayDirection, out hit)) && (MathTester.AreVector3Close(hit.point, enemies[i].transform.position, 500)))
                     {
                         float angle = Vector3.Angle(camRayDirection, gameObject.camera.transform.forward);
-                        float raydarAngle = Vector2.Angle(new Vector2(gameObject.camera.transform.forward.x, gameObject.camera.transform.forward.z), new Vector2(camRayDirection.x, camRayDirection.z));
-						if (gameObject.camera.transform.forward.x < camRayDirection.x)
-							raydarAngle *= -1;
-                        GUI.DrawTexture(new Rect(Screen.width - (Screen.width / 16) + (Mathf.Cos((raydarAngle + 90) * Mathf.Deg2Rad) * (Screen.width / 17)) - 4, Screen.height - (Screen.width / 16) + (Mathf.Sin((raydarAngle - 90) * Mathf.Deg2Rad) * (Screen.width / 17)) - 4, 8, 8), BlankBackground);
+                        float raydarAngle = Vector2.Angle(new Vector2(gameObject.camera.transform.forward.x, gameObject.camera.transform.forward.z), new Vector2(rayDirection.x, rayDirection.z));
+						
+						
+						float dx = gameObject.camera.transform.position.x - enemies[i].transform.position.x; // how far to the side of the player is the enemy?
+						float dz = gameObject.camera.transform.position.z - enemies[i].transform.position.z; // how far in front or behind the player is the enemy?
+						
+						// what's the angle to turn to face the enemy - compensating for the player's turning?
+						float deltay = Mathf.Atan2(dx,dz)*Mathf.Rad2Deg - 270 - gameObject.camera.transform.eulerAngles.y;
+						
+						float bX = Mathf.Cos(deltay * Mathf.Deg2Rad);
+						float bY = Mathf.Sin(deltay * Mathf.Deg2Rad);
+						
+                        GUI.DrawTexture(new Rect(Screen.width - (Screen.width / 16) + (bX * (Screen.width / 17)) - 4, Screen.height - (Screen.width / 16) + (bY * (Screen.width / 17)) - 4, 8, 8), BlankBackground);
                         if (angle < gameObject.camera.fieldOfView)
                         {
                             Vector3 screenPos = gameObject.camera.WorldToScreenPoint(enemies[i].transform.position);
