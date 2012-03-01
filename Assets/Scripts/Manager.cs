@@ -166,7 +166,7 @@ public class Manager : MonoBehaviour
 	
 	public void OnUserEnterRoom (BaseEvent evt)
     {
-		User user = (User)evt.Params["user"];		
+		User user = (User)evt.Params["user"];
 		//Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
 	}
 
@@ -269,7 +269,7 @@ public class Manager : MonoBehaviour
 			
             GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
 			
-			Debug.Log(thisGameObj);
+			//Debug.Log(thisGameObj);
 			
 			if (thisGameObj == null)
 			{
@@ -429,7 +429,7 @@ public class Manager : MonoBehaviour
 				spawnTank(thisGameObj, sender, pos);
 			}
 			//create attack
-			if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
+			/*if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
 	        {
 				string id = obj.GetUtfString("Id");
 	            
@@ -442,9 +442,8 @@ public class Manager : MonoBehaviour
 	            //Debug.Log(NetObject);
 	
 	            //Debug.Log("Type " + type);
-	                //switch to determine what to create
 	            GameObject proj;
-	            switch (type)
+                switch (type) //switch to determine what to create
 	            {
 	                case 1: //projectile
 	                    NetInputController thisRemoteController = NetObject.GetComponent<NetInputController>();
@@ -465,23 +464,17 @@ public class Manager : MonoBehaviour
 	                    {
 	                        Debug.Log("Null Object");
 	                    }
-	                    //create projectile
-	                    //give it the values
-	                    //give it the id
 	                    break;
 	                case 2: //missile
 	                    proj = (GameObject)GameObject.Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
 	                    proj.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
 	                    proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
 	                    Debug.Log("created missile for player " + temp[0]);
-	                    //create missile
-	                    //give it the values
-	                    //give it the id
 	                    break;
 	                default:
 	                    break;
 	            }
-        	}
+        	}*/
 		}
 	}
 	
@@ -514,10 +507,8 @@ public class Manager : MonoBehaviour
             case 00: //tank
 				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 				newObject = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
-		        //InputController ic = tank.GetComponent<InputController>();
-		        //NetTag nt = tank.GetComponent<NetTag>();
 		        newObject.GetComponent<InputController>().id = user.Id.ToString();
-				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + temp[2];
+				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00";
 				updatePhysList();
 				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
@@ -525,11 +516,9 @@ public class Manager : MonoBehaviour
 			case 1: //projectile
 				newObject = (GameObject)Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
                 newObject.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz"));
-
                 newObject.transform.position += newObject.rigidbody.velocity.normalized * 7;
-
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-1-" + temp[2];
-				primaryCount++;
+				//primaryCount++;
 				updatePhysList();
 				//Debug.Log("Spawning New Projectile with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
@@ -538,11 +527,9 @@ public class Manager : MonoBehaviour
 				newObject = (GameObject)Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"),obj.GetFloat("ppy"),obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"),obj.GetFloat("pry"),obj.GetFloat("prz"))));
                 newObject.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"), obj.GetFloat("ty"), obj.GetFloat("tz")); //ATMissile
                 newObject.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); //ATMissile
-
                 newObject.transform.position += newObject.rigidbody.velocity.normalized * 7;
-
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-2-" + temp[2];
-				secondaryCount++;
+				//secondaryCount++;
 				updatePhysList();
 				//Debug.Log("Spawning New Missile with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
