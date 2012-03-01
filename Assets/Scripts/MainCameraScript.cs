@@ -239,7 +239,7 @@ public class MainCameraScript : MonoBehaviour
         //chat
         GUI.Box(new Rect(10, Screen.height - 128 - 330, 300, 300), "Chat");
 
-        GUILayout.BeginArea(new Rect(20, 110, 300, 300));
+        GUILayout.BeginArea(new Rect(20, Screen.height - 128 - 310, 300, 300));
         chatScrollPosition = GUILayout.BeginScrollView(chatScrollPosition, GUILayout.Width(300), GUILayout.Height(300));
         GUILayout.BeginVertical();
         foreach (string message in messages)

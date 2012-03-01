@@ -326,17 +326,8 @@ public class TestLobby : MonoBehaviour {
 			GUILayout.Label ("No rooms available to join");
 		}
 		// Game Room button
-		if (GUI.Button (new Rect (80, 110, 85, 24), "Make Test 1")) {
-			//Debug.Log("new room ");
-			
-			RoomSettings settings = new RoomSettings("Test Room");
-			settings.MaxUsers = 32;
-			settings.Name = "Test Room";
-			settings.IsGame = true;
-			smartFox.Send(new CreateRoomRequest(settings));
-		}
 		
-		if (GUI.Button (new Rect (80, 130, 85, 24), "Make Game")) {
+		if (GUI.Button (new Rect (80, 110, 85, 24), "Make Game")) {
 			// ****** Create new room ******* //
 			//Debug.Log("new room "+username + "'s Room");
 
@@ -345,6 +336,16 @@ public class TestLobby : MonoBehaviour {
 			settings.IsGame = true;
 			smartFox.Send(new CreateRoomRequest(settings));
 		}
+		
+		/*if (GUI.Button (new Rect (80, 130, 85, 24), "Make Test 1")) {
+			//Debug.Log("new room ");
+			
+			RoomSettings settings = new RoomSettings("Test Room");
+			settings.MaxUsers = 32;
+			settings.Name = "Test Room";
+			settings.IsGame = true;
+			smartFox.Send(new CreateRoomRequest(settings));
+		}*/
 			
 		GUILayout.EndArea ();
 		
