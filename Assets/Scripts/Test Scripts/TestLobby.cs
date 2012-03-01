@@ -15,7 +15,7 @@ using Sfs2X.Logging;
 public class TestLobby : MonoBehaviour {
 
 	private SmartFox smartFox;
-	private string zone = "APZ";
+	private string zone = "BBB";
 	private string serverName = "129.21.29.6";
 	private int serverPort = 9933;
 	public string username = "";
@@ -332,6 +332,7 @@ public class TestLobby : MonoBehaviour {
 			//Debug.Log("new room "+username + "'s Room");
 
 			RoomSettings settings = new RoomSettings(username + "'s Room");
+			settings.Name = username + "'s Room";
 			settings.MaxUsers = 32;
 			settings.IsGame = true;
 			smartFox.Send(new CreateRoomRequest(settings));
