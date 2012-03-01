@@ -166,23 +166,33 @@ public class Manager : MonoBehaviour
 
 	public void spawnMe(Vector3 pos)
     {
-		//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
-		GameObject tank = Instantiate(playerTankPrefab, pos, Quaternion.identity) as GameObject;
-		//tank.GetComponent<Hovercraft>().SetFocus(cF);
-		myTank = tank;
-        myTank.GetComponent<NetTag>().Id = myId + "-00-" + "00"; 
-		updatePhysList();
-        localController = GetLocalController();
-		spawned = true;
+		if(!spawned){
+			//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
+			GameObject tank = Instantiate(playerTankPrefab, pos, Quaternion.identity) as GameObject;
+			//tank.GetComponent<Hovercraft>().SetFocus(cF);
+			myTank = tank;
+	        myTank.GetComponent<NetTag>().Id = myId + "-00-" + "00"; 
+			updatePhysList();
+	        localController = GetLocalController();
+			spawned = true;
+		}
+		else{
+			//move to spawn location
+			myTank.GetComponent<Hovercraft>().respawn(pos);
+		}
 	}
 	
-	private void spawnTank(User user, Vector3 pos){
-		GameObject tank = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
-        //InputController ic = tank.GetComponent<InputController>();
-        //NetTag nt = tank.GetComponent<NetTag>();
-        tank.GetComponent<InputController>().id = user.Id.ToString();
-		tank.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00";  //ID Schema: UserId + Type + InstanceNumber
-		updatePhysList();
+	private void spawnTank(GameObject obj, User user, Vector3 pos)
+	{
+		if(obj != null){
+			obj.GetComponent<Hovercraft>().respawn(pos);
+		}
+		else{
+			GameObject tank = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
+	        tank.GetComponent<InputController>().id = user.Id.ToString();
+			tank.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00"; //ID Schema: UserId + Type + InstanceNumber
+			updatePhysList();	
+		}
 	}
 	
 	public void OnUserLeaveRoom (BaseEvent evt)
@@ -293,8 +303,8 @@ public class Manager : MonoBehaviour
 						
 						if(localController.Hull.Health <= 0)
 						{
-							Destroy(localController.Hull);
-	                        updatePhysList();
+							localController.Hull.kill();
+	                        //updatePhysList();
 						}
 	                }
 	            }
@@ -341,8 +351,8 @@ public class Manager : MonoBehaviour
 						
 	                    if (remoteController.Hull.Health <= 0)
 						{
-							Destroy(remoteController.Hull);
-	                        updatePhysList();
+							remoteController.Hull.kill();
+	                        //updatePhysList();
 						}
 	                }
 	            }
@@ -398,6 +408,12 @@ public class Manager : MonoBehaviour
 	            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
 				
 				thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+			}//spawning a tank - this might no longer be needed
+			if(obj.ContainsKey("spawnPos"))
+		    {
+				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+				Debug.Log(pos);
+				spawnTank(thisGameObj, sender, pos);
 			}
 			//create attack
 			if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
@@ -453,12 +469,6 @@ public class Manager : MonoBehaviour
 	                    break;
 	            }
         	}
-		}//spawning a tank - this might no longer be needed
-		else if(obj.ContainsKey("spawnPos"))
-        {
-			Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
-			Debug.Log(pos);
-			spawnTank(sender, pos);
 		}
 	}
 	
@@ -642,6 +652,7 @@ public class Manager : MonoBehaviour
     {
 		SFSObject myData = new SFSObject();
 		myData.PutBool("spawnPos", true);
+		myData.PutUtfString("Id", myId + "-00-00");
 		myData.PutFloat("px", pos.x);
 		myData.PutFloat("py", pos.y);
 		myData.PutFloat("pz", pos.z);

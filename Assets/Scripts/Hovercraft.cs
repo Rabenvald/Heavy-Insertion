@@ -251,14 +251,6 @@ public class Hovercraft : ImportantObject
             if (Health <= 0)
             {
                  kill();
-				
-				/*gameObject.renderer.enabled = false;
-                gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
-                Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
-                foreach (Renderer r in childRenderers)
-                {
-                    r.enabled = false;
-                }//*/
 				return;
             }
         
@@ -334,27 +326,14 @@ public class Hovercraft : ImportantObject
 	
 	public void respawn(Vector3 pos)
 	{
-        gameObject.renderer.enabled = true;
+		transform.rigidbody.WakeUp();
+		transform.collider.enabled = true;
         gameObject.transform.GetComponentInChildren<TurretScript>().enabled = true;
-        Renderer[] childRenderers = gameObject.transform.GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in childRenderers)
-        {
-            r.enabled = true;
-        }
-        respawnTimer = 30;
+		Controller.enabled = true;
         dead = false;
         Health = 300;
         gameObject.transform.position = pos;
 	}
-
-    void OnDestroy()
-    {
-        //Explode
-        //Hide mesh
-        Destroy(levelParent); //Kill Children
-        //Kill Explosion
-        //Kill self
-    }
 	
 	public void kill()
 	{
@@ -367,10 +346,16 @@ public class Hovercraft : ImportantObject
 		if (Controller.PlayerControlled)
        		SetFocus(manager);
 		
-		GameObject.Destroy(gameObject);
+		//GameObject.Destroy(gameObject);
 		
 		mapCamera.camera.enabled = true;
 		mainCamera.camera.enabled = false;
 		mainCamera.GetComponent<MainCameraScript>().setEnemies();
+		
+		transform.rigidbody.Sleep();
+		transform.collider.enabled = false;
+		gameObject.transform.position = new Vector3(0.0f, -13337.0f, 0.0f);
+        gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
+		Controller.enabled = false;
 	}
 }
