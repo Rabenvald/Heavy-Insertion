@@ -12,10 +12,7 @@
 			return null;
 		}
 		if (typeof unityObject != "undefined") {
-			var params = {
-				disableContextMenu: true
-			};
-			unityObject.embedUnity("unityPlayer", "WebPlayer.unity3d", 800, 600, params);
+			unityObject.embedUnity("unityPlayer", "WebPlayer.unity3d", 1600, 900);
 			
 		}
 		-->
@@ -24,15 +21,15 @@
 		<!--
 		body {
 			font-family: Helvetica, Verdana, Arial, sans-serif;
-			background-color: white;
-			color: black;
+			background-color: black;
+			color: white;
 			text-align: center;
 		}
 		a:link, a:visited {
-			color: #000;
+			color: #bfbfbf;
 		}
 		a:active, a:hover {
-			color: #666;
+			color: #bfbfbf;
 		}
 		p.header {
 			font-size: small;
@@ -45,7 +42,7 @@
 		}
 		div.content {
 			margin: auto;
-			width: 800px;
+			width: 1600px;
 		}
 		div.missing {
 			margin: auto;
@@ -63,8 +60,8 @@
 		}
 		div#unityPlayer {
 			cursor: default;
-			height: 600px;
-			width: 800px;
+			height: 900px;
+			width: 1600px;
 		}
 		-->
 		</style>

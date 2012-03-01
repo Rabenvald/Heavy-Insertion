@@ -343,8 +343,8 @@ public class Hovercraft : ImportantObject
 			Manager.Instance.Spawned = false;	
 		}
 		
-		if (Controller.PlayerControlled)
-       		SetFocus(manager);
+		//if (Controller.PlayerControlled)
+       	//	SetFocus(manager);
 		
 		//GameObject.Destroy(gameObject);
 		

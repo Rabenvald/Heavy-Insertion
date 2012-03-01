@@ -31,6 +31,10 @@ public class Manager : MonoBehaviour
 	//my info
 	public String myId;
 	private GameObject myTank;
+	public GameObject MyTank
+	{
+		get { return myTank; }	
+	}
 	
 	
 	private string clientName;
@@ -71,6 +75,7 @@ public class Manager : MonoBehaviour
     public float TimeBetweenUpdates = 2.2f;
     private float LastUpdateTime = 0;
     private uint ObjectSent = 0;
+	public bool IsGameRoom;
 
 	void Awake() 
     {
@@ -82,6 +87,7 @@ public class Manager : MonoBehaviour
 		if (SmartFoxConnection.IsInitialized)
         {
 			smartFox = SmartFoxConnection.Connection;
+			IsGameRoom = true;
 		}
 		else
         {
@@ -166,7 +172,7 @@ public class Manager : MonoBehaviour
 
 	public void spawnMe(Vector3 pos)
     {
-		if(!spawned){
+		if(myTank == null){
 			//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
 			GameObject tank = Instantiate(playerTankPrefab, pos, Quaternion.identity) as GameObject;
 			//tank.GetComponent<Hovercraft>().SetFocus(cF);
@@ -179,6 +185,7 @@ public class Manager : MonoBehaviour
 		else{
 			//move to spawn location
 			myTank.GetComponent<Hovercraft>().respawn(pos);
+			spawned = true;
 		}
 	}
 	
@@ -198,6 +205,12 @@ public class Manager : MonoBehaviour
 	public void OnUserLeaveRoom (BaseEvent evt)
     {
 		User user = (User)evt.Params["user"];
+		GameObject thisGameObj = GetNetObject(user.Id.ToString() + "-00-00");
+		if(thisGameObj != null)
+		{
+			Destroy(thisGameObj);
+			updatePhysList();
+		}
 	}
 	
 	public void OnUserCountChange (BaseEvent evt)
