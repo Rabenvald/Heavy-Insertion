@@ -1,12 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Manager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Hovercraft.cs">
     <Files>
-      <File FileName="Assets\Scripts\Hovercraft.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Manager.cs" Line="280" Column="27" />
-      <File FileName="Assets\Scripts\MapCameraScript.cs" Line="51" Column="5" />
+      <File FileName="Assets\Scripts\Manager.cs" Line="562" Column="43" />
+      <File FileName="Assets\Scripts\Hovercraft.cs" Line="336" Column="3" />
+      <File FileName="Assets\Scripts\MapCameraScript.cs" Line="71" Column="36" />
       <File FileName="Assets\Scripts\MenuMainCameraScript.cs" Line="118" Column="1" />
-      <File FileName="Assets\Scripts\Test Scripts\TestLobby.cs" Line="318" Column="1" />
+      <File FileName="Assets\Scripts\Test Scripts\TestLobby.cs" Line="319" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
