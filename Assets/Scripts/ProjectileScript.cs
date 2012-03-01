@@ -44,5 +44,6 @@ public class ProjectileScript : ImportantObject
     {
         GameObject impExp = (GameObject)Instantiate(ImpactExplosion, transform.position, Quaternion.identity);
         GameObject.Destroy(this.gameObject);
+        //Manager.Instance.updatePhysList();
     }
 }

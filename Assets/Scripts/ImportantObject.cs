@@ -59,6 +59,7 @@ public class ImportantObject : MonoBehaviour
 
     void OnDestroy()
     {
-        Manager.Instance.updatePhysList();
+		if (Manager.Instance.IsGameRoom)
+		    Manager.Instance.updatePhysList();
     }
 }

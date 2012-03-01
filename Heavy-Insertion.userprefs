@@ -1,12 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Manager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Detonator\System\DetonatorFireball.cs">
     <Files>
-      <File FileName="Assets\Scripts\Manager.cs" Line="280" Column="27" />
-      <File FileName="Assets\Scripts\Hovercraft.cs" Line="253" Column="25" />
-      <File FileName="Assets\Scripts\MapCameraScript.cs" Line="51" Column="5" />
-      <File FileName="Assets\Scripts\MenuMainCameraScript.cs" Line="118" Column="1" />
-      <File FileName="Assets\Scripts\Test Scripts\TestLobby.cs" Line="318" Column="1" />
+      <File FileName="Assets\Scripts\Hovercraft.cs" Line="330" Column="37" />
+      <File FileName="Assets\Scripts\Manager.cs" Line="214" Column="3" />
+      <File FileName="Assets\Scripts\MapCameraScript.cs" Line="70" Column="36" />
+      <File FileName="Assets\Scripts\ImportantObject.cs" Line="62" Column="1" />
+      <File FileName="Assets\Scripts\MainCameraScript.cs" Line="195" Column="34" />
+      <File FileName="Assets\Scripts\PlayerInputController.cs" Line="97" Column="6" />
+      <File FileName="Assets\Scripts\ProjectileScript.cs" Line="47" Column="11" />
+      <File FileName="Assets\Detonator\System\DetonatorFireball.cs" Line="159" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -65,6 +65,7 @@ public class MapCameraScript : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))
                 {
 					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
+					mainCamera.transform.position = new Vector3(hit.point.x, 1700, hit.point.z);
 					mainCamera.camera.enabled = true;
 					myself.camera.enabled = false;
 					Manager.Instance.spawnMe(pos);

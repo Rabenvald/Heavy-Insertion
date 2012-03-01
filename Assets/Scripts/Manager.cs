@@ -31,6 +31,10 @@ public class Manager : MonoBehaviour
 	//my info
 	public String myId;
 	private GameObject myTank;
+	public GameObject MyTank
+	{
+		get { return myTank; }	
+	}
 	
 	
 	private string clientName;
@@ -71,6 +75,7 @@ public class Manager : MonoBehaviour
     public float TimeBetweenUpdates = 2.2f;
     private float LastUpdateTime = 0;
     private uint ObjectSent = 0;
+	public bool IsGameRoom;
 
 	void Awake() 
     {
@@ -82,6 +87,7 @@ public class Manager : MonoBehaviour
 		if (SmartFoxConnection.IsInitialized)
         {
 			smartFox = SmartFoxConnection.Connection;
+			IsGameRoom = true;
 		}
 		else
         {
@@ -160,34 +166,51 @@ public class Manager : MonoBehaviour
 	
 	public void OnUserEnterRoom (BaseEvent evt)
     {
-		User user = (User)evt.Params["user"];		
+		User user = (User)evt.Params["user"];
 		//Debug.Log ("user entered room " + user.Name + " with id of " + user.Id);
 	}
 
 	public void spawnMe(Vector3 pos)
     {
-		//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
-		GameObject tank = Instantiate(playerTankPrefab, pos, Quaternion.identity) as GameObject;
-		//tank.GetComponent<Hovercraft>().SetFocus(cF);
-		myTank = tank;
-        myTank.GetComponent<NetTag>().Id = myId + "-00-" + "00"; 
-		updatePhysList();
-        localController = GetLocalController();
-		spawned = true;
+		if(myTank == null){
+			//GameObject cF = Instantiate(cameraFocus, pos, Quaternion.identity) as GameObject;
+			GameObject tank = Instantiate(playerTankPrefab, pos, Quaternion.identity) as GameObject;
+			//tank.GetComponent<Hovercraft>().SetFocus(cF);
+			myTank = tank;
+	        myTank.GetComponent<NetTag>().Id = myId + "-00-" + "00"; 
+			updatePhysList();
+	        localController = GetLocalController();
+			spawned = true;
+		}
+		else{
+			//move to spawn location
+			myTank.GetComponent<Hovercraft>().respawn(pos);
+			spawned = true;
+		}
 	}
 	
-	private void spawnTank(User user, Vector3 pos){
-		GameObject tank = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
-        //InputController ic = tank.GetComponent<InputController>();
-        //NetTag nt = tank.GetComponent<NetTag>();
-        tank.GetComponent<InputController>().id = user.Id.ToString();
-		tank.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00";  //ID Schema: UserId + Type + InstanceNumber
-		updatePhysList();
+	private void spawnTank(GameObject obj, User user, Vector3 pos)
+	{
+		if(obj != null){
+			obj.GetComponent<Hovercraft>().respawn(pos);
+		}
+		else{
+			GameObject tank = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
+	        tank.GetComponent<InputController>().id = user.Id.ToString();
+			tank.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00"; //ID Schema: UserId + Type + InstanceNumber
+			updatePhysList();	
+		}
 	}
 	
 	public void OnUserLeaveRoom (BaseEvent evt)
     {
 		User user = (User)evt.Params["user"];
+		GameObject thisGameObj = GetNetObject(user.Id.ToString() + "-00-00");
+		if(thisGameObj != null)
+		{
+			Destroy(thisGameObj);
+			updatePhysList();
+		}
 	}
 	
 	public void OnUserCountChange (BaseEvent evt)
@@ -246,7 +269,7 @@ public class Manager : MonoBehaviour
 			
             GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
 			
-			Debug.Log(thisGameObj);
+			//Debug.Log(thisGameObj);
 			
 			if (thisGameObj == null)
 			{
@@ -293,8 +316,8 @@ public class Manager : MonoBehaviour
 						
 						if(localController.Hull.Health <= 0)
 						{
-							Destroy(localController.Hull);
-	                        updatePhysList();
+							localController.Hull.kill();
+	                        //updatePhysList();
 						}
 	                }
 	            }
@@ -341,8 +364,8 @@ public class Manager : MonoBehaviour
 						
 	                    if (remoteController.Hull.Health <= 0)
 						{
-							Destroy(remoteController.Hull);
-	                        updatePhysList();
+							remoteController.Hull.kill();
+	                        //updatePhysList();
 						}
 	                }
 	            }
@@ -398,9 +421,15 @@ public class Manager : MonoBehaviour
 	            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
 				
 				thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+			}//spawning a tank - this might no longer be needed
+			if(obj.ContainsKey("spawnPos"))
+		    {
+				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
+				Debug.Log(pos);
+				spawnTank(thisGameObj, sender, pos);
 			}
 			//create attack
-			if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
+			/*if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
 	        {
 				string id = obj.GetUtfString("Id");
 	            
@@ -413,9 +442,8 @@ public class Manager : MonoBehaviour
 	            //Debug.Log(NetObject);
 	
 	            //Debug.Log("Type " + type);
-	                //switch to determine what to create
 	            GameObject proj;
-	            switch (type)
+                switch (type) //switch to determine what to create
 	            {
 	                case 1: //projectile
 	                    NetInputController thisRemoteController = NetObject.GetComponent<NetInputController>();
@@ -436,29 +464,17 @@ public class Manager : MonoBehaviour
 	                    {
 	                        Debug.Log("Null Object");
 	                    }
-	                    //create projectile
-	                    //give it the values
-	                    //give it the id
 	                    break;
 	                case 2: //missile
 	                    proj = (GameObject)GameObject.Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
 	                    proj.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
 	                    proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
 	                    Debug.Log("created missile for player " + temp[0]);
-	                    //create missile
-	                    //give it the values
-	                    //give it the id
 	                    break;
 	                default:
 	                    break;
 	            }
-        	}
-		}//spawning a tank - this might no longer be needed
-		else if(obj.ContainsKey("spawnPos"))
-        {
-			Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
-			Debug.Log(pos);
-			spawnTank(sender, pos);
+        	}*/
 		}
 	}
 	
@@ -491,10 +507,8 @@ public class Manager : MonoBehaviour
             case 00: //tank
 				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 				newObject = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
-		        //InputController ic = tank.GetComponent<InputController>();
-		        //NetTag nt = tank.GetComponent<NetTag>();
 		        newObject.GetComponent<InputController>().id = user.Id.ToString();
-				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + temp[2];
+				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00";
 				updatePhysList();
 				Debug.Log("Spawning New Tank with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
@@ -502,11 +516,9 @@ public class Manager : MonoBehaviour
 			case 1: //projectile
 				newObject = (GameObject)Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
                 newObject.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz"));
-
                 newObject.transform.position += newObject.rigidbody.velocity.normalized * 7;
-
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-1-" + temp[2];
-				primaryCount++;
+				//primaryCount++;
 				updatePhysList();
 				//Debug.Log("Spawning New Projectile with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
@@ -515,11 +527,9 @@ public class Manager : MonoBehaviour
 				newObject = (GameObject)Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"),obj.GetFloat("ppy"),obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"),obj.GetFloat("pry"),obj.GetFloat("prz"))));
                 newObject.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"), obj.GetFloat("ty"), obj.GetFloat("tz")); //ATMissile
                 newObject.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); //ATMissile
-
                 newObject.transform.position += newObject.rigidbody.velocity.normalized * 7;
-
 				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-2-" + temp[2];
-				secondaryCount++;
+				//secondaryCount++;
 				updatePhysList();
 				//Debug.Log("Spawning New Missile with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
@@ -642,6 +652,7 @@ public class Manager : MonoBehaviour
     {
 		SFSObject myData = new SFSObject();
 		myData.PutBool("spawnPos", true);
+		myData.PutUtfString("Id", myId + "-00-00");
 		myData.PutFloat("px", pos.x);
 		myData.PutFloat("py", pos.y);
 		myData.PutFloat("pz", pos.z);
