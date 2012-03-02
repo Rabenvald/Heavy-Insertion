@@ -77,6 +77,10 @@ public class Manager : MonoBehaviour
     private uint ObjectSent = 0;
 	public bool IsGameRoom;
 	
+	private int kills;
+	
+	private Queue<ISFSObject> instantiateQueue;
+	
 	private const string encyption = "*:@#$5147grbSDvASDAWE4124NHFJFCmd5bB%^D%brnxrx454335";
 
 	void Awake() 
@@ -108,11 +112,15 @@ public class Manager : MonoBehaviour
 			isPhysAuth = false;	
 		}
 		
+		kills = 0;
+		
 		spawned = false;
 
 		updatePhysList();
 		
 		myId = smartFox.MySelf.Id.ToString();
+		
+		instantiateQueue = new Queue<ISFSObject>();
 		
 		smartFox.AddEventListener(SFSEvent.USER_ENTER_ROOM, OnUserEnterRoom);
 		smartFox.AddEventListener(SFSEvent.USER_EXIT_ROOM, OnUserLeaveRoom);
@@ -164,6 +172,12 @@ public class Manager : MonoBehaviour
             }
             LastUpdateTime += Time.deltaTime;
         }
+		
+		Debug.Log(instantiateQueue.Count);
+		if (instantiateQueue.Count > 0)
+		{
+			CreateNewGameObject(instantiateQueue.Dequeue());
+		}
 	}
 	
 	public void OnUserEnterRoom (BaseEvent evt)
@@ -287,7 +301,12 @@ public class Manager : MonoBehaviour
 				if(victim==killer)
 					SendMsg(encyption + victim + " blew themselves up.");
 				else
+				{
 					SendMsg(encyption + victim + " got blown up by " + killer + ".");
+					SFSObject myData = new SFSObject();
+					myData.PutUtfString("killer", temp2[0]);
+					smartFox.Send(new ObjectMessageRequest(myData));
+				}
 			}
 		}
 	}
@@ -302,7 +321,21 @@ public class Manager : MonoBehaviour
 		//Debug.Log("Obj contains spawnPos? " + obj.ContainsKey("spawnPos"));
 		
 		//making sure that the object has an Id
-        if (obj.ContainsKey("Id"))
+		if (obj.ContainsKey("killer"))
+		{
+			if (obj.GetUtfString("killer") == myId)
+			{
+				kills++;
+				SendMsg(encyption + smartFox.UserManager.GetUserById(int.Parse(myId)).Name + " has " + kills + " kills.");
+				if (kills >= 10)
+				{
+					//SFSObject myData = new SFSObject();
+					//myData.PutUtfString("killer", temp2[0]);
+					//smartFox.Send(new ObjectMessageRequest(myData));
+				}
+			}
+		}
+		else if (obj.ContainsKey("Id") && obj.GetUtfString("Id") != null)
         {
             //Debug.Log("Incomming IDed info");
             //Debug.Log("Its about" + obj.GetUtfString("Id"));
@@ -312,14 +345,26 @@ public class Manager : MonoBehaviour
 			
             GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
 			
+			
 			//Debug.Log(thisGameObj);
 			
 			if (thisGameObj == null)
 			{
-				Debug.Log("Should be null and spawning an object of type: " + tempId[1]);
-				
-				CreateNewGameObject(obj, sender);
-				thisGameObj = GetNetObject(obj.GetUtfString("Id"));
+				/*Debug.Log(obj.GetUtfString("Id"));
+				Debug.Log(thisGameObj);
+				Debug.Log("Should be null and spawning an object of type: " + tempId[0]);*/
+				//CreateNewGameObject(obj, sender);
+				foreach (ISFSObject qobj in instantiateQueue)
+				{
+					if (qobj.GetUtfString("Id") ==	obj.GetUtfString("Id"))
+					{
+						return;
+						Debug.Log("Shouldn't get here");
+					}
+				}
+				instantiateQueue.Enqueue(obj);
+				return;
+				Debug.Log("Shouldn't get here either");
 			}
 			
            	//Debug.Log(thisGameObj);
@@ -550,7 +595,7 @@ public class Manager : MonoBehaviour
 		Room room = (Room)evt.Params["room"];
 	}
 	
-	public void CreateNewGameObject(ISFSObject obj, User user)
+	public void CreateNewGameObject(ISFSObject obj)
 	{
 		string id = obj.GetUtfString("Id");
             
@@ -569,18 +614,18 @@ public class Manager : MonoBehaviour
             case 00: //tank
 				Vector3 pos = new Vector3(obj.GetFloat("px"), obj.GetFloat("py"), obj.GetFloat("pz"));
 				newObject = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
-		        newObject.GetComponent<InputController>().id = user.Id.ToString();
-				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00";
-				updatePhysList();
+		        newObject.GetComponent<InputController>().id = temp[0];
+				newObject.GetComponent<NetTag>().Id = temp[0] + "-00-" + "00";
 				GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>().setEnemies();
 				GameObject.FindWithTag("MapCamera").GetComponent<MapCameraScript>().setEnemies();
+				updatePhysList();
 				break;
 			
 			case 1: //projectile
 				newObject = (GameObject)Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
                 newObject.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz"));
                 newObject.transform.position += newObject.rigidbody.velocity.normalized * 7;
-				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-1-" + temp[2];
+				newObject.GetComponent<NetTag>().Id = temp[0] + "-1-" + temp[2];
 				//primaryCount++;
 				updatePhysList();
 				//Debug.Log("Spawning New Projectile with ID: " + newObject.GetComponent<NetTag>().Id);
@@ -591,7 +636,7 @@ public class Manager : MonoBehaviour
                 newObject.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"), obj.GetFloat("ty"), obj.GetFloat("tz")); //ATMissile
                 newObject.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); //ATMissile
                 newObject.transform.position += newObject.rigidbody.velocity.normalized * 7;
-				newObject.GetComponent<NetTag>().Id = user.Id.ToString() + "-2-" + temp[2];
+				newObject.GetComponent<NetTag>().Id = temp[0] + "-2-" + temp[2];
 				//secondaryCount++;
 				updatePhysList();
 				//Debug.Log("Spawning New Missile with ID: " + newObject.GetComponent<NetTag>().Id);
