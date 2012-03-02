@@ -37,7 +37,20 @@ public class Lobby : MonoBehaviour {
 	private string[] roomNameStrings; //Names of rooms
 	private string[] roomFullStrings; //Names and descriptions
 	private int screenW;
-
+	private int screenH;
+	
+	//for lobby positioning
+	private int chatW;
+	private int chatH;
+	private int sendW;
+	private int sendH;
+	private int userW;
+	private int userH;
+	private int roomW;
+	private int roomH;
+	private int vSpacing;
+	private int hSpacing;
+	private int offset;
 	
 	void Start()
 	{
@@ -62,6 +75,20 @@ public class Lobby : MonoBehaviour {
 		
 		smartFox.AddLogListener(LogLevel.INFO, OnDebugMessage);
 		screenW = Screen.width;
+		screenH = Screen.height;
+		vSpacing = 10;
+		hSpacing = 10;
+		offset = 10;
+		
+		
+		userW = 180;
+		userH = screenH - 20;
+		chatW = screenW - userW - hSpacing*3;
+		chatH = 200;
+		sendW = chatW - (chatW/9);
+		sendH = 24;
+		roomW = screenW - userW - hSpacing*3;
+		roomH = screenH - chatH - sendH - 48;
 	}
 	
 	private void AddEventListeners() {
@@ -265,7 +292,7 @@ public class Lobby : MonoBehaviour {
                 DrawRoomsGUI();
             }
 
-            if (GUI.Button(new Rect(10, 10, 100, 20), "Main Menu"))
+            if (GUI.Button(new Rect(10, 10, 100, 24), "Main Menu"))
                 Application.LoadLevel("Main Menu");
         }
 	}
@@ -298,22 +325,33 @@ public class Lobby : MonoBehaviour {
 		DrawChatGUI();
 		
 		// Send message
-		newMessage = GUI.TextField(new Rect(10, 480, 370, 20), newMessage, 50);
-		if (GUI.Button(new Rect(390, 478, 90, 24), "Send")  || (Event.current.type == EventType.keyDown && Event.current.character == '\n'))
+		newMessage = GUI.TextField(new Rect(offset, screenH - sendH - vSpacing, sendW, sendH), newMessage, 50);
+		if (GUI.Button(new Rect(sendW + hSpacing*2, screenH - sendH - vSpacing, 100, 24), "Send")  || (Event.current.type == EventType.keyDown && Event.current.character == '\n'))
 		{
 			smartFox.Send( new PublicMessageRequest(newMessage) );
 			newMessage = "";
 		}
 		// Logout button
-		if (GUI.Button (new Rect (screenW - 115, 20, 85, 24), "Logout")) {
+		if (GUI.Button (new Rect (120, offset, 100, 24), "Logout")) {
 			smartFox.Send( new LogoutRequest() );
+		}
+		
+		//make game button
+		if (currentActiveRoom.Name == "The Lobby"){
+			if (GUI.Button (new Rect (230, offset, 100, 24), "Make Game")) {
+				RoomSettings settings = new RoomSettings(username + "'s Room");
+				settings.Name = username + "'s Room";
+				settings.MaxUsers = 32;
+				settings.IsGame = true;
+				smartFox.Send(new CreateRoomRequest(settings, false));
+			}
 		}
 	}
 		
 		
 	private void DrawUsersGUI(){
-		GUI.Box (new Rect (screenW - 200, 80, 180, 170), "Users");
-		GUILayout.BeginArea (new Rect (screenW - 190, 110, 150, 160));
+		GUI.Box (new Rect (screenW - userW - hSpacing, screenH - userH - vSpacing, userW, userH), "Users");
+		GUILayout.BeginArea (new Rect (screenW - userW - offset, screenH - userH + hSpacing, userW, userH));
 			userScrollPosition = GUILayout.BeginScrollView (userScrollPosition, GUILayout.Width (150), GUILayout.Height (150));
 			GUILayout.BeginVertical ();
 			
@@ -327,11 +365,11 @@ public class Lobby : MonoBehaviour {
 	}
 	
 	private void DrawRoomsGUI(){
-		GUI.Box (new Rect (screenW - 200, 260, 180, 130), "Room List");
-		GUILayout.BeginArea (new Rect (screenW - 190, 290, 180, 150));
-		if (smartFox.RoomList.Count > 1) {		
-			roomScrollPosition = GUILayout.BeginScrollView (roomScrollPosition, GUILayout.Width (150), GUILayout.Height (160));
-			roomSelection = GUILayout.SelectionGrid (roomSelection, roomFullStrings, 1, "RoomListButton");
+		GUI.Box (new Rect (offset, screenH - (chatH + sendH + roomH + vSpacing), roomW, roomH), "Room List");
+		GUILayout.BeginArea (new Rect (offset*2, screenH - (chatH + sendH + roomH - 24), roomW - 20, roomH - 10));
+		if (smartFox.RoomList.Count >= 1) {		
+			roomScrollPosition = GUILayout.BeginScrollView (roomScrollPosition, GUILayout.Width (roomW - 30), GUILayout.Height (roomH - 20));
+			roomSelection = GUILayout.SelectionGrid (roomSelection, roomFullStrings, 1);
 			
 			if (roomSelection >= 0 && roomNameStrings[roomSelection] != currentActiveRoom.Name) {
 				smartFox.Send(new JoinRoomRequest(roomNameStrings[roomSelection]));
@@ -341,37 +379,17 @@ public class Lobby : MonoBehaviour {
 		} else {
 			GUILayout.Label ("No rooms available to join");
 		}
-		// Game Room button
-		
-		if (GUI.Button (new Rect (80, 110, 85, 24), "Make Game")) {
-			// ****** Create new room ******* //
-			//Debug.Log("new room "+username + "'s Room");
-
-			RoomSettings settings = new RoomSettings(username + "'s Room");
-			settings.Name = username + "'s Room";
-			settings.MaxUsers = 32;
-			settings.IsGame = true;
-			smartFox.Send(new CreateRoomRequest(settings));
-		}
-		
-		/*if (GUI.Button (new Rect (80, 130, 85, 24), "Make Test 1")) {
-			//Debug.Log("new room ");
-			
-			RoomSettings settings = new RoomSettings("Test Room");
-			settings.MaxUsers = 32;
-			settings.Name = "Test Room";
-			settings.IsGame = true;
-			smartFox.Send(new CreateRoomRequest(settings));
-		}*/
-			
 		GUILayout.EndArea ();
 		
+		GUILayout.BeginArea(new Rect (350, 10, 100, 100));
+			// Game Room button
+		GUILayout.EndArea ();
 	}
 	
 	private void DrawChatGUI(){
-		GUI.Box(new Rect(10, 80, 470, 390), "Chat");
-
-		GUILayout.BeginArea (new Rect(20, 110, 450, 350));
+		GUI.Box(new Rect(offset, screenH - (chatH + sendH), chatW, chatH - vSpacing - offset), "Chat");
+		
+		GUILayout.BeginArea (new Rect(offset*2, screenH - (chatH + sendH - offset), chatW - 10, chatH - 10));
 			chatScrollPosition = GUILayout.BeginScrollView (chatScrollPosition, GUILayout.Width (450), GUILayout.Height (350));
 				GUILayout.BeginVertical();
 					foreach (string message in messages) {
@@ -382,9 +400,6 @@ public class Lobby : MonoBehaviour {
 			GUILayout.EndScrollView ();
 		GUILayout.EndArea();		
 	}
-	
-	
-	
 	
 	private void SetupRoomList () {
 		List<string> rooms = new List<string> ();
