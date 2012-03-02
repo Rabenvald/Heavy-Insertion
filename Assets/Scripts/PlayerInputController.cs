@@ -105,7 +105,7 @@ public class PlayerInputController : InputController
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-        if (Manager.Instance.gameOver == false)
+        if (!Manager.Instance.gameOver)
         {
             if (!hull.Dead && driving/* && Camera.current == mainCamera.camera*/ /*mainCamera*/)//mainCamera.camera.enabled)
             {
@@ -137,7 +137,7 @@ public class PlayerInputController : InputController
 
     void Update()
     {
-        if (Manager.Instance.gameOver == false)
+        if (!Manager.Instance.gameOver)
         {
             enterJustPressed = false;
             if (mainCamera.GetComponent<MainCameraScript>().typing == false)

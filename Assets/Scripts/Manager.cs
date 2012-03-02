@@ -170,8 +170,7 @@ public class Manager : MonoBehaviour
         smartFox.ProcessEvents();
         if (!gameOver)
         {
-
-            if (spawned)
+			if (spawned)
                 sendInputs();
 
             if (isPhysAuth && PhysObjects.Length > 0)
@@ -309,7 +308,7 @@ public class Manager : MonoBehaviour
         {
             string message = (string)evt.Params["message"];
             User sender = (User)evt.Params["sender"];
-			Debug.Log("testing");
+			//Debug.Log("testing");
 			if (message.Contains(encyption))
 			{
 				Debug.Log(message.Length);
@@ -425,13 +424,13 @@ public class Manager : MonoBehaviour
 		
 		Debug.Log("me: " + myId + " kills: " + leaderBoard[myId][0]);
         if (leaderBoard[myId][0] >= maxKills)
-        {
-            // declare win for me
-            GameOver(myId);
-
+		{
             // object sent to let them know
             ISFSObject myData = new SFSObject();
             myData.PutUtfString("gameOver", myId);
+			
+            // declare win for me
+            GameOver(myId);
         }
 	}
 	
@@ -1022,7 +1021,6 @@ public class Manager : MonoBehaviour
     {
         return smartFox.UserManager.GetUserById(int.Parse(id)).Name;
     }
-
 
     private void GameOver(string winnerID)
     {
