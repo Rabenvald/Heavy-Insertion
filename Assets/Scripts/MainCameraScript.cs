@@ -143,6 +143,10 @@ public class MainCameraScript : MonoBehaviour
             {
                 print("Clicked 'Singleplayer / Debug'");
                 Application.LoadLevel("Main Menu");
+				if (Manager.Instance != null)
+				{
+					
+				}
             }
 
             if (GUI.Button(exitButtonLoc, ExitTexture, blankStyle))

@@ -87,6 +87,7 @@
      <Compile Include="Assets\Scripts\ImportantObject.cs" />
      <Compile Include="Assets\Scripts\InputController.cs" />
      <Compile Include="Assets\Scripts\LevelManagerScript.cs" />
+     <Compile Include="Assets\Scripts\Lobby.cs" />
      <Compile Include="Assets\Scripts\MainCameraScript.cs" />
      <Compile Include="Assets\Scripts\Manager.cs" />
      <Compile Include="Assets\Scripts\MapCameraScript.cs" />
