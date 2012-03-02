@@ -69,9 +69,9 @@ public class MapCameraScript : MonoBehaviour
 					mainCamera.GetComponent<MainCameraScript>().setPlayer();
                     Screen.showCursor = true;
 					
-                    Debug.Log(Camera.main);
-					Debug.Log("MapCamera = " + gameObject.camera.enabled);
-					Debug.Log("MainCamera = " + mainCamera.camera.enabled);
+                    //Debug.Log(Camera.main);
+					//Debug.Log("MapCamera = " + gameObject.camera.enabled);
+					//Debug.Log("MainCamera = " + mainCamera.camera.enabled);
 				}
 			}
 			

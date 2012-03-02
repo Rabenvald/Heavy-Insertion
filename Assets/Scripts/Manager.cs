@@ -21,6 +21,12 @@ public class Manager : MonoBehaviour
 
     private PlayerInputController localController;
 
+    private Dictionary<String, int[]> leaderBoard;
+    public Dictionary<String, int[]> LeaderBoard
+    {
+        get { return leaderBoard; }
+    }
+
 	//important prefabs
 	public GameObject OtherPlayerTankPrefab;
 	public GameObject playerTankPrefab;
@@ -35,7 +41,6 @@ public class Manager : MonoBehaviour
 	{
 		get { return myTank; }	
 	}
-	
 	
 	private string clientName;
 	public string ClientName 
@@ -76,8 +81,10 @@ public class Manager : MonoBehaviour
     private float LastUpdateTime = 0;
     private uint ObjectSent = 0;
 	public bool IsGameRoom;
-	
-	private int kills;
+
+    public bool gameOver;
+
+    public int maxKills;
 	
 	private Queue<ISFSObject> instantiateQueue;
 	
@@ -112,8 +119,6 @@ public class Manager : MonoBehaviour
 			isPhysAuth = false;	
 		}
 		
-		kills = 0;
-		
 		spawned = false;
 
 		updatePhysList();
@@ -126,7 +131,28 @@ public class Manager : MonoBehaviour
 		uData.Add (new SFSUserVariable ("Deaths", 0));
 		uData.Add (new SFSUserVariable ("F'Yas", 0));
 		smartFox.Send (new SetUserVariablesRequest (uData));
+
 		instantiateQueue = new Queue<ISFSObject>();
+
+        maxKills = 5;
+
+        leaderBoard = new Dictionary<string, int[]>();
+
+        int kills, deaths, fyas;
+
+        gameOver = false;
+
+        List<User> users = smartFox.UserManager.GetUserList();
+        for (int i = 0; i < users.Count; i++)
+        {
+            if (users[i].ContainsVariable("Kills") && users[i].ContainsVariable("Deaths") && users[i].ContainsVariable("F'Yas"))
+            {
+                kills = users[i].GetVariable("Kills").GetIntValue();
+                deaths = users[i].GetVariable("Deaths").GetIntValue();
+                fyas = users[i].GetVariable("F'Yas").GetIntValue();
+                leaderBoard.Add(users[i].Id.ToString(), new int[] { kills, deaths, fyas });
+            }
+        }
 		
 		smartFox.AddEventListener(SFSEvent.USER_ENTER_ROOM, OnUserEnterRoom);
 		smartFox.AddEventListener(SFSEvent.USER_EXIT_ROOM, OnUserLeaveRoom);
@@ -141,33 +167,36 @@ public class Manager : MonoBehaviour
 	
 	void FixedUpdate () 
     {
-		smartFox.ProcessEvents();
-		
-		if(spawned)
-			sendInputs();
-
-        if (isPhysAuth && PhysObjects.Length > 0)
+        smartFox.ProcessEvents();
+        if (!gameOver)
         {
-            if (LastUpdateTime >= TimeBetweenUpdates)
+
+            if (spawned)
+                sendInputs();
+
+            if (isPhysAuth && PhysObjects.Length > 0)
             {
-                if (ObjectSent < PhysObjects.Length)
-				{
-	                sendTelemetry(PhysObjects[ObjectSent]);
-	                ObjectSent++;
-	                LastUpdateTime = 0;
-				}
-				else
-				{
-					ObjectSent = 0;
-				}
+                if (LastUpdateTime >= TimeBetweenUpdates)
+                {
+                    if (ObjectSent < PhysObjects.Length)
+                    {
+                        sendTelemetry(PhysObjects[ObjectSent]);
+                        ObjectSent++;
+                        LastUpdateTime = 0;
+                    }
+                    else
+                    {
+                        ObjectSent = 0;
+                    }
+                }
+                LastUpdateTime += Time.deltaTime;
             }
-            LastUpdateTime += Time.deltaTime;
+
+            if (instantiateQueue.Count > 0)
+            {
+                CreateNewGameObject(instantiateQueue.Dequeue());
+            }
         }
-		
-		if (instantiateQueue.Count > 0)
-		{
-			CreateNewGameObject(instantiateQueue.Dequeue());
-		}
 	}
 	
 	public void OnUserEnterRoom (BaseEvent evt)
@@ -216,10 +245,27 @@ public class Manager : MonoBehaviour
 	public void OnUserCountChange (BaseEvent evt)
     {
 		User user = (User)evt.Params["user"];
+		int kills = (int)user.GetVariable("Kills").GetIntValue( );
+		int deaths = (int)user.GetVariable("Deaths").GetIntValue( );
+		int fyas = (int)user.GetVariable("F'Yas").GetIntValue( );
+
 		if(currentRoom.UserCount == 1)
         {
 			isPhysAuth = true;
 		}
+
+        // If user exists in leaderBoard, means they're leaving
+        if (leaderBoard.ContainsKey(user.Id.ToString()))
+        {
+            //remove from leaderBoard
+            leaderBoard.Remove(user.Id.ToString());
+        }// If user doesn't exist, means they are joining
+        else
+        {
+            //add to leaderBoard
+            leaderBoard.Add(user.Id.ToString(), new int[] { kills, deaths, fyas });
+        }
+
 		//Debug.Log ("User count change based on " + user.Name + " with user Id of " + user.Id);
 	}
 	
@@ -235,8 +281,22 @@ public class Manager : MonoBehaviour
 		int kills = (int)user.GetVariable("Kills").GetIntValue( );
 		int deaths = (int)user.GetVariable("Deaths").GetIntValue( );
 		int fyas = (int)user.GetVariable("F'Yas").GetIntValue( );
-			
-		Debug.Log("For User " + user.Id + " Kills = " + kills + " Deaths = " + deaths + " F'Yas! = " + fyas);
+
+        //if person does not exist in the leaderboard
+        if (!leaderBoard.ContainsKey(user.Id.ToString()))
+        {
+            //create him/her in the leaderBoard
+            leaderBoard.Add(user.Id.ToString(), new int[] { kills, deaths, fyas });
+        }//if the person exists
+        else
+        {
+            //update their leaderboard values
+            leaderBoard[user.Id.ToString()][0] = kills;
+            leaderBoard[user.Id.ToString()][1] = deaths;
+            leaderBoard[user.Id.ToString()][2] = fyas;
+        }
+
+		//Debug.Log("For User " + user.Id + " Kills = " + kills + " Deaths = " + deaths + " F'Yas! = " + fyas);
 	}
 	
     //chat
@@ -284,8 +344,6 @@ public class Manager : MonoBehaviour
 			if (cause=="terrain")
 		    {
 			    SendMsg(encyption + victim.Name +  " smashed into the terrain.");
-			    //update own users death count, lower kill count
-			    updateUserKDVariables(victim, victim);
 		    }
 		    else
 		    {
@@ -300,10 +358,13 @@ public class Manager : MonoBehaviour
 				    SendMsg(encyption + victim.Name + " got blown up by " + killer.Name + ".");
 			    }
 
-			    //update killer's kill count and victim's death count
-			    updateUserKDVariables(killer, victim);
-				SendMsg(encyption + victim + " got blown up by " + killer + ".");
+
+                if (temp2[0] == myId || temp[0] == myId)
+                {
+                    updateUserKDVariables(GetUser(temp2[0]), GetUser(temp[0]));
+                }
 				SFSObject myData = new SFSObject();
+                myData.PutUtfString("victim", temp[0]);
 				myData.PutUtfString("killer", temp2[0]);
 				smartFox.Send(new ObjectMessageRequest(myData));
             }
@@ -315,13 +376,15 @@ public class Manager : MonoBehaviour
 	{
 		List<UserVariable> uData = new List<UserVariable> ();
 		
-		//if I'm the killer
-		if(killer.Id == int.Parse(myId))
+		//if I'm the killer and not also the victim
+		if(killer.Id == int.Parse(myId) && victim.Id != killer.Id)
 		{
 			//get my kill count
 			int kills = (int)killer.GetVariable("Kills").GetIntValue( );
 			//increase kill count
-			kills++;
+            kills++;
+            //update the leaderBoard
+            leaderBoard[myId][0] = kills;
 			//update the kill variable
 			uData.Add (new SFSUserVariable ("Kills", kills));
 		}
@@ -335,17 +398,20 @@ public class Manager : MonoBehaviour
 				//get my kill count
 				int kills = (int)victim.GetVariable("Deaths").GetIntValue( );
 				//lower kill count
-				kills--;
+                kills--;
+                //update the leaderBoard
+                leaderBoard[myId][0] = kills;
 				//update the kill variable
 				uData.Add (new SFSUserVariable ("Kills", kills));
 			}
 			//get my death count
 			int deaths = (int)victim.GetVariable("Deaths").GetIntValue( );
 			//increase death count
-			deaths++;
+            deaths++;
+            //update the leaderBoard
+            leaderBoard[myId][0] = deaths;
 			//update the death variable
 			uData.Add (new SFSUserVariable ("Deaths", deaths));
-			
 		}
 		
 		//if udata has things it, update variables
@@ -353,6 +419,16 @@ public class Manager : MonoBehaviour
 		{
 			smartFox.Send (new SetUserVariablesRequest (uData));
 		}
+
+        if (leaderBoard[myId][0] >= maxKills)
+        {
+            // declare win for me
+            GameOver(myId);
+
+            // object sent to let them know
+            ISFSObject myData = new SFSObject();
+            myData.PutUtfString("gameOver", myId);
+        }
 	}
 	
     public void OnObjectMessageReceived(BaseEvent evt) //You do not recieve these messages from yourself
@@ -365,20 +441,14 @@ public class Manager : MonoBehaviour
 		//Debug.Log("Obj contains spawnPos? " + obj.ContainsKey("spawnPos"));
 		
 		//making sure that the object has an Id
-		if (obj.ContainsKey("killer"))
-		{
-			if (obj.GetUtfString("killer") == myId)
-			{
-				kills++;
-				SendMsg(encyption + smartFox.UserManager.GetUserById(int.Parse(myId)).Name + " has " + kills + " kills.");
-				if (kills >= 10)
-				{
-					//SFSObject myData = new SFSObject();
-					//myData.PutUtfString("killer", temp2[0]);
-					//smartFox.Send(new ObjectMessageRequest(myData));
-				}
-			}
+		if (obj.ContainsKey("killer") && obj.ContainsKey("victim"))
+        {
+            updateUserKDVariables(GetUser(obj.GetUtfString("killer")), GetUser(obj.GetUtfString("victim")));
 		}
+        if(obj.ContainsKey("gameOver"))
+        {
+            GameOver(obj.GetUtfString("gameOver"));
+        }
 		else if (obj.ContainsKey("Id") && obj.GetUtfString("Id") != null)
         {
             //Debug.Log("Incomming IDed info");
@@ -617,6 +687,9 @@ public class Manager : MonoBehaviour
                 newObject.transform.position += newObject.rigidbody.velocity.normalized * 7;
 				newObject.GetComponent<NetTag>().Id = temp[0] + "-1-" + temp[2];
 				//primaryCount++;
+                // Recoil
+                NetInputController thisRemoteController = GetRemoteController(temp[0] + "-00-" + "00");
+                thisRemoteController.Hull.rigidbody.AddForceAtPosition(-newObject.rigidbody.velocity * newObject.rigidbody.mass, thisRemoteController.Turret.Muzzle.transform.position, ForceMode.Impulse);
 				updatePhysList();
 				//Debug.Log("Spawning New Projectile with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
@@ -927,5 +1000,28 @@ public class Manager : MonoBehaviour
     {
 		Gizmos.DrawIcon(transform.position, "Manager");
         Gizmos.color = Color.white;
+    }
+
+    public void ReloadMainMenu()
+    {
+        smartFox.Disconnect();
+        Screen.showCursor = true;
+        Application.LoadLevel("Main Menu");
+    }
+
+    public User GetUser(String id)
+    {
+        return smartFox.UserManager.GetUserById(int.Parse(id));
+    }
+
+    public String GetUserName(String id)
+    {
+        return smartFox.UserManager.GetUserById(int.Parse(id)).Name;
+    }
+
+
+    private void GameOver(string winnerID)
+    {
+        gameOver = true;
     }
 }

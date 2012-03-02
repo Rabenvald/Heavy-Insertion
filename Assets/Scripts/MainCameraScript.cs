@@ -39,6 +39,10 @@ public class MainCameraScript : MonoBehaviour
     private string newMessage = "";
     private ArrayList messages = new ArrayList();
     private Vector2 chatScrollPosition;
+	
+	private Vector2 scoreScrollPosition;
+	
+	public bool displayScores;
 
     Rect menuButtonLoc;
 
@@ -95,6 +99,8 @@ public class MainCameraScript : MonoBehaviour
         volumeSliderValue = AudioListener.volume;
 
         typing = false;
+		
+		displayScores = false;
 	}
 
 	void Update () 
@@ -142,10 +148,13 @@ public class MainCameraScript : MonoBehaviour
             if (GUI.Button(mainmenuButtonLoc, MainMenuTexture, blankStyle))
             {
                 print("Clicked 'Singleplayer / Debug'");
-                Application.LoadLevel("Main Menu");
 				if (Manager.Instance != null)
 				{
-					
+					Manager.Instance.ReloadMainMenu();
+				}
+				else
+				{
+					Application.LoadLevel("Main Menu");
 				}
             }
 
@@ -276,6 +285,25 @@ public class MainCameraScript : MonoBehaviour
                 sendMsg();
             }
         }
+		
+		if (displayScores)
+		{
+			Dictionary<string, int[]> temp = Manager.Instance.LeaderBoard;
+			int count = 0;
+			
+			GUI.Box(new Rect(Screen.width/4, Screen.height/4, Screen.width/2, Screen.height/2), "Leader Board");
+
+	        GUILayout.BeginArea(new Rect((Screen.width/4) + 10, Screen.height/4 + 30, Screen.width/2, Screen.height/2));
+            scoreScrollPosition = GUILayout.BeginScrollView(scoreScrollPosition, GUILayout.Width(Screen.width / 2), GUILayout.Height(Screen.height / 2));
+	        GUILayout.BeginVertical();
+	        foreach (KeyValuePair<string,int[]> stats in temp)
+			{
+				GUILayout.Label("Player: " + Manager.Instance.GetUserName(stats.Key) + ". Kills: " + stats.Value[0] + ". Deaths : " + stats.Value[1] + ". FYAHs: " + stats.Value[2] + ".");
+			}
+			GUILayout.EndVertical();
+	        GUILayout.EndScrollView();
+	        GUILayout.EndArea();
+		}
     }
 
     public void messageReceived(string msg)

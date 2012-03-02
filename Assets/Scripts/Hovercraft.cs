@@ -349,7 +349,8 @@ public class Hovercraft : ImportantObject
 	public void respawn(Vector3 pos)
 	{
 		transform.rigidbody.WakeUp();
-		transform.collider.enabled = true;
+		//transform.collider.enabled = true;
+        transform.collider.active = true;
         gameObject.transform.GetComponentInChildren<TurretScript>().enabled = true;
 		Controller.enabled = true;
         Health = 300;
@@ -376,7 +377,8 @@ public class Hovercraft : ImportantObject
 		mainCamera.camera.enabled = false;
 		
 		transform.rigidbody.Sleep();
-		transform.collider.enabled = false;
+		//transform.collider.enabled = false;
+        transform.collider.active = false;
 		gameObject.transform.position = new Vector3(0.0f, -13337.0f, 0.0f);
         gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
 		Controller.enabled = false;
