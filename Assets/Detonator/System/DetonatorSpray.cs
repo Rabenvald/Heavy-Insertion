@@ -52,6 +52,10 @@ public class DetonatorSpray : DetonatorComponent {
 				Vector3 randVec = Random.onUnitSphere * (startingRadius * size);
 				Vector3 velocityVec = new Vector3((velocity.x*size),(velocity.y*size),(velocity.z*size));
 				GameObject chunk = Instantiate(sprayObject, (this.transform.position + randVec), this.transform.rotation) as GameObject;
+				NetTag tag = chunk.GetComponent<NetTag>();
+				if (tag)
+				 	tag.Id = gameObject.GetComponent<NetTag>().Id;
+				
 				chunk.transform.parent = this.transform;
 				
 				//calculate scale for this piece

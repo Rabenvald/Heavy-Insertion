@@ -43,6 +43,7 @@ public class ProjectileScript : ImportantObject
     protected void explode()
     {
         GameObject impExp = (GameObject)Instantiate(ImpactExplosion, transform.position, Quaternion.identity);
+		impExp.GetComponent<NetTag>().Id = gameObject.GetComponent<NetTag>().Id;
         GameObject.Destroy(this.gameObject);
         //Manager.Instance.updatePhysList();
     }

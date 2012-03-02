@@ -76,6 +76,8 @@ public class Manager : MonoBehaviour
     private float LastUpdateTime = 0;
     private uint ObjectSent = 0;
 	public bool IsGameRoom;
+	
+	private const string encyption = "*:@#$5147grbSDvASDAWE4124NHFJFCmd5bB%^D%brnxrx454335";
 
 	void Awake() 
     {
@@ -238,7 +240,19 @@ public class Manager : MonoBehaviour
         {
             string message = (string)evt.Params["message"];
             User sender = (User)evt.Params["sender"];
-            GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>().messageReceived(sender.Name + ": " + message);
+			Debug.Log("testing");
+			if (message.Contains(encyption))
+			{
+				Debug.Log(message.Length);
+				Debug.Log(encyption.Length - 1);
+				string newMessage = message.Substring(encyption.Length);
+				Debug.Log(newMessage);
+				GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>().messageReceived(newMessage);
+			}
+			else
+			{
+            	GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>().messageReceived(sender.Name + ": " + message);
+			}
         }
         catch (Exception ex)
         {
@@ -251,7 +265,33 @@ public class Manager : MonoBehaviour
     {
         smartFox.Send(new PublicMessageRequest(msg));
     }
-
+	
+	public void BroadcastDeath(string cause, string whoDied)
+	{
+		if (isPhysAuth)
+		{
+			string[] temp = whoDied.Split('-');
+			string victim = smartFox.UserManager.GetUserById(int.Parse(temp[0])).Name;
+			if(cause=="cube")
+			{
+				SendMsg(encyption + victim + " got hit by shrapnel.");
+			}
+			else if (cause=="terrain")
+			{
+				SendMsg(encyption + victim +  " smashed into the terrain.");
+			}
+			else
+			{
+				string[] temp2 = cause.Split('-');
+				string killer = smartFox.UserManager.GetUserById(int.Parse(temp2[0])).Name;
+				if(victim==killer)
+					SendMsg(encyption + victim + " blew themselves up.");
+				else
+					SendMsg(encyption + victim + " got blown up by " + killer + ".");
+			}
+		}
+	}
+	
     public void OnObjectMessageReceived(BaseEvent evt) //You do not recieve these messages from yourself
     {
 		User sender = (User)evt.Params["sender"];

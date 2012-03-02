@@ -192,6 +192,25 @@ public class Hovercraft : ImportantObject
         else if (damage > 50)
         {
             Health -= damage;
+			if (Health < 0)
+			{
+				NetTag tag = other.gameObject.GetComponent<NetTag>();
+				if (tag)
+				{
+					string id = tag.Id;
+					Manager.Instance.BroadcastDeath(id, gameObject.GetComponent<NetTag>().Id);
+					return;
+				}
+				else if (other.gameObject == myterrain)
+				{
+					Manager.Instance.BroadcastDeath("terrain", gameObject.GetComponent<NetTag>().Id);
+				}
+				else
+				{
+					Manager.Instance.BroadcastDeath("cube", gameObject.GetComponent<NetTag>().Id);
+				}
+				
+			}
         }
         //if (Health < 0) explode();
     }

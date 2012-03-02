@@ -251,7 +251,7 @@ public class MainCameraScript : MonoBehaviour
         GUI.Box(new Rect(10, Screen.height - 128 - 330, 300, 300), "Chat");
 
         GUILayout.BeginArea(new Rect(20, Screen.height - 128 - 310, 300, 300));
-        chatScrollPosition = GUILayout.BeginScrollView(chatScrollPosition, GUILayout.Width(300), GUILayout.Height(300));
+        chatScrollPosition = GUILayout.BeginScrollView(chatScrollPosition, GUILayout.Width(295), GUILayout.Height(285));
         GUILayout.BeginVertical();
         foreach (string message in messages)
         {
