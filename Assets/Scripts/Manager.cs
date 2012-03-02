@@ -194,7 +194,10 @@ public class Manager : MonoBehaviour
 
             if (instantiateQueue.Count > 0)
             {
-                CreateNewGameObject(instantiateQueue.Dequeue());
+				ISFSObject obj = instantiateQueue.Dequeue();
+				GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
+				if(thisGameObj == null)
+                	CreateNewGameObject(obj);
             }
         }
 	}
@@ -396,7 +399,7 @@ public class Manager : MonoBehaviour
 			if(killer.Id == victim.Id)
 			{
 				//get my kill count
-				int kills = (int)victim.GetVariable("Deaths").GetIntValue( );
+				int kills = (int)victim.GetVariable("Kills").GetIntValue( );
 				//lower kill count
                 kills--;
                 //update the leaderBoard
@@ -409,7 +412,7 @@ public class Manager : MonoBehaviour
 			//increase death count
             deaths++;
             //update the leaderBoard
-            leaderBoard[myId][0] = deaths;
+            leaderBoard[myId][1] = deaths;
 			//update the death variable
 			uData.Add (new SFSUserVariable ("Deaths", deaths));
 		}
@@ -419,7 +422,8 @@ public class Manager : MonoBehaviour
 		{
 			smartFox.Send (new SetUserVariablesRequest (uData));
 		}
-
+		
+		Debug.Log("me: " + myId + " kills: " + leaderBoard[myId][0]);
         if (leaderBoard[myId][0] >= maxKills)
         {
             // declare win for me
@@ -688,8 +692,8 @@ public class Manager : MonoBehaviour
 				newObject.GetComponent<NetTag>().Id = temp[0] + "-1-" + temp[2];
 				//primaryCount++;
                 // Recoil
-                NetInputController thisRemoteController = GetRemoteController(temp[0] + "-00-" + "00");
-                thisRemoteController.Hull.rigidbody.AddForceAtPosition(-newObject.rigidbody.velocity * newObject.rigidbody.mass, thisRemoteController.Turret.Muzzle.transform.position, ForceMode.Impulse);
+                /*NetInputController thisRemoteController = GetRemoteController(temp[0] + "-00-" + "00");
+                thisRemoteController.Hull.rigidbody.AddForceAtPosition(-newObject.rigidbody.velocity * newObject.rigidbody.mass, thisRemoteController.Turret.Muzzle.transform.position, ForceMode.Impulse);*/
 				updatePhysList();
 				//Debug.Log("Spawning New Projectile with ID: " + newObject.GetComponent<NetTag>().Id);
 				break;
@@ -1022,6 +1026,7 @@ public class Manager : MonoBehaviour
 
     private void GameOver(string winnerID)
     {
+		SendMsg(encyption + GetUserName(winnerID) + " has won the game!");
         gameOver = true;
     }
 }

@@ -317,7 +317,8 @@ public class MainCameraScript : MonoBehaviour
         if (newMessage != "")
             Manager.Instance.SendMsg(newMessage);
         newMessage = "";
-        typing = false;
+		if (Manager.Instance.gameOver == false)
+        	typing = false;
     }
 
 

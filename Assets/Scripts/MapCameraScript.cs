@@ -58,20 +58,23 @@ public class MapCameraScript : MonoBehaviour
                 && MathTester.AreVector3Close(new Vector3(hit.point.x, 0, hit.point.z), new Vector3(terrainWidth / 2, 0, terrainWidth / 2), terrainWidth / 4))
             {
                 drawCheck = true;
-                if (Input.GetMouseButtonDown(0))
-                {
-					Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
-					mainCamera.transform.position = new Vector3(hit.point.x, 1700, hit.point.z);
-					mainCamera.camera.enabled = true;
-					gameObject.camera.enabled = false;
-					Manager.Instance.spawnMe(pos);
-					Manager.Instance.sendSpawnData(pos);
-					mainCamera.GetComponent<MainCameraScript>().setPlayer();
-                    Screen.showCursor = true;
-					
-                    //Debug.Log(Camera.main);
-					//Debug.Log("MapCamera = " + gameObject.camera.enabled);
-					//Debug.Log("MainCamera = " + mainCamera.camera.enabled);
+				if (!Manager.Instance.gameOver)
+				{
+	                if (Input.GetMouseButtonDown(0))
+	                {
+						Vector3 pos = new Vector3(hit.point.x, 2000, hit.point.z);
+						mainCamera.transform.position = new Vector3(hit.point.x, 1700, hit.point.z);
+						mainCamera.camera.enabled = true;
+						gameObject.camera.enabled = false;
+						Manager.Instance.spawnMe(pos);
+						Manager.Instance.sendSpawnData(pos);
+						mainCamera.GetComponent<MainCameraScript>().setPlayer();
+	                    Screen.showCursor = true;
+						
+	                    //Debug.Log(Camera.main);
+						//Debug.Log("MapCamera = " + gameObject.camera.enabled);
+						//Debug.Log("MainCamera = " + mainCamera.camera.enabled);
+					}
 				}
 			}
 			

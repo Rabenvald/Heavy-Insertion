@@ -210,12 +210,15 @@ public class Lobby : MonoBehaviour {
 	
 	void OnPublicMessage(BaseEvent evt) {
 		try {
-			string message = (string)evt.Params["message"];
-			User sender = (User)evt.Params["sender"];
-			messages.Add(sender.Name +": "+ message);
-			
-			chatScrollPosition.y = Mathf.Infinity;
-			//Debug.Log("User " + sender.Name + " said: " + message); 
+			if (smartFox.LastJoinedRoom != null && smartFox.LastJoinedRoom.Name == "The Lobby")
+			{
+				string message = (string)evt.Params["message"];
+				User sender = (User)evt.Params["sender"];
+				messages.Add(sender.Name +": "+ message);
+				
+				chatScrollPosition.y = Mathf.Infinity;
+				//Debug.Log("User " + sender.Name + " said: " + message); 
+			}
 		}
 		catch (Exception ex) {
 			Debug.Log("Exception handling public message: "+ex.Message+ex.StackTrace);

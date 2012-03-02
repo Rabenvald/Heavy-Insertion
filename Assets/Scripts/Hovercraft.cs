@@ -189,7 +189,7 @@ public class Hovercraft : ImportantObject
         {
             //Do nothing
         }
-        else if (damage > 50)
+        else if (damage > 50 && Health > 0)
         {
             Health -= damage;
 			if (Health < 0)
@@ -209,7 +209,6 @@ public class Hovercraft : ImportantObject
 				{
 					Manager.Instance.BroadcastDeath("cube", gameObject.GetComponent<NetTag>().Id);
 				}
-				
 			}
         }
         //if (Health < 0) explode();
@@ -363,24 +362,27 @@ public class Hovercraft : ImportantObject
 	public void kill()
 	{
 		dead = true;
-        if (Controller.PlayerControlled) //changed from myself to keep consistency
-        {
-			Manager.Instance.Spawned = false;	
+		if (Manager.Instance.gameOver == false)
+		{
+	        if (Controller.PlayerControlled) //changed from myself to keep consistency
+	        {
+				Manager.Instance.Spawned = false;	
+			}
+			
+			//if (Controller.PlayerControlled)
+	       	//	SetFocus(manager);
+			
+			//GameObject.Destroy(gameObject);
+			
+			mapCamera.camera.enabled = true;
+			mainCamera.camera.enabled = false;
+			
+			transform.rigidbody.Sleep();
+			//transform.collider.enabled = false;
+	        transform.collider.active = false;
+			gameObject.transform.position = new Vector3(0.0f, -13337.0f, 0.0f);
+	        gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
+			Controller.enabled = false;
 		}
-		
-		//if (Controller.PlayerControlled)
-       	//	SetFocus(manager);
-		
-		//GameObject.Destroy(gameObject);
-		
-		mapCamera.camera.enabled = true;
-		mainCamera.camera.enabled = false;
-		
-		transform.rigidbody.Sleep();
-		//transform.collider.enabled = false;
-        transform.collider.active = false;
-		gameObject.transform.position = new Vector3(0.0f, -13337.0f, 0.0f);
-        gameObject.transform.GetComponentInChildren<TurretScript>().enabled = false;
-		Controller.enabled = false;
 	}
 }

@@ -99,13 +99,13 @@ public class PlayerInputController : InputController
         hull = GetComponentInChildren<Hovercraft>();
         mapCamera = GameObject.FindWithTag("MapCamera");
         mainCamera = GameObject.FindWithTag("MainCamera");
-        Manager.Instance.gameOver = false;
+        //Manager.Instance.gameOver = false;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-        if (!Manager.Instance.gameOver)
+        if (Manager.Instance.gameOver == false)
         {
             if (!hull.Dead && driving/* && Camera.current == mainCamera.camera*/ /*mainCamera*/)//mainCamera.camera.enabled)
             {
@@ -137,7 +137,7 @@ public class PlayerInputController : InputController
 
     void Update()
     {
-        if (!Manager.Instance.gameOver)
+        if (Manager.Instance.gameOver == false)
         {
             enterJustPressed = false;
             if (mainCamera.GetComponent<MainCameraScript>().typing == false)
