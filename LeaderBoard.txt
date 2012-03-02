@@ -1,0 +1,2 @@
+After time is up or someone reaches max kills pop up gui element (freeze everything in the background) with the leaderboards and a button to go back to the lobby
+When after game timer is up, reload the level, reset user variables.

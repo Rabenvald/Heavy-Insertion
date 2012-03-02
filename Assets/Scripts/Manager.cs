@@ -114,6 +114,13 @@ public class Manager : MonoBehaviour
 		
 		myId = smartFox.MySelf.Id.ToString();
 		
+		//update my own user variables to reset the kills, deaths, and f'yas to 0
+		List<UserVariable> uData = new List<UserVariable> ();
+		uData.Add (new SFSUserVariable ("Kills", 0));
+		uData.Add (new SFSUserVariable ("Deaths", 0));
+		uData.Add (new SFSUserVariable ("F'Yas", 0));
+		smartFox.Send (new SetUserVariablesRequest (uData));
+		
 		smartFox.AddEventListener(SFSEvent.USER_ENTER_ROOM, OnUserEnterRoom);
 		smartFox.AddEventListener(SFSEvent.USER_EXIT_ROOM, OnUserLeaveRoom);
 		smartFox.AddEventListener(SFSEvent.USER_COUNT_CHANGE, OnUserCountChange);
@@ -122,23 +129,8 @@ public class Manager : MonoBehaviour
 		smartFox.AddEventListener(SFSEvent.USER_VARIABLES_UPDATE, OnUserVariablesUpdate); 
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariablesUpdate);
 		smartFox.AddEventListener(SFSEvent.PUBLIC_MESSAGE, OnPublicMessage);
-        //smartFox.AddEventListener(SFSEvent.UDP_INIT, OnUDPInit);
 		smartFox.AddEventListener(SFSEvent.EXTENSION_RESPONSE, onExtensionResponse);
-        //smartFox.InitUDP("129.21.29.6", 9933); //FIX THIS: Should be dynamic ========================================
 	}
-
-    void OnUDPInit(BaseEvent evt) 
-    {
-        if ((bool)evt.Params["success"]) 
-        {
-            // Execute an extension call via UDP
-            smartFox.Send(new ExtensionRequest("udpTest", new SFSObject(), null, true));
-        } 
-        else 
-        {
-            Console.WriteLine("UDP init failed!");
-        }
-    }
 	
 	void FixedUpdate () 
     {
@@ -196,15 +188,6 @@ public class Manager : MonoBehaviour
 		if(obj != null){
 			obj.GetComponent<Hovercraft>().respawn(pos);
 		}
-		else{
-			/*GameObject tank = (GameObject)Instantiate(OtherPlayerTankPrefab, pos, Quaternion.identity);
-	        tank.GetComponent<InputController>().id = user.Id.ToString();
-			tank.GetComponent<NetTag>().Id = user.Id.ToString() + "-00-" + "00"; //ID Schema: UserId + Type + InstanceNumber
-			updatePhysList();
-			GameObject.FindWithTag("MainCamera").GetComponent<MainCameraScript>().setEnemies();
-			GameObject.FindWithTag("MapCamera").GetComponent<MapCameraScript>().setEnemies();
-			Debug.Log("I made an enemy");*/
-		}
 	}
 	
 	public void OnUserLeaveRoom (BaseEvent evt)
@@ -232,7 +215,18 @@ public class Manager : MonoBehaviour
     {
 		smartFox.RemoveAllEventListeners();
 	}
-
+	
+	//This is for leaderboard stuff! Kills, Deaths, and F'Yas are user variables
+	public void OnUserVariablesUpdate(BaseEvent evt)
+	{
+		User user = (User) evt.Params["user"];
+		int kills = (int)user.GetVariable("Kills").GetIntValue( );
+		int deaths = (int)user.GetVariable("Deaths").GetIntValue( );
+		int fyas = (int)user.GetVariable("F'Yas").GetIntValue( );
+			
+		Debug.Log("For User " + user.Id + " Kills = " + kills + " Deaths = " + deaths + " F'Yas! = " + fyas);
+	}
+	
     //chat
     void OnPublicMessage(BaseEvent evt)
     {
@@ -268,27 +262,78 @@ public class Manager : MonoBehaviour
 	
 	public void BroadcastDeath(string cause, string whoDied)
 	{
+		string[] temp;
+		string[] temp2;
+		
 		if (isPhysAuth)
 		{
-			string[] temp = whoDied.Split('-');
-			string victim = smartFox.UserManager.GetUserById(int.Parse(temp[0])).Name;
-			if(cause=="cube")
+			temp = whoDied.Split('-');
+			User victim = smartFox.UserManager.GetUserById(int.Parse(temp[0]));
+			if (cause=="terrain")
 			{
-				SendMsg(encyption + victim + " got hit by shrapnel.");
-			}
-			else if (cause=="terrain")
-			{
-				SendMsg(encyption + victim +  " smashed into the terrain.");
+				SendMsg(encyption + victim.Name +  " smashed into the terrain.");
+				//update own users death count, lower kill count
+				updateUserKDVariables(victim, victim);
 			}
 			else
 			{
-				string[] temp2 = cause.Split('-');
-				string killer = smartFox.UserManager.GetUserById(int.Parse(temp2[0])).Name;
+				temp2 = cause.Split('-');
+				User killer = smartFox.UserManager.GetUserById(int.Parse(temp2[0]));
 				if(victim==killer)
-					SendMsg(encyption + victim + " blew themselves up.");
+				{
+					SendMsg(encyption + victim.Name + " blew themselves up.");
+				}
 				else
-					SendMsg(encyption + victim + " got blown up by " + killer + ".");
+				{
+					SendMsg(encyption + victim.Name + " got blown up by " + killer.Name + ".");
+				}
+				//update killer's kill count and victim's death count
+				updateUserKDVariables(killer, victim);
 			}
+		}
+	}
+	
+	private void updateUserKDVariables(User killer, User victim)
+	{
+		List<UserVariable> uData = new List<UserVariable> ();
+		
+		//if I'm the killer
+		if(killer.Id == int.Parse(myId))
+		{
+			//get my kill count
+			int kills = (int)killer.GetVariable("Kills").GetIntValue( );
+			//increase kill count
+			kills++;
+			//update the kill variable
+			uData.Add (new SFSUserVariable ("Kills", kills));
+		}
+		
+		//if I'm the victim
+		if(victim.Id == int.Parse(myId))
+		{
+			//if killer and victim are the same (aka me)
+			if(killer.Id == victim.Id)
+			{
+				//get my kill count
+				int kills = (int)victim.GetVariable("Deaths").GetIntValue( );
+				//lower kill count
+				kills--;
+				//update the kill variable
+				uData.Add (new SFSUserVariable ("Kills", kills));
+			}
+			//get my death count
+			int deaths = (int)victim.GetVariable("Deaths").GetIntValue( );
+			//increase death count
+			deaths++;
+			//update the death variable
+			uData.Add (new SFSUserVariable ("Deaths", deaths));
+			
+		}
+		
+		//if udata has things it, update variables
+		if(uData.Count > 0)
+		{
+			smartFox.Send (new SetUserVariablesRequest (uData));
 		}
 	}
 	
@@ -313,7 +358,6 @@ public class Manager : MonoBehaviour
             GameObject thisGameObj = GetNetObject(obj.GetUtfString("Id"));
 			
 			//Debug.Log(thisGameObj);
-			
 			if (thisGameObj == null)
 			{
 				Debug.Log("Should be null and spawning an object of type: " + tempId[1]);
@@ -483,6 +527,7 @@ public class Manager : MonoBehaviour
 	            thisGameObj.rigidbody.velocity = new Vector3(obj.GetFloat("vx"), obj.GetFloat("vy"), obj.GetFloat("vz"));
 				
 				thisGameObj.rigidbody.angularVelocity = new Vector3(obj.GetFloat("ax"), obj.GetFloat("ay"), obj.GetFloat("az"));
+				
 			}//spawning a tank - this might no longer be needed
 			if(obj.ContainsKey("spawnPos"))
 		    {
@@ -490,59 +535,7 @@ public class Manager : MonoBehaviour
 				Debug.Log(pos);
 				spawnTank(thisGameObj, sender, pos);
 			}
-			//create attack
-			/*if(obj.GetUtfString("Command") == "CreateAttack") //removed else because we are still sending those pieces of data
-	        {
-				string id = obj.GetUtfString("Id");
-	            
-				//parse id to determine type
-				string[] temp = id.Split('-');
-				//Debug.Log(temp[0] + " " + temp[1] + " " + temp[2]);
-	
-				int type = int.Parse(temp[1]);
-	            GameObject NetObject = GetNetObject(temp[0] + "-00-00");
-	            //Debug.Log(NetObject);
-	
-	            //Debug.Log("Type " + type);
-	            GameObject proj;
-                switch (type) //switch to determine what to create
-	            {
-	                case 1: //projectile
-	                    NetInputController thisRemoteController = NetObject.GetComponent<NetInputController>();
-	                    //Debug.Log("RC" + thisRemoteController);
-	                    //Debug.Log("RC Muzz: " + thisRemoteController.Turret.Muzzle);
-	                    GameObject Muzzle = thisRemoteController.Turret.Muzzle;
-	                    //Debug.Log("RC id" + thisRemoteController.id);
-	                    if (thisRemoteController != null)
-	                    {
-	                        Debug.Log("created projectile for player " + temp[0]);
-	                        proj = (GameObject)GameObject.Instantiate(heatProjectile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
-	
-	                        proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
-	                        // Recoil
-	                        thisRemoteController.Hull.rigidbody.AddForceAtPosition(-proj.rigidbody.velocity * proj.rigidbody.mass, Muzzle.transform.position, ForceMode.Impulse);
-	                    }
-	                    else
-	                    {
-	                        Debug.Log("Null Object");
-	                    }
-	                    break;
-	                case 2: //missile
-	                    proj = (GameObject)GameObject.Instantiate(ATMissile, new Vector3(obj.GetFloat("ppx"), obj.GetFloat("ppy"), obj.GetFloat("ppz")), Quaternion.Euler(new Vector3(obj.GetFloat("prx"), obj.GetFloat("pry"), obj.GetFloat("prz"))));
-	                    proj.GetComponent<GuidedProjectileInputController>().TargetPosition = new Vector3(obj.GetFloat("tx"),obj.GetFloat("ty"),obj.GetFloat("tz"));
-	                    proj.rigidbody.velocity = new Vector3(obj.GetFloat("pvx"), obj.GetFloat("pvy"), obj.GetFloat("pvz")); 
-	                    Debug.Log("created missile for player " + temp[0]);
-	                    break;
-	                default:
-	                    break;
-	            }
-        	}*/
 		}
-	}
-	
-	public void OnUserVariablesUpdate (BaseEvent evt)
-    {
-		User user = (User)evt.Params["user"];
 	}
 	
 	public void OnRoomVariablesUpdate (BaseEvent evt)

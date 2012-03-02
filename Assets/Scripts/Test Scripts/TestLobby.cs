@@ -174,6 +174,13 @@ public class TestLobby : MonoBehaviour {
 			smartFox.Send(new SpectatorToPlayerRequest());
 		}
 		else{
+			//set up user variables
+			List<UserVariable> uData = new List<UserVariable> ();
+			uData.Add (new SFSUserVariable ("Kills", 0));
+			uData.Add (new SFSUserVariable ("Deaths", 0));
+			uData.Add (new SFSUserVariable ("F'Yas", 0));
+			smartFox.Send (new SetUserVariablesRequest (uData));
+			
 			Application.LoadLevel("M1");
 			smartFox.Send(new SpectatorToPlayerRequest());
 		}

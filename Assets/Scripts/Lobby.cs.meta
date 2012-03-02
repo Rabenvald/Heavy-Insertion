@@ -1,0 +1,6 @@
+fileFormatVersion: 1
+guid: d33276458bd74a04b8c420850a4eab81
+MonoImporter:
+  importerVersion: 1
+  defaultReferences:
+    gSkin: {fileID: 11400000, guid: afc050018f2b77740a6dc6048b540249, type: 2}
