@@ -12,7 +12,10 @@
 			return null;
 		}
 		if (typeof unityObject != "undefined") {
-			unityObject.embedUnity("unityPlayer", "WebPlayer.unity3d", 1600, 900);
+			var params = {
+				disableContextMenu: true
+			};
+			unityObject.embedUnity("unityPlayer", "WebPlayer.unity3d", 1600, 900, params);
 			
 		}
 		-->
@@ -21,15 +24,15 @@
 		<!--
 		body {
 			font-family: Helvetica, Verdana, Arial, sans-serif;
-			background-color: black;
-			color: white;
+			background-color: white;
+			color: black;
 			text-align: center;
 		}
 		a:link, a:visited {
-			color: #bfbfbf;
+			color: #000;
 		}
 		a:active, a:hover {
-			color: #bfbfbf;
+			color: #666;
 		}
 		p.header {
 			font-size: small;
